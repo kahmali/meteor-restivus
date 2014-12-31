@@ -30,7 +30,7 @@
     action: ->
       # Authenticate the request if necessary
       if self.config.useAuth and options.authRequired
-        authenticate this.request
+        authenticate.call this
 
       # Respond to the requested HTTP method if an endpoint has been provided for it
       method = this.request.method
@@ -56,8 +56,6 @@
         'Content-Type': 'text/json'
       this.response.write JSON.stringify responseBody
       this.response.end()
-
-  console.log 'Attempted to add path with Iron Router'
 
   # Add the path to our list of existing paths
   this.config.paths.push path
@@ -90,10 +88,10 @@
 ###
   Verify the request is being made by an actively logged in user
 ###
-authenticate = (request) ->
+authenticate = ->
   # Get the auth info from header
-  userId = request.headers['x-user-id']
-  loginToken = request.headers['x-login-token']
+  userId = this.request.headers['x-user-id']
+  loginToken = this.request.headers['x-login-token']
 
   # Get the user from the database
   if userId and loginToken
@@ -103,5 +101,7 @@ authenticate = (request) ->
   if not user
     # TODO: Execute the http error response here
     return [403, {success: false, message: "You must be logged in to do this."}]
+
+  this.user = user
 
 Restfully = new @Restfully()
