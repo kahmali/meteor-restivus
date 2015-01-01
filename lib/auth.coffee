@@ -60,13 +60,13 @@ loginWithPassword = (user, password) ->
 
   return {loginToken: authToken.token, userId: authenticatingUser._id}
 
-@Restfully.prototype.initAuth = ->
+@Restivus.prototype.initAuth = ->
   ###
   Add a login method to the API
 
   After the user is logged in, the onLoggedIn hook is called (see Restfully.configure() for adding hook).
   ###
-  Restfully.add 'login', {authRequired: false},
+  Restivus.add 'login', {authRequired: false},
     post: ->
       # Grab the username or email that the user is logging in with
       user = {}
@@ -90,7 +90,7 @@ loginWithPassword = (user, password) ->
           'services.resume.loginTokens.token': auth.loginToken
 
       # Call the login hook with the authenticated user attached
-      Restfully.config.onLoggedIn.call context
+      Restivus.config.onLoggedIn.call context
 
       auth.success = true
       auth
@@ -100,13 +100,13 @@ loginWithPassword = (user, password) ->
 
   After the user is logged out, the onLoggedOut hook is called (see Restfully.configure() for adding hook).
   ###
-  Restfully.add 'logout', {authRequired: true},
+  Restivus.add 'logout', {authRequired: true},
     get: ->
       # Remove the given auth token from the user's account
       authToken = this.request.headers['x-login-token']
       Meteor.users.update this.user._id, {$pull: {'services.resume.loginTokens': {token: authToken}}}
 
       # Call the logout hook with the logged out user attached
-      Restfully.config.onLoggedOut.call this.user
+      Restivus.config.onLoggedOut.call this.user
 
       {success: true, message: 'You\'ve been logged out!'}

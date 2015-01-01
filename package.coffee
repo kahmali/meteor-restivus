@@ -1,8 +1,8 @@
 Package.describe
-  name: 'nimblenotes:restfully'
-  summary: 'A Meteor package for building ReSTful APIs - inspired by RestStop and backed by Iron Router.'
+  name: 'nimble:restivus'
+  summary: 'ReST APIs for the Best of Us! - A Meteor package for building ReSTful APIs'
   version: '0.0.0'
-  git: 'https://github.com/krose72205/meteor-restfully.git'
+  git: 'https://github.com/krose72205/meteor-restivus.git'
 
 
 Package.onUse (api) ->
@@ -20,11 +20,11 @@ Package.onUse (api) ->
   api.addFiles 'lib/auth.coffee', 'server'
 
   # Export Restfully
-  api.export 'Restfully'
+  api.export 'Restivus'
 
 
 Package.onTest (api) ->
   # Meteor dependencies
   api.use 'tinytest'
   api.use 'test-helpers'
-  api.use 'nimblenotes:restfully'
+  api.use 'nimble:restivus'

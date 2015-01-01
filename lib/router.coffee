@@ -1,4 +1,4 @@
-@Restfully = ->
+@Restivus = ->
   this.config =
     paths: []
     useAuth: false
@@ -12,7 +12,7 @@
 ###
   Add endpoints for the given HTTP methods at the given path
 ###
-@Restfully.prototype.add = (path, options, methods) ->
+@Restivus.prototype.add = (path, options, methods) ->
   self = this
 
   path = this.config.apiPath + path
@@ -22,7 +22,7 @@
   # Throw an error if this path has already been added
   # TODO: Check for collisions with paths that follow same pattern with different parameter names
   if _.contains this.paths, path
-    throw new Error "Cannot Restfully.add() route at an existing path: #{path}"
+    throw new Error "Cannot Restivus.add() route at an existing path: #{path}"
 
   # Add all given methods using Iron Router
   Router.route path,
@@ -68,9 +68,9 @@
 
   Can only be called once.
 ###
-@Restfully.prototype.configure = (config) ->
+@Restivus.prototype.configure = (config) ->
   if this.configured
-    throw new Error 'Restfully.configure() can only be called once'
+    throw new Error 'Restivus.configure() can only be called once'
 
   this.configured = true
 
@@ -82,7 +82,7 @@
 
   # Add default login and logout endpoints if auth is configured
   if this.config.useAuth
-    Restfully.initAuth()
+    Restivus.initAuth()
 
 
 ###
@@ -104,4 +104,4 @@ authenticate = ->
 
   this.user = user
 
-Restfully = new @Restfully()
+Restivus = new @Restivus()
