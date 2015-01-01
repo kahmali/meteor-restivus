@@ -8,5 +8,5 @@
 *.js
 *.map
 
-## Ignored in other Meteor packages (when in Rome...) ##
-.build*
+## Package config file needs to remain in JS for now ##
+!package.js
