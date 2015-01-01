@@ -16,7 +16,8 @@ Package.onUse (api) ->
   api.use 'iron:router'
 
   # Package files
-  api.addFiles 'lib/router.coffee', 'server'
+  api.addFiles 'lib/restivus.coffee', 'server'
+  api.addFiles 'lib/endpoint.coffee', 'server'
   api.addFiles 'lib/auth.coffee', 'server'
 
   # Export Restfully
