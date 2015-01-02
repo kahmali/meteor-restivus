@@ -60,4 +60,4 @@ getUserQuerySelector = (user) ->
   authToken = Accounts._generateStampedLoginToken()
   Meteor.users.update authenticatingUser._id, {$push: {'services.resume.loginTokens': authToken}}
 
-  return {loginToken: authToken.token, userId: authenticatingUser._id}
+  return {authToken: authToken.token, userId: authenticatingUser._id}

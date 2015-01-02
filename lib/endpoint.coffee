@@ -58,7 +58,7 @@
 authenticate = ->
   # Get the auth info from header
   userId = @request.headers['x-user-id']
-  loginToken = @request.headers['x-login-token']
+  loginToken = @request.headers['x-auth-token']
 
   # Get the user from the database
   if userId and loginToken
