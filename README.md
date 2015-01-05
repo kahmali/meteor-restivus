@@ -14,8 +14,8 @@ You can install Restivus using Meteor's package manager:
 ```bash
 > meteor add nimble:restivus
 ```
-To update Restivus to the latest version just use the `meteor update` command:
 
+And to update Restivus to the latest version:
 ```bash
 > meteor update nimble:restivus
 ```
@@ -38,18 +38,19 @@ To update Restivus to the latest version just use the `meteor update` command:
         Accounts.createUser
           email: this.bodyParams.email
           password: this.bodyParams.password
-        Meteor.users.findOne {emails.address: this.bodyParams.email}
+        Meteor.users.findOne {'emails.address': this.bodyParams.email}
 
     # Maps to: api/friends/abc123
     Restivus.add 'friends/:friendId', {authRequired: true},
       get: ->
-        _.findWhere this.user.profile.friends, {id: this.urlParams.friendId}
+        _.findWhere this.user.profile.friends, {_id: this.urlParams.friendId}
       delete: ->
         if _.contains this.user.profile.friends, this.urlParams.friendId
           Meteor.users.update(userId, {$pull: {'profile.devices.android': deviceId}})
           {success: true, message: 'Friend removed'}
         else
-          [404, {success: false, message: 'Friend not found. No friend removed.'}]
+          statusCode: 404
+          body: {success: false, message: 'Friend not found. No friend removed.'}
 ```
 ###### JavaScript:
 
@@ -86,8 +87,10 @@ To update Restivus to the latest version just use the `meteor update` command:
           return {success: true, message: 'Friend removed'};
         }
         else {
-          return [404, {success: false, message: 'Friend not found. No friend removed.'}];
-        }
+          return {
+            statusCode: 404,
+            body: {success: false, message: 'Friend not found. No friend removed.'}
+        };
       }
     });
   }
@@ -113,7 +116,7 @@ To update Restivus to the latest version just use the `meteor update` command:
 The following configuration options are available with `Restivus.configure`:
 - `useAuth`
   - Default: `false`
-  - If true, `/login` and `/logout` routes are added to the API. You can access `this.user` in [authenticated][#authenticating] endpoints.
+  - If true, `/login` and `/logout` routes are added to the API. You can access `this.user` in [authenticated](#authenticating) endpoints.
 - `apiPath`
   - Default: `'api'`
   - The base path for your API. If you use 'api' and add a route called 'users', the URL will be
@@ -129,16 +132,9 @@ The following configuration options are available with `Restivus.configure`:
 
 The `path` is the 1st parameter of `Restivus.add`. You can pass it a string or regex. If you pass it `test/path`, the full path will be `https://yoursite.com/api/test/path`.
 
-Routes can have variable parameters. For example, you can create one route to
-show any post with an id. The `id` is variable depending on the post you want to
-see such as "/posts/1" or "/posts/2". To declare a named parameter in your route
-use the `:` syntax in the url followed by the parameter name. When a user goes
-to that url, the actual value of the parameter will be stored as a property on
-`this.urlParams` in your endpoint function.
+Routes can have variable parameters. For example, you can create one route to show any post with an id. The `id` is variable depending on the post you want to see such as "/posts/1" or "/posts/2". To declare a named parameter in your route use the `:` syntax in the url followed by the parameter name. When a user goes to that url, the actual value of the parameter will be stored as a property on `this.urlParams` in your endpoint function.
 
-In this example we have a route parameter named `_id`. If we navigate to the
-`/post/5` url in our browser, inside of the route function we can get the actual
-value of the `_id` from `this.urlParams._id`. In this case `this.urlParams._id => 5`.
+In this example we have a route parameter named `_id`. If we navigate to the `/post/5` url in our browser, inside of the route function we can get the actual value of the `_id` from `this.urlParams._id`. In this case `this.urlParams._id => 5`.
 
 ###### CoffeeScript:
 ```coffeescript
@@ -159,10 +155,7 @@ Restivus.add('/post/:_id', {
 });
 ```
 
-You can have multiple route parameters. In this example, we have an `_id`
-parameter and a `commentId` parameter. If you navigate to the url
-`/post/5/comments/100` then inside your route function `this.params._id => 5`
-and `this.params.commentId => 100`.
+You can have multiple route parameters. In this example, we have an `_id` parameter and a `commentId` parameter. If you navigate to the url `/post/5/comments/100` then inside your route function `this.params._id => 5` and `this.params.commentId => 100`.
 
 ###### CoffeeScript:
 ```coffeescript
@@ -184,25 +177,24 @@ Restivus.add('/post/:_id/comments/:commentId', {
 });
 ```
 
-If there is a query string or hash fragment in the url, you can access those
-using the `query` and `hash` properties of the `this.params` object.
+If there is a query string in the url, you can access that using `this.queryParams`.
 
 ###### Coffeescript:
 ```coffeescript
-# Given the url: "/post/5?q=liked"
+# Given the url: "/post/5?q=liked#hash_fragment"
 Restivus.add '/post/:_id',
   get: ->
-    var id = this.urlParams._id
-    var query = this.urlParams.query # query.q -> "liked"
+    id = this.urlParams._id
+    query = this.queryParams # query.q -> "liked"
 ```
 
 ###### JavaScript:
 ```javascript
-// Given the url: "/post/5?q=liked"
+// Given the url: "/post/5?q=liked#hash_fragment"
 Restivus.add('/post/:_id', {
   get: function () {
     var id = this.urlParams._id;
-    var query = this.urlParams.query; // query.q -> "liked"
+    var query = this.queryParams; // query.q -> "liked"
   }
 });
 ```
@@ -212,7 +204,7 @@ Restivus.add('/post/:_id', {
 The following options are available in Restivus.add (as the 2nd, optional parameter):
 -`authRequired`
   - Default: false
-  - If true, all methods on this endpoint will return a 401 if the user is not properly [authenticated][#authentication].
+  - If true, all endpoints on this route will return a `401` if the user is not properly [authenticated](#authenticating).
 
 
 ## Method Definition
@@ -229,7 +221,7 @@ These methods can be defined one of two ways. First, you can simply provide a fu
 Otherwise, for finer-grained control over each method, you can also define each one as an object with the following properties:
 - `authRequired`
   - Default: false
-  - If true, this method will return a 401 if the user is not properly [authenticated][#authenticating]. Overrides the option of the same name defined on the entire route.
+  - If true, this endpoint will return a `401` if the user is not properly [authenticated](#authenticating). Overrides the option of the same name defined on the entire route.
 - `action`
   - Default: undefined
   - A function that will be executed when a request is made for the corresponding HTTP method.
@@ -257,29 +249,29 @@ Restivus.add('posts', {authRequired: true}, {
   get: function () {
     authRequired: false
     action: function () {
-      # GET api/posts
+      // GET api/posts
     }
   }
   post: function () {
-    # POST api/posts
+    // POST api/posts
   }
   put: function () {
-    # PUT api/posts
+    // PUT api/posts
   }
   patch: function () {
-    # PATCH api/posts
+    // PATCH api/posts
   }
   delete: function () {
-    # DELETE api/posts
+    // DELETE api/posts
   }
 ```
-In the above examples, all the methods except the GETs will require authentication.
+In the above examples, all the methods except the GETs will require [authentication](#authenticating).
 
 ## Method Context
 
 Each method has access to:
 - `this.user`
-  - The [authenticated][#authenticating] `Meteor.user`. Only available if `useAuth` and `authRequired` are both `true`. If not, it will be `false`.
+  - The [authenticated](#authenticating) `Meteor.user`. Only available if `useAuth` and `authRequired` are both `true`. If not, it will be `false`.
 - `this.urlParams`
   - Non-optional parameters extracted from the URL. A parameter `id` on the path `posts/:id` would be available as `this.urlParams.id`.
 - `this.queryParams`
@@ -327,8 +319,6 @@ return {
 
 The following uses the above code.
 
-Any results specified by Restivus (mostly errors) will include a JSON object that follows the [JSend][] standard.
-
 ## Basic Usage
 
 We can call our `POST /posts/:id/comments` endpoint the following way. Note the /api/ in the URL (defined with the api_path option above):
@@ -366,9 +356,19 @@ Or, pass it as a header. This is probably a bit cleaner:
 ```bash
 curl -H "X-Auth-Token: f2KpRW7KeN9aPmjSZ" -H "X-User-Id: fbdpsNf4oHiX79vMJ" http://localhost:3000/api/posts/
 ```
-# Thanks To
+## Thanks
 
 Thanks to the developers over at Differential for [RestStop2][], where we got our inspiration for this package and stole tons of ideas and code, as well as the [Iron Router][iron-router] team for giving us a solid foundation with their server-side routing in Meteor.
+
+Also, thanks to the following projects, which RestStop2 was inspired by:
+- [gkoberger/meteor-reststop](https://github.com/gkoberger/meteor-reststop)
+- [tmeasday/meteor-router](https://github.com/tmeasday/meteor-router)
+- [crazytoad/meteor-collectionapi](https://github.com/crazytoad/meteor-collectionapi)
+
+
+## License
+
+MIT License. See LICENSE for details.
 
 
 
