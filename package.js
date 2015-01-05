@@ -1,7 +1,7 @@
 Package.describe({
   name: 'nimble:restivus',
   summary: 'ReST APIs for the Best of Us! - A Meteor package for building ReSTful APIs',
-  version: '0.0.0',
+  version: '0.5.0',
   git: 'https://github.com/krose72205/meteor-restivus.git'
 });
 
@@ -14,7 +14,7 @@ Package.onUse(function (api) {
   api.use('check');
   api.use('coffeescript');
   api.use('underscore');
-  api.use('iron:router');
+  api.use('iron:router@1.0.6');
 
   // Package files
   api.addFiles('lib/restivus.coffee', 'server');

@@ -3,7 +3,7 @@
   @config =
     paths: []
     useAuth: false
-    apiPath: '/api'
+    apiPath: 'api/'
     version: 1
     prettyJson: true
     onLoggedIn: -> {}
@@ -33,7 +33,10 @@
 
   @configured = true
 
-  if config.apiPath[-1] != '/'
+  # Normalize the API path
+  if config.apiPath[0] is '/'
+    config.apiPath = config.apiPath.slice 1
+  if config.apiPath[-1] isnt '/'
     config.apiPath = config.apiPath + '/'
 
   # Configure API with the given options
@@ -45,6 +48,10 @@
   # Add default login and logout endpoints if auth is configured
   if @config.useAuth
     initAuth()
+    console.log "Restivus configured at #{@config.apiPath} with authentication"
+  else
+    console.log "Restivus configured at #{@config.apiPath} without authentication"
+
 
 
 ###
@@ -60,14 +67,14 @@ initAuth = ->
     post: ->
       # Grab the username or email that the user is logging in with
       user = {}
-      if @params.user.indexOf('@') is -1
-        user.username = @params.user
+      if @bodyParams.user.indexOf('@') is -1
+        user.username = @bodyParams.user
       else
-        user.email = @params.user
+        user.email = @bodyParams.user
 
       # Try to log the user into the user's account (if successful we'll get an auth token back)
       try
-        auth = Auth.loginWithPassword user, @params.password
+        auth = Auth.loginWithPassword user, @bodyParams.password
       catch e
         return [e.error, {success: false, message: e.reason}]
 

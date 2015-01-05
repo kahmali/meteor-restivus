@@ -1,5 +1,8 @@
 @Endpoint = (@api, @path, @options, @methods) ->
-  # TODO: Make the options...well...optional
+  # Check if options were provided
+  if not @methods
+    @methods = @options
+    @options = null
 
 @Endpoint.prototype.addToApi =  ->
   self = this
@@ -12,52 +15,88 @@
   # Append the path to the base API path
   fullPath = @api.config.apiPath + @path
 
-  # TODO: Remove log statements before package release
-  console.log "Adding [#{ _.keys @methods }] methods to path: #{fullPath}"
+#  console.log "Adding [#{ _.keys @methods }] methods to path: #{fullPath}"
 
   # Add all given methods using Iron Router
   Router.route fullPath,
     where: 'server'
     action: ->
-      # Authenticate the request if necessary
-      if self.api.config.useAuth and self.options.authRequired
-        authenticate.call this
+      method = @request.method
+#      console.log "Handling #{method} request at #{self.path}"
+
+      # Flatten parameters in the URL and request body (and give them better names)
+      # TODO: Decide whether or not to nullify the copied objects. Makes sense to do it, right?
+      @urlParams = @params
+      @queryParams = @params.query
+      @bodyParams = @request.body
+#      @params = @params.query = @request.body = null
 
       # Respond to the requested HTTP method if an endpoint has been provided for it
-      method = @request.method
-      console.log "Handling #{method} request at #{self.path}"
-      # TODO: Handle the different method definition types (e.g., function, object) proposed in README
       if method is 'GET' and self.methods.get
-        responseBody = self.methods.get.call this
+        responseData = callEndpoint.call(this, self, self.methods.get)
       else if method is 'POST' and self.methods.post
-        _.extend @params, @request.body
-        responseBody = self.methods.post.call this
+        responseData = callEndpoint.call(this, self, self.methods.post)
       else if method is 'PUT' and self.methods.put
-        _.extend @params, @request.body
-        responseBody = self.methods.put.call this
+        responseData = callEndpoint.call(this, self, self.methods.put)
       else if method is 'PATCH' and self.methods.patch
-        _.extend @params, @request.body
-        responseBody = self.methods.patch.call this
+        responseData = callEndpoint.call(this, self, self.methods.patch)
       else if method is 'DELETE' and self.methods.delete
-        responseBody = self.methods.delete.call this
+        responseData = callEndpoint.call(this, self, self.methods.delete)
       else
-        return [404, {success: false, message:'ReST API method not found'}]
+        responseData = {statusCode: 404, body: {success: false, message:'API method not found'}}
 
-      # TODO: Handle the different method responses proposed in README
-      # TODO: Flatten params into this.urlParams, this.queryParams, and this.bodyParams
-
-      # Generate and return the http response
-      @response.writeHead 200,
-        'Content-Type': 'text/json'
-      @response.write JSON.stringify responseBody
-      @response.end()
+      # Generate and return the http response, handling the different method response types
+      if responseData.body and (responseData.statusCode or responseData.headers)
+        responseData.statusCode or= 200
+        responseData.headers or= {'Content-Type': 'text/json'}
+        respond.call this, responseData.body, responseData.statusCode, responseData.headers
+      else
+        respond.call this, responseData
 
   # Add the path to our list of existing paths
   @api.config.paths.push @path
 
 
 ###
+  Authenticate an endpoint if required, and return the result of calling it
+
+  @context: IronRouter.Router.route()
+###
+callEndpoint = (endpoint, method) ->
+  method = resolveMethod method
+  authenticateIfRequired.call this, endpoint, method
+  method.action.call this
+
+###
+  Convert the given endpoint method into our expected object if it is a bare function
+###
+resolveMethod = (method) ->
+  if _.isFunction(method)
+    method = {action: method}
+  method
+
+###
+  Authenticate the given method if required
+
+  Once it's globally configured in the API, authentication can be required on an entire endpoint or individual
+  methods. If required on an entire endpoint, that serves as the default. If required in any individual methods, that
+  will override the default.
+
+  @context: IronRouter.Router.route()
+###
+authenticateIfRequired = (endpoint, method) ->
+  # Authenticate the request if necessary
+  if endpoint.api.config.useAuth
+    if method.authRequired is undefined
+      authenticate.call(this) if endpoint.options?.authRequired
+    else if method.authRequired
+      authenticate.call this
+
+
+###
   Verify the request is being made by an actively logged in user
+
+  @context: IronRouter.Router.route()
 ###
 authenticate = ->
   # Get the auth info from header
@@ -70,7 +109,17 @@ authenticate = ->
 
   # Return an error if the login token does not match any belonging to the user
   if not user
-    # TODO: Execute the http error response here
-    return [403, {success: false, message: "You must be logged in to do this."}]
+    respond.call this, {success: false, message: "You must be logged in to do this."}, 401
 
-  this.user = user
+  @user = user
+
+
+###
+  Respond to an HTTP request
+
+  @context: IronRouter.Router.route()
+###
+respond = (body, statusCode=200, headers={'Content-Type':'text/json'}) ->
+  @response.writeHead statusCode, headers
+  @response.write JSON.stringify body
+  @response.end()

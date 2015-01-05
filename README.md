@@ -118,9 +118,6 @@ The following configuration options are available with `Restivus.configure`:
   - Default: `'api'`
   - The base path for your API. If you use 'api' and add a route called 'users', the URL will be
     `https://yoursite.com/api/users/`.
-- `prettyJson`
-  - Default: `false`
-  - If true, render formatted JSON in responses.
 - `onLoggedIn`
   - Default: `undefined`
   - A hook that runs once a user has been successfully logged into their account via the `/login` endpoint. You can access `this.user` from within the function you define, and any returned data will be added to the response body as `data.extra` (coming soon).
@@ -141,7 +138,7 @@ to that url, the actual value of the parameter will be stored as a property on
 
 In this example we have a route parameter named `_id`. If we navigate to the
 `/post/5` url in our browser, inside of the route function we can get the actual
-value of the `_id` from `this.urlParams._id`. In this case `this.params._id => 5`.
+value of the `_id` from `this.urlParams._id`. In this case `this.urlParams._id => 5`.
 
 ###### CoffeeScript:
 ```coffeescript
@@ -220,21 +217,63 @@ The following options are available in Restivus.add (as the 2nd, optional parame
 
 ## Method Definition
 
-The last parameter of Restivus.add is an object with properties corresponding to the supported HTTP methods. The following methods can be defined in Restivus:
+The last parameter of Restivus.add is an object with properties corresponding to the supported HTTP methods. At least one method must be defined. The following methods can be defined in Restivus:
 - `get`
 - `post`
 - `put`
 - `delete`
 - `patch`
 
-These methods can be defined one of two ways. First, you can simply provide a function for each method you want to support at the given path. The corresponding method will be executed when that type of request is made at that path. Otherwise, for finer-grained control over each method, you can also define each one as an object with the following properties:
+These methods can be defined one of two ways. First, you can simply provide a function for each method you want to support at the given path. The corresponding method will be executed when that type of request is made at that path.
+
+Otherwise, for finer-grained control over each method, you can also define each one as an object with the following properties:
 - `authRequired`
   - Default: false
-  - If true, this method will return a 401 if the user is not properly [authenticated][#authentication]. Overrides the option of the same name defined on the entire route.
+  - If true, this method will return a 401 if the user is not properly [authenticated][#authenticating]. Overrides the option of the same name defined on the entire route.
 - `action`
   - Default: undefined
   - A function that will be executed when a request is made for the corresponding HTTP method.
 
+###### CoffeeScript
+```coffeescript
+Restivus.add 'posts', {authRequired: true},
+  get:
+    authRequired: false
+    action: ->
+      # GET api/posts
+  post: ->
+    # POST api/posts
+  put: ->
+    # PUT api/posts
+  patch: ->
+    # PATCH api/posts
+  delete: ->
+    # DELETE api/posts
+```
+
+###### JavaScript
+```javascript
+Restivus.add('posts', {authRequired: true}, {
+  get: function () {
+    authRequired: false
+    action: function () {
+      # GET api/posts
+    }
+  }
+  post: function () {
+    # POST api/posts
+  }
+  put: function () {
+    # PUT api/posts
+  }
+  patch: function () {
+    # PATCH api/posts
+  }
+  delete: function () {
+    # DELETE api/posts
+  }
+```
+In the above examples, all the methods except the GETs will require authentication.
 
 ## Method Context
 
@@ -270,19 +309,18 @@ A raw array:
 return [ 'red', 'green', 'blue' ];
 ```
 
-Include a status code by using an array with the status code as the first element:
+Or optionally include a `statusCode` or `headers`. At least one must be provided along with the `body`:
 ```javascript
-return [404, { success: false, message: "There's nothing here!" }];
-```
-
-Include a status code AND headers (first and second elements, respectively):
-```javascript
-return [404, { 'Content-Type': 'text/plain' }, { success: false, message: "There's nothing here!" }];
-```
-
-Or just skip using a function at all, and just provide the return data when adding a route to the API:
-```javascript
-Restivus.add('/404', [404, "There's nothing here!"]);
+return {
+  statusCode: 404,
+  headers: {
+    'Content-Type': 'text/plain'
+  },
+  body: {
+    success: false,
+    message: "There's nothing here!"
+  }
+};
 ```
 
 # Consuming A Restivus API
