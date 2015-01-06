@@ -102,7 +102,7 @@ And to update Restivus to the latest version:
   - [Configuration Options](#configuration-options)
   - [Route Structure](#route-structure)
   - [Route Options](#route-options)
-  - [Method Context](#method-context)
+  - [Endpoint Context](#endpoint-context)
   - [Response Data](#response-data)
 - [Consuming a Restivus API](#consuming-a-restivus-api)
   - [Basic Usage](#basic-usage)
@@ -207,18 +207,18 @@ The following options are available in Restivus.add (as the 2nd, optional parame
   - If true, all endpoints on this route will return a `401` if the user is not properly [authenticated](#authenticating).
 
 
-## Method Definition
+## Endpoint Definition
 
-The last parameter of Restivus.add is an object with properties corresponding to the supported HTTP methods. At least one method must be defined. The following methods can be defined in Restivus:
+The last parameter of Restivus.add is an object with properties corresponding to the supported HTTP methods. At least one method must have an endpoint defined on it. The following endpoints can be defined in Restivus:
 - `get`
 - `post`
 - `put`
 - `delete`
 - `patch`
 
-These methods can be defined one of two ways. First, you can simply provide a function for each method you want to support at the given path. The corresponding method will be executed when that type of request is made at that path.
+These endpoints can be defined one of two ways. First, you can simply provide a function for each method you want to support at the given path. The corresponding endpoint will be executed when that type of request is made at that path.
 
-Otherwise, for finer-grained control over each method, you can also define each one as an object with the following properties:
+Otherwise, for finer-grained control over each endpoint, you can also define each one as an object with the following properties:
 - `authRequired`
   - Default: false
   - If true, this endpoint will return a `401` if the user is not properly [authenticated](#authenticating). Overrides the option of the same name defined on the entire route.
@@ -265,11 +265,11 @@ Restivus.add('posts', {authRequired: true}, {
     // DELETE api/posts
   }
 ```
-In the above examples, all the methods except the GETs will require [authentication](#authenticating).
+In the above examples, all the endpoints except the GETs will require [authentication](#authenticating).
 
-## Method Context
+## Endpoint Context
 
-Each method has access to:
+Each endpoint has access to:
 - `this.user`
   - The [authenticated](#authenticating) `Meteor.user`. Only available if `useAuth` and `authRequired` are both `true`. If not, it will be `false`.
 - `this.urlParams`
@@ -329,7 +329,7 @@ curl --data "message=Some message details" http://localhost:3000/api/posts/3/com
 
 ## Authenticating
 
-If you have `useAuth` set to `true`, you now have a `/login` method that returns a `userId` and `authToken`. You must save these, and include them in subsequent requests.
+If you have `useAuth` set to `true`, you now have a `/login` endpoint that returns a `userId` and `authToken`. You must save these, and include them in subsequent requests.
 
 (Note: Make absolute certain you're using HTTPS, otherwise this is insecure. In an ideal world, this should only be done with DDP and SRP, but, alas, this is a ReSTful API.)
 

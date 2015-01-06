@@ -1,5 +1,5 @@
 @Restivus = ->
-  @endpoints = []
+  @routes = []
   @config =
     paths: []
     useAuth: false
@@ -14,18 +14,18 @@
   Add endpoints for the given HTTP methods at the given path
 ###
 @Restivus.prototype.add = (path, options, methods) ->
-  # Create a new endpoint and add it to our list of existing endpoints
-  endpoint = new Endpoint(this, path, options, methods)
-  @endpoints.push(endpoint)
+  # Create a new route and add it to our list of existing routes
+  route = new Route(this, path, options, methods)
+  @routes.push(route)
 
-  # Don't add the endpoint to the API until the API has been configured
-  endpoint.addToApi() if @configured
+  # Don't add the route to the API until the API has been configured
+  route.addToApi() if @configured
 
 
 ###
   Configure the ReST API
 
-  Can only be called once.
+  Must be called exactly once, from anywhere on the server.
 ###
 @Restivus.prototype.configure = (config) ->
   if @configured
@@ -42,8 +42,8 @@
   # Configure API with the given options
   _.extend @config, config
 
-  # Add any existing endpoints to the API now that it's configured
-  _.each @endpoints, (endpoint) -> endpoint.addToApi()
+  # Add any existing routes to the API now that it's configured
+  _.each @routes, (route) -> route.addToApi()
 
   # Add default login and logout endpoints if auth is configured
   if @config.useAuth
@@ -59,7 +59,7 @@
 ###
 initAuth = ->
   ###
-  Add a login method to the API
+  Add a login endpoint to the API
 
   After the user is logged in, the onLoggedIn hook is called (see Restfully.configure() for adding hook).
   ###
@@ -93,7 +93,7 @@ initAuth = ->
       auth
 
   ###
-  Add a logout method to the API
+  Add a logout endpoint to the API
 
   After the user is logged out, the onLoggedOut hook is called (see Restfully.configure() for adding hook).
   ###

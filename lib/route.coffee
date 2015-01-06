@@ -1,51 +1,46 @@
-@Endpoint = (@api, @path, @options, @methods) ->
+@Route = (@api, @path, @options, @endpoints) ->
   # Check if options were provided
-  if not @methods
-    @methods = @options
+  if not @endpoints
+    @endpoints = @options
     @options = null
 
-@Endpoint.prototype.addToApi =  ->
+@Route.prototype.addToApi =  ->
   self = this
 
-  # Throw an error if this endpoint has already been added
+  # Throw an error if a route has already been added at this path
   # TODO: Check for collisions with paths that follow same pattern with different parameter names
   if _.contains @api.config.paths, @path
-    throw new Error "Cannot add endpoint at an existing path: #{@path}"
+    throw new Error "Cannot add a route at an existing path: #{@path}"
 
   # Append the path to the base API path
   fullPath = @api.config.apiPath + @path
 
-#  console.log "Adding [#{ _.keys @methods }] methods to path: #{fullPath}"
-
-  # Add all given methods using Iron Router
+  # Setup endpoints on route using Iron Router
   Router.route fullPath,
     where: 'server'
     action: ->
-      method = @request.method
-#      console.log "Handling #{method} request at #{self.path}"
-
       # Flatten parameters in the URL and request body (and give them better names)
       # TODO: Decide whether or not to nullify the copied objects. Makes sense to do it, right?
       @urlParams = @params
       @queryParams = @params.query
       @bodyParams = @request.body
-#      @params = @params.query = @request.body = null
 
       # Respond to the requested HTTP method if an endpoint has been provided for it
-      if method is 'GET' and self.methods.get
-        responseData = callEndpoint.call(this, self, self.methods.get)
-      else if method is 'POST' and self.methods.post
-        responseData = callEndpoint.call(this, self, self.methods.post)
-      else if method is 'PUT' and self.methods.put
-        responseData = callEndpoint.call(this, self, self.methods.put)
-      else if method is 'PATCH' and self.methods.patch
-        responseData = callEndpoint.call(this, self, self.methods.patch)
-      else if method is 'DELETE' and self.methods.delete
-        responseData = callEndpoint.call(this, self, self.methods.delete)
+      method = @request.method
+      if method is 'GET' and self.endpoints.get
+        responseData = callEndpoint.call(this, self, self.endpoints.get)
+      else if method is 'POST' and self.endpoints.post
+        responseData = callEndpoint.call(this, self, self.endpoints.post)
+      else if method is 'PUT' and self.endpoints.put
+        responseData = callEndpoint.call(this, self, self.endpoints.put)
+      else if method is 'PATCH' and self.endpoints.patch
+        responseData = callEndpoint.call(this, self, self.endpoints.patch)
+      else if method is 'DELETE' and self.endpoints.delete
+        responseData = callEndpoint.call(this, self, self.endpoints.delete)
       else
-        responseData = {statusCode: 404, body: {success: false, message:'API method not found'}}
+        responseData = {statusCode: 404, body: {success: false, message:'API endpoint not found'}}
 
-      # Generate and return the http response, handling the different method response types
+      # Generate and return the http response, handling the different endpoint response types
       if responseData.body and (responseData.statusCode or responseData.headers)
         responseData.statusCode or= 200
         responseData.headers or= {'Content-Type': 'text/json'}
@@ -62,34 +57,34 @@
 
   @context: IronRouter.Router.route()
 ###
-callEndpoint = (endpoint, method) ->
-  method = resolveMethod method
-  authenticateIfRequired.call this, endpoint, method
-  method.action.call this
+callEndpoint = (route, endpoint) ->
+  endpoint = resolveEndpoint endpoint
+  authenticateIfRequired.call this, route, endpoint
+  endpoint.action.call this
 
 ###
-  Convert the given endpoint method into our expected object if it is a bare function
+  Convert the given endpoint into our expected endpoint object if it is a bare function
 ###
-resolveMethod = (method) ->
-  if _.isFunction(method)
-    method = {action: method}
-  method
+resolveEndpoint = (endpoint) ->
+  if _.isFunction(endpoint)
+    endpoint = {action: endpoint}
+  endpoint
 
 ###
   Authenticate the given method if required
 
-  Once it's globally configured in the API, authentication can be required on an entire endpoint or individual
-  methods. If required on an entire endpoint, that serves as the default. If required in any individual methods, that
+  Once it's globally configured in the API, authentication can be required on an entire route or individual
+  endpoints. If required on an entire endpoint, that serves as the default. If required in any individual endpoints, that
   will override the default.
 
   @context: IronRouter.Router.route()
 ###
-authenticateIfRequired = (endpoint, method) ->
+authenticateIfRequired = (route, endpoint) ->
   # Authenticate the request if necessary
-  if endpoint.api.config.useAuth
-    if method.authRequired is undefined
-      authenticate.call(this) if endpoint.options?.authRequired
-    else if method.authRequired
+  if route.api.config.useAuth
+    if endpoint.authRequired is undefined
+      authenticate.call(this) if route.options?.authRequired
+    else if endpoint.authRequired
       authenticate.call this
 
 
