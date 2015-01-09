@@ -1,7 +1,8 @@
 # Restivus
-#### ReST APIs for the Best of US!
+#### ReST APIs for the Best of Us!
 
-Restivus makes building ReSTful APIs in Meteor 0.9.0+ an absolute breeze. The package is inspired by [RestStop2][reststop2-docs] and uses [Iron Router][iron-router]'s server-side routing to provide:
+Restivus makes building ReSTful APIs in Meteor 0.9.0+ an absolute breeze. The package is inspired by
+[RestStop2][reststop2-docs] and uses [Iron Router][iron-router]'s server-side routing to provide:
 - A simple interface for building ReSTful APIs
 - User authentication via the API
   - Optional login and logout endpoints
@@ -52,8 +53,8 @@ And to update Restivus to the latest version:
           statusCode: 404
           body: {success: false, message: 'Friend not found. No friend removed.'}
 ```
-###### JavaScript:
 
+###### JavaScript:
 ```javascript
   if(Meteor.isServer) {
 
@@ -116,25 +117,36 @@ And to update Restivus to the latest version:
 The following configuration options are available with `Restivus.configure`:
 - `useAuth`
   - Default: `false`
-  - If true, `/login` and `/logout` routes are added to the API. You can access `this.user` in [authenticated](#authenticating) endpoints.
+  - If true, `/login` and `/logout` routes are added to the API. You can access `this.user` in
+    [authenticated](#authenticating) endpoints.
 - `apiPath`
   - Default: `'api'`
   - The base path for your API. If you use 'api' and add a route called 'users', the URL will be
     `https://yoursite.com/api/users/`.
 - `onLoggedIn`
   - Default: `undefined`
-  - A hook that runs once a user has been successfully logged into their account via the `/login` endpoint. You can access `this.user` from within the function you define, and any returned data will be added to the response body as `data.extra` (coming soon).
+  - A hook that runs once a user has been successfully logged into their account via the `/login`
+    endpoint. You can access `this.user` from within the function you define, and any returned data
+    will be added to the response body as `data.extra` (coming soon).
 - `onLoggedOut`
   - Default: `undefined`
-  - Same as onLoggedIn, but runs once a user has been successfully logged out of their account via the `/logout` endpoint.
+  - Same as onLoggedIn, but runs once a user has been successfully logged out of their account via
+    the `/logout` endpoint.
 
 ## Route Structure
 
-The `path` is the 1st parameter of `Restivus.add`. You can pass it a string or regex. If you pass it `test/path`, the full path will be `https://yoursite.com/api/test/path`.
+The `path` is the 1st parameter of `Restivus.add`. You can pass it a string or regex. If you pass it
+`test/path`, the full path will be `https://yoursite.com/api/test/path`.
 
-Routes can have variable parameters. For example, you can create one route to show any post with an id. The `id` is variable depending on the post you want to see such as "/posts/1" or "/posts/2". To declare a named parameter in your route use the `:` syntax in the url followed by the parameter name. When a user goes to that url, the actual value of the parameter will be stored as a property on `this.urlParams` in your endpoint function.
+Routes can have variable parameters. For example, you can create one route to show any post with an
+id. The `id` is variable depending on the post you want to see such as "/posts/1" or "/posts/2". To
+declare a named parameter in your route use the `:` syntax in the url followed by the parameter
+name. When a user goes to that url, the actual value of the parameter will be stored as a property
+on `this.urlParams` in your endpoint function.
 
-In this example we have a route parameter named `_id`. If we navigate to the `/post/5` url in our browser, inside of the route function we can get the actual value of the `_id` from `this.urlParams._id`. In this case `this.urlParams._id => 5`.
+In this example we have a route parameter named `_id`. If we navigate to the `/post/5` url in our
+browser, inside of the route function we can get the actual value of the `_id` from
+`this.urlParams._id`. In this case `this.urlParams._id => 5`.
 
 ###### CoffeeScript:
 ```coffeescript
@@ -153,7 +165,9 @@ Restivus.add('/post/:_id', {
 });
 ```
 
-You can have multiple route parameters. In this example, we have an `_id` parameter and a `commentId` parameter. If you navigate to the url `/post/5/comments/100` then inside your route function `this.params._id => 5` and `this.params.commentId => 100`.
+You can have multiple route parameters. In this example, we have an `_id` parameter and a
+`commentId` parameter. If you navigate to the url `/post/5/comments/100` then inside your route
+function `this.params._id => 5` and `this.params.commentId => 100`.
 
 ###### CoffeeScript:
 ```coffeescript
@@ -202,24 +216,31 @@ Restivus.add('/post/:_id', {
 The following options are available in Restivus.add (as the 2nd, optional parameter):
 -`authRequired`
   - Default: false
-  - If true, all endpoints on this route will return a `401` if the user is not properly [authenticated](#authenticating).
-
+  - If true, all endpoints on this route will return a `401` if the user is not properly
+    [authenticated](#authenticating).
 
 ## Endpoint Definition
 
-The last parameter of Restivus.add is an object with properties corresponding to the supported HTTP methods. At least one method must have an endpoint defined on it. The following endpoints can be defined in Restivus:
+The last parameter of Restivus.add is an object with properties corresponding to the supported HTTP
+methods. At least one method must have an endpoint defined on it. The following endpoints can be
+defined in Restivus:
 - `get`
 - `post`
 - `put`
 - `delete`
 - `patch`
 
-These endpoints can be defined one of two ways. First, you can simply provide a function for each method you want to support at the given path. The corresponding endpoint will be executed when that type of request is made at that path.
+These endpoints can be defined one of two ways. First, you can simply provide a function for each
+method you want to support at the given path. The corresponding endpoint will be executed when that
+type of request is made at that path.
 
-Otherwise, for finer-grained control over each endpoint, you can also define each one as an object with the following properties:
+Otherwise, for finer-grained control over each endpoint, you can also define each one as an object
+with the following properties:
 - `authRequired`
   - Default: false
-  - If true, this endpoint will return a `401` if the user is not properly [authenticated](#authenticating). Overrides the option of the same name defined on the entire route.
+  - If true, this endpoint will return a `401` if the user is not properly
+    [authenticated](#authenticating). Overrides the option of the same name defined on the entire
+    route.
 - `action`
   - Default: undefined
   - A function that will be executed when a request is made for the corresponding HTTP method.
@@ -263,24 +284,28 @@ Restivus.add('posts', {authRequired: true}, {
     // DELETE api/posts
   }
 ```
-In the above examples, all the endpoints except the GETs will require [authentication](#authenticating).
+In the above examples, all the endpoints except the GETs will require
+[authentication](#authenticating).
 
 ## Endpoint Context
 
 Each endpoint has access to:
 - `this.user`
-  - The [authenticated](#authenticating) `Meteor.user`. Only available if `useAuth` and `authRequired` are both `true`. If not, it will be `false`.
+  - The [authenticated](#authenticating) `Meteor.user`. Only available if `useAuth` and
+    `authRequired` are both `true`. If not, it will be `false`.
 - `this.urlParams`
-  - Non-optional parameters extracted from the URL. A parameter `id` on the path `posts/:id` would be available as `this.urlParams.id`.
+  - Non-optional parameters extracted from the URL. A parameter `id` on the path `posts/:id` would
+    be available as `this.urlParams.id`.
 - `this.queryParams`
-  - Optional query parameters from the URL. Given the url `https://yoursite.com/posts?likes=true`, `this.queryParams.likes => true`.
+  - Optional query parameters from the URL. Given the url `https://yoursite.com/posts?likes=true`,
+    `this.queryParams.likes => true`.
 - `this.bodyParams`
-  - Parameters passed in the request body. Given the request body `{ "friend": { "name": "Jack" } }`, `this.bodyParams.friend.name => "Jack"`.
+  - Parameters passed in the request body. Given the request body
+    `{ "friend": { "name": "Jack" } }`, `this.bodyParams.friend.name => "Jack"`.
 - `this.request`
   - The [Node request object][node-request]
 - `this.response`
   - The [Node response object][node-response]
-
 
 ## Response Data
 
@@ -299,7 +324,8 @@ A raw array:
 return [ 'red', 'green', 'blue' ];
 ```
 
-Or optionally include a `statusCode` or `headers`. At least one must be provided along with the `body`:
+Or optionally include a `statusCode` or `headers`. At least one must be provided along with the
+`body`:
 ```javascript
 return {
   statusCode: 404,
@@ -318,11 +344,17 @@ All responses contain the following defaults, which will be overridden with any 
 - Headers:
   - `Content-Type`: `text/json`
   - `Access-Control-Allow-Origin`: `*`
-    - This is a CORS-compliant header that allows requests to be made to the API from any domain. Without this, requests from within the browser would only be allowed from the same domain the API is hosted on, which is typically not the intended behavior. To prevent this, override it with your domain.
+    - This is a CORS-compliant header that allows requests to be made to the API from any domain.
+      Without this, requests from within the browser would only be allowed from the same domain the
+      API is hosted on, which is typically not the intended behavior. To prevent this, override it
+      with your domain.
 
 ## Documentation
 
-What's a ReST API without awesome docs? I'll tell you: absolutely freaking useless. So to fix that, we use and recommend [apiDoc][]. It allows you to generate beautiful and extremely handy API docs from your JavaScript or CoffeeScript comments. It supports other comment styles as well, but we're Meteorites, so who cares? Check it out. Use it.
+What's a ReST API without awesome docs? I'll tell you: absolutely freaking useless. So to fix that,
+we use and recommend [apiDoc][]. It allows you to generate beautiful and extremely handy API docs
+from your JavaScript or CoffeeScript comments. It supports other comment styles as well, but we're
+Meteorites, so who cares? Check it out. Use it.
 
 # Consuming A Restivus API
 
@@ -330,16 +362,19 @@ The following uses the above code.
 
 ## Basic Usage
 
-We can call our `POST /posts/:id/comments` endpoint the following way. Note the /api/ in the URL (defined with the api_path option above):
+We can call our `POST /posts/:id/comments` endpoint the following way. Note the /api/ in the URL
+(defined with the api_path option above):
 ```bash
 curl --data "message=Some message details" http://localhost:3000/api/posts/3/comments
 ```
 
 ## Authenticating
 
-If you have `useAuth` set to `true`, you now have a `/login` endpoint that returns a `userId` and `authToken`. You must save these, and include them in subsequent requests.
+If you have `useAuth` set to `true`, you now have a `/login` endpoint that returns a `userId` and
+`authToken`. You must save these, and include them in subsequent requests.
 
-(Note: Make absolute certain you're using HTTPS, otherwise this is insecure. In an ideal world, this should only be done with DDP and SRP, but, alas, this is a ReSTful API.)
+**Note: Make absolute certain you're using HTTPS, otherwise this is insecure. In an ideal world,
+this should only be done with DDP and SRP, but, alas, this is a ReSTful API.**
 
 ```bash
 curl --data "password=testpassword&user=test" http://localhost:3000/api/login/
@@ -352,7 +387,8 @@ The response will look something like this, which you must save (for subsequent 
 
 ## Authenticated Calls
 
-Since this is a RESTful API (and it's meant to be used by non-browsers), you must include the `userId` and `authToken` with each request under the following headers:
+Since this is a RESTful API (and it's meant to be used by non-browsers), you must include the
+`userId` and `authToken` with each request under the following headers:
 - X-User-Id
 - X-Auth-Token
 
@@ -367,7 +403,9 @@ curl -H "X-Auth-Token: f2KpRW7KeN9aPmjSZ" -H "X-User-Id: fbdpsNf4oHiX79vMJ" http
 
 ## Thanks
 
-Thanks to the developers over at Differential for [RestStop2][], where we got our inspiration for this package and stole tons of ideas and code, as well as the [Iron Router][iron-router] team for giving us a solid foundation with their server-side routing in Meteor.
+Thanks to the developers over at Differential for [RestStop2][], where we got our inspiration for
+this package and stole tons of ideas and code, as well as the [Iron Router][iron-router] team for
+giving us a solid foundation with their server-side routing in Meteor.
 
 Also, thanks to the following projects, which RestStop2 was inspired by:
 - [gkoberger/meteor-reststop](https://github.com/gkoberger/meteor-reststop)
