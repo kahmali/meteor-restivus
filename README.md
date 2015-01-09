@@ -1,7 +1,7 @@
 # Restivus
 #### ReST APIs for the Best of US!
 
-Restivus makes building ReSTful APIs in Meteor an absolute breeze. The package is inspired by [RestStop2][reststop2-docs] and uses [Iron Router][iron-router]'s server-side routing to provide:
+Restivus makes building ReSTful APIs in Meteor 0.9.0+ an absolute breeze. The package is inspired by [RestStop2][reststop2-docs] and uses [Iron Router][iron-router]'s server-side routing to provide:
 - A simple interface for building ReSTful APIs
 - User authentication via the API
   - Optional login and logout endpoints
@@ -36,16 +36,16 @@ And to update Restivus to the latest version:
         Meteor.users.find().fetch()
       post: ->
         Accounts.createUser
-          email: this.bodyParams.email
-          password: this.bodyParams.password
-        Meteor.users.findOne {'emails.address': this.bodyParams.email}
+          email: @bodyParams.email
+          password: @bodyParams.password
+        Meteor.users.findOne {'emails.address': @bodyParams.email}
 
     # Maps to: api/friends/abc123
     Restivus.add 'friends/:friendId', {authRequired: true},
       get: ->
-        _.findWhere this.user.profile.friends, {_id: this.urlParams.friendId}
+        _.findWhere @user.profile.friends, {_id: @urlParams.friendId}
       delete: ->
-        if _.contains this.user.profile.friends, this.urlParams.friendId
+        if _.contains @user.profile.friends, @urlParams.friendId
           Meteor.users.update(userId, {$pull: {'profile.devices.android': deviceId}})
           {success: true, message: 'Friend removed'}
         else
@@ -141,16 +141,14 @@ In this example we have a route parameter named `_id`. If we navigate to the `/p
 # Given a url like "/post/5"
 Restivus.add '/post/:_id',
   get: ->
-    urlParams = this.urlParams # { _id: "5" }
-    id = urlParams._id # "5"
+    id = @urlParams._id # "5"
 ```
 ###### JavaScript:
 ```javascript
 // Given a url "/post/5"
 Restivus.add('/post/:_id', {
   get: function () {
-    var params = this.urlParams; // { _id: "5" }
-    var id = urlParams._id; // "5"
+    var id = this.urlParams._id; // "5"
   }
 });
 ```
@@ -162,8 +160,8 @@ You can have multiple route parameters. In this example, we have an `_id` parame
 # Given a url "/post/5/comments/100"
 Restivus.add '/post/:_id/comments/:commentId',
   get: ->
-    id = this.urlParams._id # "5"
-    commentId = this.urlParams.commentId # "100"
+    id = @urlParams._id # "5"
+    commentId = @urlParams.commentId # "100"
 ```
 
 ###### JavaScript:
@@ -184,8 +182,8 @@ If there is a query string in the url, you can access that using `this.queryPara
 # Given the url: "/post/5?q=liked#hash_fragment"
 Restivus.add '/post/:_id',
   get: ->
-    id = this.urlParams._id
-    query = this.queryParams # query.q -> "liked"
+    id = @urlParams._id
+    query = @queryParams # query.q -> "liked"
 ```
 
 ###### JavaScript:
@@ -315,6 +313,17 @@ return {
 };
 ```
 
+All responses contain the following defaults, which will be overridden with any provided values:
+- Status code: `200`
+- Headers:
+  - `Content-Type`: `text/json`
+  - `Access-Control-Allow-Origin`: `*`
+    - This is a CORS-compliant header that allows requests to be made to the API from any domain. Without this, requests from within the browser would only be allowed from the same domain the API is hosted on, which is typically not the intended behavior. To prevent this, override it with your domain.
+
+## Documentation
+
+What's a ReST API without awesome docs? I'll tell you: absolutely freaking useless. So to fix that, we use and recommend [apiDoc][]. It allows you to generate beautiful and extremely handy API docs from your JavaScript or CoffeeScript comments. It supports other comment styles as well, but we're Meteorites, so who cares? Check it out. Use it.
+
 # Consuming A Restivus API
 
 The following uses the above code.
@@ -325,7 +334,6 @@ We can call our `POST /posts/:id/comments` endpoint the following way. Note the 
 ```bash
 curl --data "message=Some message details" http://localhost:3000/api/posts/3/comments
 ```
-
 
 ## Authenticating
 
@@ -356,6 +364,7 @@ Or, pass it as a header. This is probably a bit cleaner:
 ```bash
 curl -H "X-Auth-Token: f2KpRW7KeN9aPmjSZ" -H "X-User-Id: fbdpsNf4oHiX79vMJ" http://localhost:3000/api/posts/
 ```
+
 ## Thanks
 
 Thanks to the developers over at Differential for [RestStop2][], where we got our inspiration for this package and stole tons of ideas and code, as well as the [Iron Router][iron-router] team for giving us a solid foundation with their server-side routing in Meteor.
@@ -365,16 +374,15 @@ Also, thanks to the following projects, which RestStop2 was inspired by:
 - [tmeasday/meteor-router](https://github.com/tmeasday/meteor-router)
 - [crazytoad/meteor-collectionapi](https://github.com/crazytoad/meteor-collectionapi)
 
-
 ## License
 
 MIT License. See LICENSE for details.
 
 
-
-[reststop2-docs]:    http://github.differential.com/reststop2/   "RestStop2 Docs"
-[reststop2]:    https://github.com/Differential/reststop2   "RestStop2"
-[iron-router]:  https://github.com/EventedMind/iron-router  "Iron Router"
-[node-request]:  http://nodejs.org/api/http.html#http_http_incomingmessage  "Node Request Object Docs"
-[node-response]:  http://nodejs.org/api/http.html#http_class_http_serverresponse  "Node Response Object Docs"
-[jsend]:  http://labs.omniti.com/labs/jsend  "JSend ReST API Standard"
+[reststop2-docs]:    http://github.differential.com/reststop2/                       "RestStop2 Docs"
+[reststop2]:         https://github.com/Differential/reststop2                       "RestStop2"
+[iron-router]:       https://github.com/EventedMind/iron-router                      "Iron Router"
+[node-request]:      http://nodejs.org/api/http.html#http_http_incomingmessage       "Node Request Object Docs"
+[node-response]:     http://nodejs.org/api/http.html#http_class_http_serverresponse  "Node Response Object Docs"
+[jsend]:             http://labs.omniti.com/labs/jsend                               "JSend ReST API Standard"
+[apidoc]:            http://apidocjs.com/                                            "apiDoc"
