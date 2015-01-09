@@ -96,11 +96,11 @@ authenticateIfRequired = (route, endpoint) ->
 authenticate = ->
   # Get the auth info from header
   userId = @request.headers['x-user-id']
-  loginToken = @request.headers['x-auth-token']
+  authToken = @request.headers['x-auth-token']
 
   # Get the user from the database
-  if userId and loginToken
-    user = Meteor.users.findOne {'_id': userId, 'services.resume.loginTokens.token': loginToken}
+  if userId and authToken
+    user = Meteor.users.findOne {'_id': userId, 'services.resume.loginTokens.token': authToken}
 
   # Return an error if the login token does not match any belonging to the user
   if not user
@@ -114,7 +114,15 @@ authenticate = ->
 
   @context: IronRouter.Router.route()
 ###
-respond = (body, statusCode=200, headers={'Content-Type':'text/json'}) ->
+respond = (body, statusCode=200, headers) ->
+  # Allow cross-domain requests to be made from the browser
+  @response.setHeader 'Access-Control-Allow-Origin', '*'
+
+  # Ensure that a content type is set (will be overridden if also included in given headers)
+  # TODO: Consider enforcing a text/json-only content type (override any user-defined content-type)
+  @response.setHeader 'Content-Type', 'text/json'
+
+  # Send response
   @response.writeHead statusCode, headers
-  @response.write JSON.stringify body
+  @response.write JSON.stringify(body)
   @response.end()
