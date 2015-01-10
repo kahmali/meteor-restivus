@@ -10,3 +10,6 @@
 
 ## Package config file needs to remain in JS for now ##
 !package.js
+
+## Dependency versions
+.versions
