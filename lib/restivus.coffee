@@ -5,7 +5,7 @@
     useAuth: false
     apiPath: 'api/'
     version: 1
-    prettyJson: true
+    prettyJson: false
     onLoggedIn: -> {}
     onLoggedOut: -> {}
   @configured = false

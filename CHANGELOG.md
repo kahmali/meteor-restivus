@@ -1,5 +1,18 @@
 # Change Log
 
+## Unreleased
+
+#### Added
+- Support pretty JSON in API configuration
+
+#### Updated
+- README
+  - Show endpoint object in 'Quick Start' code examples
+  - Restructure topic hierarchy
+  - Change 'Route Structure' section to 'Path Structure' and reword for consistent use of
+    terminology
+  - Add `prettyJson` to [Configuration Options]
+
 ## [v0.5.1] - 2014-01-10
 
 #### Added
@@ -26,3 +39,4 @@
 
 [v0.5.0]:  https://github.com/krose72205/meteor-restivus/releases/tag/v0.5.0 "v0.5.0"
 [v0.5.1]:  https://github.com/krose72205/meteor-restivus/releases/tag/v0.5.1 "v0.5.1"
+[configuration options]: https://github.com/krose72205/meteor-restivus#configuration-options "Configuration Options"

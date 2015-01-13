@@ -44,9 +44,9 @@
       if responseData.body and (responseData.statusCode or responseData.headers)
         responseData.statusCode or= 200
         responseData.headers or= {'Content-Type': 'text/json'}
-        respond.call this, responseData.body, responseData.statusCode, responseData.headers
+        respond.call this, self, responseData.body, responseData.statusCode, responseData.headers
       else
-        respond.call this, responseData
+        respond.call this, self, responseData
 
   # Add the path to our list of existing paths
   @api.config.paths.push @path
@@ -71,7 +71,7 @@ resolveEndpoint = (endpoint) ->
   endpoint
 
 ###
-  Authenticate the given method if required
+  Authenticate the given endpoint if required
 
   Once it's globally configured in the API, authentication can be required on an entire route or individual
   endpoints. If required on an entire endpoint, that serves as the default. If required in any individual endpoints, that
@@ -83,9 +83,9 @@ authenticateIfRequired = (route, endpoint) ->
   # Authenticate the request if necessary
   if route.api.config.useAuth
     if endpoint.authRequired is undefined
-      authenticate.call(this) if route.options?.authRequired
+      authenticate.call(this, route) if route.options?.authRequired
     else if endpoint.authRequired
-      authenticate.call this
+      authenticate.call this, route
 
 
 ###
@@ -93,7 +93,7 @@ authenticateIfRequired = (route, endpoint) ->
 
   @context: IronRouter.Router.route()
 ###
-authenticate = ->
+authenticate = (route) ->
   # Get the auth info from header
   userId = @request.headers['x-user-id']
   authToken = @request.headers['x-auth-token']
@@ -104,7 +104,7 @@ authenticate = ->
 
   # Return an error if the login token does not match any belonging to the user
   if not user
-    respond.call this, {success: false, message: "You must be logged in to do this."}, 401
+    respond.call this, route, {success: false, message: "You must be logged in to do this."}, 401
 
   @user = user
 
@@ -114,7 +114,7 @@ authenticate = ->
 
   @context: IronRouter.Router.route()
 ###
-respond = (body, statusCode=200, headers) ->
+respond = (route, body, statusCode=200, headers) ->
   # Allow cross-domain requests to be made from the browser
   @response.setHeader 'Access-Control-Allow-Origin', '*'
 
@@ -122,7 +122,15 @@ respond = (body, statusCode=200, headers) ->
   # TODO: Consider enforcing a text/json-only content type (override any user-defined content-type)
   @response.setHeader 'Content-Type', 'text/json'
 
+  # Prettify JSON if configured in API
+  if route.api.config.prettyJson
+    bodyAsJson = JSON.stringify body, undefined, 2
+  else
+    bodyAsJson = JSON.stringify body
+
+  console.log bodyAsJson
+
   # Send response
   @response.writeHead statusCode, headers
-  @response.write JSON.stringify(body)
+  @response.write bodyAsJson
   @response.end()

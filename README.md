@@ -131,6 +131,9 @@ The following configuration options are available with `Restivus.configure`:
   - Default: `'api'`
   - The base path for your API. If you use 'api' and add a route called 'users', the URL will be
     `https://yoursite.com/api/users/`.
+- `prettyJson`
+  - Default: `false`
+  - If true, render formatted JSON in response.
 - `onLoggedIn`
   - Default: `undefined`
   - A hook that runs once a user has been successfully logged into their account via the `/login`
