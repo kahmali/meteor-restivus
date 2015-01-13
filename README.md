@@ -35,11 +35,13 @@ And to update Restivus to the latest version:
     Restivus.add 'users',
       get: ->
         Meteor.users.find().fetch()
-      post: ->
-        Accounts.createUser
-          email: @bodyParams.email
-          password: @bodyParams.password
-        Meteor.users.findOne {'emails.address': @bodyParams.email}
+      post:
+        authRequired: true
+        action: ->
+          Accounts.createUser
+            email: @bodyParams.email
+            password: @bodyParams.password
+          Meteor.users.findOne {'emails.address': @bodyParams.email}
 
     # Maps to: api/friends/abc123
     Restivus.add 'friends/:friendId', {authRequired: true},
@@ -68,12 +70,15 @@ And to update Restivus to the latest version:
       get: function () {
         return Meteor.users.find().fetch();
       }
-      post: function () {
-        Accounts.createUser({
-          email: this.bodyParams.email,
-          password: this.bodyParams.password
-        });
-        return Meteor.users.findOne({emails.address: this.bodyParams.email});
+      post: {
+        authRequired: true,
+        action: function () {
+          Accounts.createUser({
+            email: this.bodyParams.email,
+            password: this.bodyParams.password
+          });
+          return Meteor.users.findOne({emails.address: this.bodyParams.email});
+        }
       }
     });
 
@@ -101,10 +106,13 @@ And to update Restivus to the latest version:
 
 - [Writing a Restivus API](#writing-a-restivus-api)
   - [Configuration Options](#configuration-options)
-  - [Route Structure](#route-structure)
-  - [Route Options](#route-options)
-  - [Endpoint Context](#endpoint-context)
-  - [Response Data](#response-data)
+  - [Defining Routes](#defining-routes)
+    - [Path Structure](#path-structure)
+    - [Route Options](#route-options)
+    - [Defining Endpoints](#defining-endpoints)
+    - [Endpoint Context](#endpoint-context)
+    - [Response Data](#response-data)
+  - [Documenting Your API](#documenting-your-api)
 - [Consuming a Restivus API](#consuming-a-restivus-api)
   - [Basic Usage](#basic-usage)
   - [Authenticating](#authenticating)
@@ -133,19 +141,24 @@ The following configuration options are available with `Restivus.configure`:
   - Same as onLoggedIn, but runs once a user has been successfully logged out of their account via
     the `/logout` endpoint.
 
-## Route Structure
+## Defining Routes
+
+Routes are defined using `Restivus.add`. A route consists of a path and a set of endpoints defined
+at that path.
+
+### Path Structure
 
 The `path` is the 1st parameter of `Restivus.add`. You can pass it a string or regex. If you pass it
 `test/path`, the full path will be `https://yoursite.com/api/test/path`.
 
-Routes can have variable parameters. For example, you can create one route to show any post with an
-id. The `id` is variable depending on the post you want to see such as "/posts/1" or "/posts/2". To
-declare a named parameter in your route use the `:` syntax in the url followed by the parameter
+Paths can have variable parameters. For example, you can create a route to show a post with a
+specific id. The `id` is variable depending on the post you want to see such as "/posts/1" or
+"/posts/2". To declare a named parameter in the path, use the `:` syntax followed by the parameter
 name. When a user goes to that url, the actual value of the parameter will be stored as a property
 on `this.urlParams` in your endpoint function.
 
-In this example we have a route parameter named `_id`. If we navigate to the `/post/5` url in our
-browser, inside of the route function we can get the actual value of the `_id` from
+In this example we have a parameter named `_id`. If we navigate to the `/post/5` url in our browser,
+inside of the GET endpoint function we can get the actual value of the `_id` from
 `this.urlParams._id`. In this case `this.urlParams._id => 5`.
 
 ###### CoffeeScript:
@@ -165,9 +178,9 @@ Restivus.add('/post/:_id', {
 });
 ```
 
-You can have multiple route parameters. In this example, we have an `_id` parameter and a
-`commentId` parameter. If you navigate to the url `/post/5/comments/100` then inside your route
-function `this.params._id => 5` and `this.params.commentId => 100`.
+You can have multiple url parameters. In this example, we have an `_id` parameter and a `commentId`
+parameter. If you navigate to the url `/post/5/comments/100` then inside your endpoint function
+`this.params._id => 5` and `this.params.commentId => 100`.
 
 ###### CoffeeScript:
 ```coffeescript
@@ -211,7 +224,7 @@ Restivus.add('/post/:_id', {
 });
 ```
 
-## Route Options
+### Route Options
 
 The following options are available in Restivus.add (as the 2nd, optional parameter):
 -`authRequired`
@@ -219,7 +232,7 @@ The following options are available in Restivus.add (as the 2nd, optional parame
   - If true, all endpoints on this route will return a `401` if the user is not properly
     [authenticated](#authenticating).
 
-## Endpoint Definition
+### Defining Endpoints
 
 The last parameter of Restivus.add is an object with properties corresponding to the supported HTTP
 methods. At least one method must have an endpoint defined on it. The following endpoints can be
@@ -287,7 +300,7 @@ Restivus.add('posts', {authRequired: true}, {
 In the above examples, all the endpoints except the GETs will require
 [authentication](#authenticating).
 
-## Endpoint Context
+### Endpoint Context
 
 Each endpoint has access to:
 - `this.user`
@@ -307,7 +320,7 @@ Each endpoint has access to:
 - `this.response`
   - The [Node response object][node-response]
 
-## Response Data
+### Response Data
 
 You can return a raw string:
 ```javascript
@@ -349,7 +362,7 @@ All responses contain the following defaults, which will be overridden with any 
       API is hosted on, which is typically not the intended behavior. To prevent this, override it
       with your domain.
 
-## Documentation
+## Documenting Your API
 
 What's a ReST API without awesome docs? I'll tell you: absolutely freaking useless. So to fix that,
 we use and recommend [apiDoc][]. It allows you to generate beautiful and extremely handy API docs
