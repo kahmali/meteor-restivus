@@ -4,7 +4,7 @@
     @endpoints = @options
     @options = null
 
-@Route.prototype.addToApi =  ->
+@Route.prototype.addToApi = ->
   self = this
 
   # Throw an error if a route has already been added at this path
@@ -56,11 +56,18 @@
   Authenticate an endpoint if required, and return the result of calling it
 
   @context: IronRouter.Router.route()
+  @returns The endpoint response or a 401 if authentication fails
 ###
 callEndpoint = (route, endpoint) ->
   endpoint = resolveEndpoint endpoint
-  authenticateIfRequired.call this, route, endpoint
-  endpoint.action.call this
+
+  # Call the endpoint if authentication doesn't fail
+  if authAccepted.call this, route, endpoint
+    endpoint.action.call this
+  else
+    statusCode: 401
+    body: {success: false, message: "You must be logged in to do this."}
+
 
 ###
   Convert the given endpoint into our expected endpoint object if it is a bare function
@@ -78,22 +85,27 @@ resolveEndpoint = (endpoint) ->
   will override the default.
 
   @context: IronRouter.Router.route()
+  @returns False if authentication fails, and true otherwise
 ###
-authenticateIfRequired = (route, endpoint) ->
-  # Authenticate the request if necessary
+authAccepted = (route, endpoint) ->
+  accept = true
   if route.api.config.useAuth
     if endpoint.authRequired is undefined
-      authenticate.call(this, route) if route.options?.authRequired
+      accept = authenticate.call(this, route) if route.options?.authRequired
     else if endpoint.authRequired
-      authenticate.call this, route
+      accept = authenticate.call this, route
+  accept
 
 
 ###
   Verify the request is being made by an actively logged in user
 
+  If verified, attach the authenticated user to the context.
+
   @context: IronRouter.Router.route()
+  @returns {Boolean} True if the authentication was successful
 ###
-authenticate = (route) ->
+authenticate = ->
   # Get the auth info from header
   userId = @request.headers['x-user-id']
   authToken = @request.headers['x-auth-token']
@@ -102,11 +114,11 @@ authenticate = (route) ->
   if userId and authToken
     user = Meteor.users.findOne {'_id': userId, 'services.resume.loginTokens.token': authToken}
 
-  # Return an error if the login token does not match any belonging to the user
-  if not user
-    respond.call this, route, {success: false, message: "You must be logged in to do this."}, 401
-
-  @user = user
+  # Attach the user to the context if the authentication was successful
+  if user
+    @user = user
+    true
+  else false
 
 
 ###
@@ -127,8 +139,6 @@ respond = (route, body, statusCode=200, headers) ->
     bodyAsJson = JSON.stringify body, undefined, 2
   else
     bodyAsJson = JSON.stringify body
-
-  console.log bodyAsJson
 
   # Send response
   @response.writeHead statusCode, headers

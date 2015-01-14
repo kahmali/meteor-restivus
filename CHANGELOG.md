@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+#### Fixed
+- Prevent endpoint from being called if authentication fails (and return 401)
+
 #### Added
 - Support pretty JSON in API configuration
 
@@ -13,7 +16,11 @@
     terminology
   - Add `prettyJson` to [Configuration Options]
 
+
 ## [v0.5.1] - 2014-01-10
+
+#### Fixed
+- `Content-Type` header in endpoint response will default to `text/json` if not overridden by user
 
 #### Added
 - Allow cross-domain requests to API from browsers (CORS-compliant)
@@ -29,9 +36,6 @@
   - `Method`: The type of HTTP request (e.g., GET, PUT, POST, etc.)
   - `Endpoint`: The function executed when a request is made at a given path for a specific HTTP method
   - `Route`: A path and a set of endpoints
-
-#### Fixed
-- `Content-Type` header in endpoint response will default to `text/json` if not overridden by user
 
 
 ## [v0.5.0] - 2014-01-04

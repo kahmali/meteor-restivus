@@ -17,7 +17,6 @@ userValidator = Match.Where (user) ->
 
 ###
   Return a MongoDB query selector for finding the given user
-  TODO: Allow the user to configure a user field that they define as valid, and check that instead of this arbitrary 'username'
 ###
 getUserQuerySelector = (user) ->
   if user.id
