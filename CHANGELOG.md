@@ -1,6 +1,6 @@
 # Change Log
 
-## Unreleased
+## [v0.5.2] - 2014-01-14
 
 #### Fixed
 - Prevent endpoint from being called if authentication fails (and return 401)
@@ -41,6 +41,10 @@
 ## [v0.5.0] - 2014-01-04
 - Initial release
 
-[v0.5.0]:  https://github.com/krose72205/meteor-restivus/releases/tag/v0.5.0 "v0.5.0"
-[v0.5.1]:  https://github.com/krose72205/meteor-restivus/releases/tag/v0.5.1 "v0.5.1"
+
+
+[v0.5.0]:  https://github.com/krose72205/meteor-restivus/releases/tag/v0.5.0 "Version 0.5.0"
+[v0.5.1]:  https://github.com/krose72205/meteor-restivus/releases/tag/v0.5.1 "Version 0.5.1"
+[v0.5.2]:  https://github.com/krose72205/meteor-restivus/releases/tag/v0.5.2 "Version 0.5.2"
+
 [configuration options]: https://github.com/krose72205/meteor-restivus#configuration-options "Configuration Options"
