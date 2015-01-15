@@ -80,14 +80,15 @@ initAuth = ->
 
       # Get the authenticated user
       # TODO: Consider returning the user in Auth.loginWithPassword(), instead of fetching it again here
-      context = {}
       if auth.userId and auth.authToken
-        context.user = Meteor.users.findOne
+        @user = Meteor.users.findOne
           '_id': auth.userId
           'services.resume.loginTokens.token': auth.authToken
+        @userId = @user._id
 
+      # TODO: Add any return data to response as data.extra
       # Call the login hook with the authenticated user attached
-      Restivus.config.onLoggedIn.call context
+      Restivus.config.onLoggedIn.call this
 
       auth.success = true
       auth
@@ -103,8 +104,9 @@ initAuth = ->
       authToken = @request.headers['x-auth-token']
       Meteor.users.update @user._id, {$pull: {'services.resume.loginTokens': {token: authToken}}}
 
+      # TODO: Add any return data to response as data.extra
       # Call the logout hook with the logged out user attached
-      Restivus.config.onLoggedOut.call @user
+      Restivus.config.onLoggedOut.call this
 
       {success: true, message: 'You\'ve been logged out!'}
 

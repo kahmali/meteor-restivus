@@ -2,12 +2,17 @@
 
 ## Unreleased
 
-## Added
+#### Fixed
+- Context in onLoggedIn and onLoggedOut hooks is now the same as within an
+  [authenticated endpoint][endpoint context]
+
+#### Added
 - Access `this.userId` within authenticated endpoints
 
-## Updated
+#### Updated
 - README
   - Add `this.userId` to [Endpoint Context]
+  - [Specify context][configuration options] in `onLoggedIn` and `onLoggedOut` hooks
 
 ## [v0.5.2] - 2014-01-14
 

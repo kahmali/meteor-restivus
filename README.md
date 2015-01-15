@@ -137,12 +137,13 @@ The following configuration options are available with `Restivus.configure`:
 - `onLoggedIn`
   - Default: `undefined`
   - A hook that runs once a user has been successfully logged into their account via the `/login`
-    endpoint. You can access `this.user` from within the function you define, and any returned data
-    will be added to the response body as `data.extra` (coming soon).
+    endpoint. [Context](#endpoint-context) is the same as within authenticated endpoints. Any
+    returned data will be added to the response body as `data.extra` (coming soon).
 - `onLoggedOut`
   - Default: `undefined`
   - Same as onLoggedIn, but runs once a user has been successfully logged out of their account via
-    the `/logout` endpoint.
+    the `/logout` endpoint. [Context](#endpoint-context) is the same as within authenticated endpoints.
+    Any returned data will be added to the response body as `data.extra` (coming soon).
 
 ## Defining Routes
 
