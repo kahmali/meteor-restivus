@@ -1,5 +1,14 @@
 # Change Log
 
+## Unreleased
+
+## Added
+- Access `this.userId` within authenticated endpoints
+
+## Updated
+- README
+  - Add `this.userId` to [Endpoint Context]
+
 ## [v0.5.2] - 2014-01-14
 
 #### Fixed
@@ -48,3 +57,4 @@
 [v0.5.2]:  https://github.com/krose72205/meteor-restivus/releases/tag/v0.5.2 "Version 0.5.2"
 
 [configuration options]: https://github.com/krose72205/meteor-restivus#configuration-options "Configuration Options"
+[endpoint context]: https://github.com/krose72205/meteor-restivus#endpoint-context "Endpoint Context"

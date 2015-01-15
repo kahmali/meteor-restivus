@@ -114,9 +114,10 @@ authenticate = ->
   if userId and authToken
     user = Meteor.users.findOne {'_id': userId, 'services.resume.loginTokens.token': authToken}
 
-  # Attach the user to the context if the authentication was successful
+  # Attach the user and their ID to the context if the authentication was successful
   if user
     @user = user
+    @userId = user._id
     true
   else false
 

@@ -125,8 +125,8 @@ And to update Restivus to the latest version:
 The following configuration options are available with `Restivus.configure`:
 - `useAuth`
   - Default: `false`
-  - If true, `/login` and `/logout` routes are added to the API. You can access `this.user` in
-    [authenticated](#authenticating) endpoints.
+  - If true, `POST /login` and `GET /logout` endpoints are added to the API. You can access
+    `this.user` and `this.userId` in [authenticated](#authenticating) endpoints.
 - `apiPath`
   - Default: `'api'`
   - The base path for your API. If you use 'api' and add a route called 'users', the URL will be
@@ -307,8 +307,11 @@ In the above examples, all the endpoints except the GETs will require
 
 Each endpoint has access to:
 - `this.user`
-  - The [authenticated](#authenticating) `Meteor.user`. Only available if `useAuth` and
-    `authRequired` are both `true`. If not, it will be `false`.
+  - The authenticated `Meteor.user`. Only available if `useAuth` and
+    `authRequired` are both `true`. If not, it will be `undefined`.
+- `this.userId`
+  - The authenticated user's `Meteor.userId`. Only available if `useAuth` and `authRequired` are both `true`. If
+    not, it will be `undefined`.
 - `this.urlParams`
   - Non-optional parameters extracted from the URL. A parameter `id` on the path `posts/:id` would
     be available as `this.urlParams.id`.
