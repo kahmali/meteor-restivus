@@ -1,6 +1,6 @@
 # Change Log
 
-## Unreleased
+## [v0.5.4] - 2015-01-27
 
 #### Fixed
 - The default api path ('api/') is used if no apiPath is provided in Restivus.configure() (would
@@ -8,7 +8,8 @@
 - Only a `config.apiPath` that is missing the trailing '/' will have it appended during API
   configuration
 
-## [v0.5.3] - 2014-01-15
+
+## [v0.5.3] - 2015-01-15
 
 #### Fixed
 - Context in onLoggedIn and onLoggedOut hooks is now the same as within an
@@ -23,7 +24,7 @@
   - [Specify context][configuration options] in `onLoggedIn` and `onLoggedOut` hooks
 
 
-## [v0.5.2] - 2014-01-14
+## [v0.5.2] - 2015-01-14
 
 #### Fixed
 - Prevent endpoint from being called if authentication fails (and return 401)
@@ -40,7 +41,7 @@
   - Add `prettyJson` to [Configuration Options]
 
 
-## [v0.5.1] - 2014-01-10
+## [v0.5.1] - 2015-01-10
 
 #### Fixed
 - `Content-Type` header in endpoint response will default to `text/json` if not overridden by user
@@ -61,7 +62,7 @@
   - `Route`: A path and a set of endpoints
 
 
-## [v0.5.0] - 2014-01-04
+## [v0.5.0] - 2015-01-04
 - Initial release
 
 
