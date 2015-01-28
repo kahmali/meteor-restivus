@@ -1,5 +1,13 @@
 # Change Log
 
+## Unreleased
+
+#### Fixed
+- The default api path ('api/') is used if no apiPath is provided in Restivus.configure() (would
+  previously crash Meteor).
+- Only a `config.apiPath` that is missing the trailing '/' will have it appended during API
+  configuration
+
 ## [v0.5.3] - 2014-01-15
 
 #### Fixed
@@ -13,6 +21,7 @@
 - README
   - Add `this.userId` to [Endpoint Context]
   - [Specify context][configuration options] in `onLoggedIn` and `onLoggedOut` hooks
+
 
 ## [v0.5.2] - 2014-01-14
 
@@ -57,10 +66,11 @@
 
 
 
-[v0.5.0]:  https://github.com/krose72205/meteor-restivus/releases/tag/v0.5.0 "Version 0.5.0"
-[v0.5.1]:  https://github.com/krose72205/meteor-restivus/releases/tag/v0.5.1 "Version 0.5.1"
-[v0.5.2]:  https://github.com/krose72205/meteor-restivus/releases/tag/v0.5.2 "Version 0.5.2"
+[v0.5.4]:  https://github.com/krose72205/meteor-restivus/releases/tag/v0.5.4 "Version 0.5.4"
 [v0.5.3]:  https://github.com/krose72205/meteor-restivus/releases/tag/v0.5.3 "Version 0.5.3"
+[v0.5.2]:  https://github.com/krose72205/meteor-restivus/releases/tag/v0.5.2 "Version 0.5.2"
+[v0.5.1]:  https://github.com/krose72205/meteor-restivus/releases/tag/v0.5.1 "Version 0.5.1"
+[v0.5.0]:  https://github.com/krose72205/meteor-restivus/releases/tag/v0.5.0 "Version 0.5.0"
 
 [configuration options]: https://github.com/krose72205/meteor-restivus#configuration-options "Configuration Options"
 [endpoint context]: https://github.com/krose72205/meteor-restivus#endpoint-context "Endpoint Context"

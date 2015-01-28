@@ -33,14 +33,14 @@
 
   @configured = true
 
-  # Normalize the API path
-  if config.apiPath[0] is '/'
-    config.apiPath = config.apiPath.slice 1
-  if config.apiPath[-1] isnt '/'
-    config.apiPath = config.apiPath + '/'
-
   # Configure API with the given options
   _.extend @config, config
+
+  # Normalize the API path
+  if @config.apiPath[0] is '/'
+    @config.apiPath = @config.apiPath.slice 1
+  if _.last(@config.apiPath) isnt '/'
+    @config.apiPath = @config.apiPath + '/'
 
   # Add any existing routes to the API now that it's configured
   _.each @routes, (route) -> route.addToApi()
