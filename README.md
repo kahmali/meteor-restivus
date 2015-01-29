@@ -253,8 +253,7 @@ Restivus.add('/post/:_id', {
 ### Route Options
 
 The following options are available in Restivus.add (as the 2nd, optional parameter):
-
--`authRequired`
+- `authRequired`
   - Default: `false`
   - If true, all endpoints on this route will return a `401` if the user is not properly
     [authenticated](#authenticating).
@@ -328,16 +327,16 @@ Restivus.add('posts', {authRequired: true}, {
     action: function () {
       // GET api/posts
     }
-  }
+  },
   post: function () {
     // POST api/posts
-  }
+  },
   put: function () {
     // PUT api/posts
-  }
+  },
   patch: function () {
     // PATCH api/posts
-  }
+  },
   delete: function () {
     // DELETE api/posts
   }
