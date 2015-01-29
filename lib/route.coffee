@@ -2,7 +2,12 @@
   # Check if options were provided
   if not @endpoints
     @endpoints = @options
-    @options = null
+    @options = {}
+
+  # Configure each endpoint
+  _resolveEndpoints this
+  _configureEndpoints this
+
 
 @Route.prototype.addToApi = ->
   self = this
@@ -28,15 +33,15 @@
       # Respond to the requested HTTP method if an endpoint has been provided for it
       method = @request.method
       if method is 'GET' and self.endpoints.get
-        responseData = callEndpoint.call(this, self, self.endpoints.get)
+        responseData = _callEndpoint.call(this, self, self.endpoints.get)
       else if method is 'POST' and self.endpoints.post
-        responseData = callEndpoint.call(this, self, self.endpoints.post)
+        responseData = _callEndpoint.call(this, self, self.endpoints.post)
       else if method is 'PUT' and self.endpoints.put
-        responseData = callEndpoint.call(this, self, self.endpoints.put)
+        responseData = _callEndpoint.call(this, self, self.endpoints.put)
       else if method is 'PATCH' and self.endpoints.patch
-        responseData = callEndpoint.call(this, self, self.endpoints.patch)
+        responseData = _callEndpoint.call(this, self, self.endpoints.patch)
       else if method is 'DELETE' and self.endpoints.delete
-        responseData = callEndpoint.call(this, self, self.endpoints.delete)
+        responseData = _callEndpoint.call(this, self, self.endpoints.delete)
       else
         responseData = {statusCode: 404, body: {success: false, message:'API endpoint not found'}}
 
@@ -44,12 +49,61 @@
       if responseData.body and (responseData.statusCode or responseData.headers)
         responseData.statusCode or= 200
         responseData.headers or= {'Content-Type': 'text/json'}
-        respond.call this, self, responseData.body, responseData.statusCode, responseData.headers
+        _respond.call this, self, responseData.body, responseData.statusCode, responseData.headers
       else
-        respond.call this, self, responseData
+        _respond.call this, self, responseData
 
   # Add the path to our list of existing paths
   @api.config.paths.push @path
+
+
+###
+  Convert all endpoints on the given route into our expected endpoint object if it is a bare function
+
+  @param {Route} route The route the endpoints belong to
+###
+_resolveEndpoints = (route) ->
+  _.each route.endpoints, (endpoint, method, endpoints) ->
+    if _.isFunction(endpoint)
+      endpoints[method] = {action: endpoint}
+  return
+
+
+###
+  Configure the authentication and role requirement on an endpoint
+
+  Once it's globally configured in the API, authentication can be required on an entire route or individual
+  endpoints. If required on an entire route, that serves as the default. If required in any individual endpoints, that
+  will override the default.
+
+  After the endpoint is configured, all authentication and role requirements of an endpoint can be accessed at
+  <code>endpoint.authRequired</code> and <code>endpoint.roleRequired</code>, respectively.
+
+  @param {Route} route The route the endpoints belong to
+  @param {Endpoint} endpoint The endpoint to configure
+###
+_configureEndpoints = (route) ->
+  _.each route.endpoints, (endpoint) ->
+      # Configure acceptable roles
+    if not route.options?.roleRequired
+      route.options.roleRequired = []
+    if not endpoint.roleRequired
+      endpoint.roleRequired = []
+    endpoint.roleRequired = _.union endpoint.roleRequired, route.options.roleRequired
+    # Make it easier to check if no roles are required
+    if _.isEmpty endpoint.roleRequired
+      endpoint.roleRequired = false
+
+    # Configure auth requirement
+    if not route.api.config.useAuth
+      endpoint.authRequired = false
+    else if endpoint.authRequired is undefined
+      if route.options?.authRequired or endpoint.roleRequired
+        endpoint.authRequired = true
+      else
+        endpoint.authRequired = false
+
+  return
 
 
 ###
@@ -58,24 +112,18 @@
   @context: IronRouter.Router.route()
   @returns The endpoint response or a 401 if authentication fails
 ###
-callEndpoint = (route, endpoint) ->
-  endpoint = resolveEndpoint endpoint
-
+_callEndpoint = (route, endpoint) ->
   # Call the endpoint if authentication doesn't fail
-  if authAccepted.call this, route, endpoint
-    endpoint.action.call this
+  if _authAccepted.call this, route, endpoint
+    if _roleAccepted.call this, route, endpoint
+      endpoint.action.call this
+    else
+      statusCode: 401
+      body: {success: false, message: "You do not have permission to do this."}
   else
     statusCode: 401
     body: {success: false, message: "You must be logged in to do this."}
 
-
-###
-  Convert the given endpoint into our expected endpoint object if it is a bare function
-###
-resolveEndpoint = (endpoint) ->
-  if _.isFunction(endpoint)
-    endpoint = {action: endpoint}
-  endpoint
 
 ###
   Authenticate the given endpoint if required
@@ -87,14 +135,10 @@ resolveEndpoint = (endpoint) ->
   @context: IronRouter.Router.route()
   @returns False if authentication fails, and true otherwise
 ###
-authAccepted = (route, endpoint) ->
-  accept = true
-  if route.api.config.useAuth
-    if endpoint.authRequired is undefined
-      accept = authenticate.call(this, route) if route.options?.authRequired
-    else if endpoint.authRequired
-      accept = authenticate.call this, route
-  accept
+_authAccepted = (route, endpoint) ->
+  if endpoint.authRequired
+    _authenticate.call this, route
+  else true
 
 
 ###
@@ -105,7 +149,7 @@ authAccepted = (route, endpoint) ->
   @context: IronRouter.Router.route()
   @returns {Boolean} True if the authentication was successful
 ###
-authenticate = ->
+_authenticate = ->
   # Get the auth info from header
   userId = @request.headers['x-user-id']
   authToken = @request.headers['x-auth-token']
@@ -123,11 +167,26 @@ authenticate = ->
 
 
 ###
+  Authenticate the user role if required
+
+  Must be called after _authAccepted().
+
+  @context: IronRouter.Router.route() (after authentication)
+  @returns True if the authenticated user belongs to <i>any</i> of the acceptable roles on the endpoint
+###
+_roleAccepted = (route, endpoint) ->
+  if endpoint.roleRequired
+    if _.isEmpty _.intersection(endpoint.roleRequired, @user.roles)
+      return false
+  true
+
+
+###
   Respond to an HTTP request
 
   @context: IronRouter.Router.route()
 ###
-respond = (route, body, statusCode=200, headers) ->
+_respond = (route, body, statusCode=200, headers) ->
   # Allow cross-domain requests to be made from the browser
   @response.setHeader 'Access-Control-Allow-Origin', '*'
 

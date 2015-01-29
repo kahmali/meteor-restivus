@@ -1,5 +1,20 @@
 # Change Log
 
+## Unreleased
+
+#### Added
+- Role permissions for limiting user access to specific endpoints (works with the `alanning:roles`
+  package)
+
+#### Updated
+- Resolve and configure endpoints during Route construction, to prevent a bunch of unnecessary
+  processing every time an endpoint was being accessed. This should yield at least a minor
+  performance gain on all endpoints.
+- README
+  - Add info on setting up role permissions to [Route Options] and [Defining Endpoints] sections
+  - Update Quick Start example to show definition of role permissions on an endpoint
+
+
 ## [v0.5.4] - 2015-01-27
 
 #### Fixed
@@ -67,11 +82,13 @@
 
 
 
-[v0.5.4]:  https://github.com/krose72205/meteor-restivus/releases/tag/v0.5.4 "Version 0.5.4"
-[v0.5.3]:  https://github.com/krose72205/meteor-restivus/releases/tag/v0.5.3 "Version 0.5.3"
-[v0.5.2]:  https://github.com/krose72205/meteor-restivus/releases/tag/v0.5.2 "Version 0.5.2"
-[v0.5.1]:  https://github.com/krose72205/meteor-restivus/releases/tag/v0.5.1 "Version 0.5.1"
-[v0.5.0]:  https://github.com/krose72205/meteor-restivus/releases/tag/v0.5.0 "Version 0.5.0"
+[v0.5.4]:  https://github.com/kahmali/meteor-restivus/releases/tag/v0.5.4 "Version 0.5.4"
+[v0.5.3]:  https://github.com/kahmali/meteor-restivus/releases/tag/v0.5.3 "Version 0.5.3"
+[v0.5.2]:  https://github.com/kahmali/meteor-restivus/releases/tag/v0.5.2 "Version 0.5.2"
+[v0.5.1]:  https://github.com/kahmali/meteor-restivus/releases/tag/v0.5.1 "Version 0.5.1"
+[v0.5.0]:  https://github.com/kahmali/meteor-restivus/releases/tag/v0.5.0 "Version 0.5.0"
 
-[configuration options]: https://github.com/krose72205/meteor-restivus#configuration-options "Configuration Options"
-[endpoint context]: https://github.com/krose72205/meteor-restivus#endpoint-context "Endpoint Context"
+[configuration options]: https://github.com/kahmali/meteor-restivus#configuration-options "Configuration Options"
+[endpoint context]: https://github.com/kahmali/meteor-restivus#endpoint-context "Endpoint Context"
+[defining endpoints]: https://github.com/kahmali/meteor-restivus#defining-endpoints "Defining Endpoints"
+[route options]: https://github.com/kahmali/meteor-restivus#route-options "Route Options"

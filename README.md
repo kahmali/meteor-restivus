@@ -7,7 +7,9 @@ Restivus makes building ReSTful APIs in Meteor 0.9.0+ an absolute breeze. The pa
 - User authentication via the API
   - Optional login and logout endpoints
   - Access to `this.user` in authenticated endpoints
-- Role permissions on endpoints coming soon!
+- **NEW!** Role permissions for limiting access to specific endpoints
+  - Works alongside the [`alanning:roles`][alanning-roles] package - Meteor's accepted role 
+    permission package
 
 ## Installation
 
@@ -42,6 +44,14 @@ And to update Restivus to the latest version:
             email: @bodyParams.email
             password: @bodyParams.password
           Meteor.users.findOne {'emails.address': @bodyParams.email}
+      delete:
+        roleRequired: ['admin', 'dev']
+        action: ->
+          if Meteor.users.remove()
+            {success: true, message: "All users removed"}
+          else
+            statusCode: 404
+            body: {success: false, message: "No users found"}
 
     # Maps to: api/friends/abc123
     Restivus.add 'friends/:friendId', {authRequired: true},
@@ -69,7 +79,7 @@ And to update Restivus to the latest version:
     Restivus.add('users', {
       get: function () {
         return Meteor.users.find().fetch();
-      }
+      },
       post: {
         authRequired: true,
         action: function () {
@@ -79,6 +89,18 @@ And to update Restivus to the latest version:
           });
           return Meteor.users.findOne({emails.address: this.bodyParams.email});
         }
+      },
+      delete: {
+        roleRequired: ['admin', 'dev'],
+        action: function () {
+          if (Meteor.users.remove()) {
+            return {success: true, message: "All users removed"};
+          }
+          else {
+            statusCode: 404,
+            body: {success: false, message: "No users found"}
+          }
+        }
       }
     });
 
@@ -86,7 +108,7 @@ And to update Restivus to the latest version:
     Restivus.add('friends/:friendId', {authRequired: true}, {
       get: function () {
         return _.findWhere(this.user.profile.friends, {id: this.urlParams.friendId});
-      }
+      },
       delete: function () {
         if (_.contains(this.user.profile.friends, this.urlParams.friendId) {
           Meteor.users.update(userId, {$pull: {'profile.devices.android': deviceId}});
@@ -231,10 +253,20 @@ Restivus.add('/post/:_id', {
 ### Route Options
 
 The following options are available in Restivus.add (as the 2nd, optional parameter):
+
 -`authRequired`
-  - Default: false
+  - Default: `false`
   - If true, all endpoints on this route will return a `401` if the user is not properly
     [authenticated](#authenticating).
+- `roleRequired`
+  - Default: `undefined` (no role required)
+  - A string or array of strings corresponding to the acceptable user roles for all endpoints on
+    this route (e.g., `'admin'`, `['admin', 'dev']`). Additional role permissions can be defined on
+    specific endpoints. If the authenticated user does not belong to at least one of the accepted
+    roles, a `401` is returned. Since a role cannot be verified without an authenticated user,
+    setting the `roleRequired` implies `authRequired: true`, so that option can be omitted without
+    any consequence. For more on setting up roles, check out the [`alanning:roles`][alanning-roles]
+    package.
 
 ### Defining Endpoints
 
@@ -254,12 +286,21 @@ type of request is made at that path.
 Otherwise, for finer-grained control over each endpoint, you can also define each one as an object
 with the following properties:
 - `authRequired`
-  - Default: false
+  - Default: `false`
   - If true, this endpoint will return a `401` if the user is not properly
     [authenticated](#authenticating). Overrides the option of the same name defined on the entire
     route.
+- `roleRequired`
+  - Default: `undefined` (no role required)
+  - A string or array of strings corresponding to the acceptable user roles for this endpoint (e.g.,
+    `'admin'`, `['admin', 'dev']`). These roles will be accepted in addition to any defined over the
+    entire route. If the authenticated user does not belong to at least one of the accepted roles, a
+    `401` is returned. Since a role cannot be verified without an authenticated user, setting the
+    `roleRequired` implies `authRequired: true`, so that option can be omitted without any
+    consequence. For more on setting up roles, check out the [`alanning:roles`][alanning-roles]
+    package.
 - `action`
-  - Default: undefined
+  - Default: `undefined`
   - A function that will be executed when a request is made for the corresponding HTTP method.
 
 ###### CoffeeScript
@@ -444,3 +485,4 @@ MIT License. See LICENSE for details.
 [node-response]:     http://nodejs.org/api/http.html#http_class_http_serverresponse  "Node Response Object Docs"
 [jsend]:             http://labs.omniti.com/labs/jsend                               "JSend ReST API Standard"
 [apidoc]:            http://apidocjs.com/                                            "apiDoc"
+[alanning-roles]:    https://github.com/alanning/meteor-roles                        "Meteor Roles Package"
