@@ -10,6 +10,7 @@
 - Resolve and configure endpoints during Route construction, to prevent a bunch of unnecessary
   processing every time an endpoint was being accessed. This should yield at least a minor
   performance gain on all endpoints.
+- Refactor Route and Restivus into CoffeeScript classes
 - README
   - Add info on setting up role permissions to [Route Options] and [Defining Endpoints] sections
   - Update Quick Start example to show definition of role permissions on an endpoint
