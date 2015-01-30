@@ -1,9 +1,9 @@
 # Change Log
 
-## Unreleased
+## [v0.5.5] - 2015-01-30
 
 #### Added
-- Role permissions for limiting user access to specific endpoints (works with the `alanning:roles`
+- User role permissions for limiting access to endpoints (works alongside the `alanning:roles`
   package)
 
 #### Updated
@@ -83,6 +83,7 @@
 
 
 
+[v0.5.5]:  https://github.com/kahmali/meteor-restivus/releases/tag/v0.5.5 "Version 0.5.5"
 [v0.5.4]:  https://github.com/kahmali/meteor-restivus/releases/tag/v0.5.4 "Version 0.5.4"
 [v0.5.3]:  https://github.com/kahmali/meteor-restivus/releases/tag/v0.5.3 "Version 0.5.3"
 [v0.5.2]:  https://github.com/kahmali/meteor-restivus/releases/tag/v0.5.2 "Version 0.5.2"
