@@ -83,12 +83,12 @@
 
 
 
-[v0.5.5]:  https://github.com/kahmali/meteor-restivus/releases/tag/v0.5.5 "Version 0.5.5"
-[v0.5.4]:  https://github.com/kahmali/meteor-restivus/releases/tag/v0.5.4 "Version 0.5.4"
-[v0.5.3]:  https://github.com/kahmali/meteor-restivus/releases/tag/v0.5.3 "Version 0.5.3"
-[v0.5.2]:  https://github.com/kahmali/meteor-restivus/releases/tag/v0.5.2 "Version 0.5.2"
-[v0.5.1]:  https://github.com/kahmali/meteor-restivus/releases/tag/v0.5.1 "Version 0.5.1"
-[v0.5.0]:  https://github.com/kahmali/meteor-restivus/releases/tag/v0.5.0 "Version 0.5.0"
+[v0.5.5]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.4...v0.5.5 "Version 0.5.5"
+[v0.5.4]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.3...v0.5.4 "Version 0.5.4"
+[v0.5.3]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.2...v0.5.3 "Version 0.5.3"
+[v0.5.2]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.1...v0.5.2 "Version 0.5.2"
+[v0.5.1]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.0...v0.5.1 "Version 0.5.1"
+[v0.5.0]:  https://github.com/kahmali/meteor-restivus/compare/d4ae97...v0.5.0 "Version 0.5.0"
 
 [configuration options]: https://github.com/kahmali/meteor-restivus#configuration-options "Configuration Options"
 [endpoint context]: https://github.com/kahmali/meteor-restivus#endpoint-context "Endpoint Context"
