@@ -1,6 +1,6 @@
 Package.describe({
   name: 'nimble:restivus',
-  summary: 'ReST APIs for the Best of Us! - A Meteor package for building ReSTful APIs',
+  summary: 'REST APIs for the Best of Us! - Create RESTful APIs in Meteor 0.9.0+',
   version: '0.5.4',
   git: 'https://github.com/kahmali/meteor-restivus.git'
 });
