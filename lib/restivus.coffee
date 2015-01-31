@@ -49,7 +49,7 @@ class @Restivus
 
     # Add default login and logout endpoints if auth is configured
     if @config.useAuth
-      _initAuth()
+      @_initAuth()
       console.log "Restivus configured at #{@config.apiPath} with authentication"
     else
       console.log "Restivus configured at #{@config.apiPath} without authentication"
@@ -59,13 +59,14 @@ class @Restivus
   ###
     Add /login and /logout endpoints to the API
   ###
-  _initAuth = ->
+  _initAuth: ->
+    self = this
     ###
     Add a login endpoint to the API
 
     After the user is logged in, the onLoggedIn hook is called (see Restfully.configure() for adding hook).
     ###
-    @Restivus.add 'login', {authRequired: false},
+    @add 'login', {authRequired: false},
       post: ->
         # Grab the username or email that the user is logging in with
         user = {}
@@ -90,7 +91,7 @@ class @Restivus
 
         # TODO: Add any return data to response as data.extra
         # Call the login hook with the authenticated user attached
-        @Restivus.config.onLoggedIn.call this
+        self.config.onLoggedIn.call this
 
         auth.success = true
         auth
@@ -100,7 +101,7 @@ class @Restivus
 
     After the user is logged out, the onLoggedOut hook is called (see Restfully.configure() for adding hook).
     ###
-    @Restivus.add 'logout', {authRequired: true},
+    @add 'logout', {authRequired: true},
       get: ->
         # Remove the given auth token from the user's account
         authToken = @request.headers['x-auth-token']
@@ -108,7 +109,7 @@ class @Restivus
 
         # TODO: Add any return data to response as data.extra
         # Call the logout hook with the logged out user attached
-        @Restivus.config.onLoggedOut.call this
+        self.config.onLoggedOut.call this
 
         {success: true, message: 'You\'ve been logged out!'}
 

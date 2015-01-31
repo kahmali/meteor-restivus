@@ -1,5 +1,12 @@
 # Change Log
 
+## [v0.5.6] - 2015-01-31
+
+#### Fixed
+- Issue #2: Make Restivus.\_initAuth() private only by convention for proper context. Context was
+  accidentally altered when refactoring Restivus into a class in latest update.
+
+
 ## [v0.5.5] - 2015-01-30
 
 #### Added
@@ -19,7 +26,7 @@
 ## [v0.5.4] - 2015-01-27
 
 #### Fixed
-- The default api path ('api/') is used if no apiPath is provided in Restivus.configure() (would
+- Issue #1: The default api path ('api/') is used if no apiPath is provided in Restivus.configure() (would
   previously crash Meteor).
 - Only a `config.apiPath` that is missing the trailing '/' will have it appended during API
   configuration
@@ -83,6 +90,7 @@
 
 
 
+[v0.5.6]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.5...v0.5.6 "Version 0.5.6"
 [v0.5.5]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.4...v0.5.5 "Version 0.5.5"
 [v0.5.4]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.3...v0.5.4 "Version 0.5.4"
 [v0.5.3]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.2...v0.5.3 "Version 0.5.3"
