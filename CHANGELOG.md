@@ -1,6 +1,6 @@
 # Change Log
 
-## Unreleased
+## [v0.5.7] - 2015-02-02
 
 #### Fixed
 - Resolve and configure endpoints in Route.addToApi() instead of Route constructor so that endpoints
@@ -107,6 +107,7 @@
 
 
 
+[v0.5.7]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.6...v0.5.7 "Version 0.5.7"
 [v0.5.6]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.5...v0.5.6 "Version 0.5.6"
 [v0.5.5]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.4...v0.5.5 "Version 0.5.5"
 [v0.5.4]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.3...v0.5.4 "Version 0.5.4"
