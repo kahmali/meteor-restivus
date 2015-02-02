@@ -27,7 +27,10 @@ And to update Restivus to the latest version:
 
 ###### CoffeeScript:
 ```coffeescript
-  if Meteor.isServer
+if Meteor.isServer
+
+  # API must be configured and built after startup!
+  Meteor.startup ->
 
     # Global configuration
     Restivus.configure
@@ -68,7 +71,10 @@ And to update Restivus to the latest version:
 
 ###### JavaScript:
 ```javascript
-  if(Meteor.isServer) {
+if(Meteor.isServer) {
+
+  // API must be configured and built after startup!
+  Meteor.startup(function () {
 
     // Global configuration
     Restivus.configure({
@@ -121,7 +127,8 @@ And to update Restivus to the latest version:
         };
       }
     });
-  }
+  });
+}
 ```
 
 ## Table of Contents
@@ -164,13 +171,19 @@ The following configuration options are available with `Restivus.configure`:
 - `onLoggedOut`
   - Default: `undefined`
   - Same as onLoggedIn, but runs once a user has been successfully logged out of their account via
-    the `/logout` endpoint. [Context](#endpoint-context) is the same as within authenticated endpoints.
-    Any returned data will be added to the response body as `data.extra` (coming soon).
+    the `/logout` endpoint. [Context](#endpoint-context) is the same as within authenticated
+    endpoints. Any returned data will be added to the response body as `data.extra` (coming soon).
+
+**Important!** Restivus must be configured from within the `Meteor.startup()` callback. Check out
+the [Quick Start](#quick-start) example.
 
 ## Defining Routes
 
 Routes are defined using `Restivus.add`. A route consists of a path and a set of endpoints defined
 at that path.
+
+**Important!** Adding routes must also be done from within the [`Meteor.startup()`](#quick-start)
+callback.
 
 ### Path Structure
 

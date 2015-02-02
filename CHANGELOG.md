@@ -1,5 +1,14 @@
 # Change Log
 
+## Unreleased
+
+#### Updated
+- README
+  - Update [Quick Start] examples so Restivus is configured and built from within the
+    Meteor.startup() callback
+  - Add "Important!" note in the [Configuration][configuration options] and [Defining Routes]
+    sections that these must be done within the Meteor.startup() callback
+
 ## [v0.5.6] - 2015-01-31
 
 #### Fixed
@@ -20,7 +29,7 @@
 - Refactor Route and Restivus into CoffeeScript classes
 - README
   - Add info on setting up role permissions to [Route Options] and [Defining Endpoints] sections
-  - Update Quick Start example to show definition of role permissions on an endpoint
+  - Update [Quick Start] example to show definition of role permissions on an endpoint
 
 
 ## [v0.5.4] - 2015-01-27
@@ -98,6 +107,8 @@
 [v0.5.1]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.0...v0.5.1 "Version 0.5.1"
 [v0.5.0]:  https://github.com/kahmali/meteor-restivus/compare/d4ae97...v0.5.0 "Version 0.5.0"
 
+[quick start]: https://github.com/kahmali/meteor-restivus#quick-start "Quick Start"
+[defining routes]: https://github.com/kahmali/meteor-restivus#defining-routes "Defining Routes"
 [configuration options]: https://github.com/kahmali/meteor-restivus#configuration-options "Configuration Options"
 [endpoint context]: https://github.com/kahmali/meteor-restivus#endpoint-context "Endpoint Context"
 [defining endpoints]: https://github.com/kahmali/meteor-restivus#defining-endpoints "Defining Endpoints"
