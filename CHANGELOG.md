@@ -2,12 +2,20 @@
 
 ## Unreleased
 
+#### Fixed
+- Resolve and configure endpoints in Route.addToApi() instead of Route constructor so that endpoints
+  are never configured until the API has been configured (with Restivus.configure()). This was
+  causing unexpected behavior in routes that were added before the API was configured, such as
+  authentication not being checked when necessary (so this.user and this.userId were undefined in
+  authenticated endpoints).
+
 #### Updated
 - README
   - Update [Quick Start] examples so Restivus is configured and built from within the
     Meteor.startup() callback
   - Add "Important!" note in the [Configuration][configuration options] and [Defining Routes]
     sections that these must be done within the Meteor.startup() callback
+
 
 ## [v0.5.6] - 2015-01-31
 

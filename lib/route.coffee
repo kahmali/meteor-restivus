@@ -6,10 +6,6 @@ class @Route
       @endpoints = @options
       @options = {}
 
-    # Configure each endpoint
-    _resolveEndpoints this
-    _configureEndpoints this
-
 
   addToApi: ->
     self = this
@@ -18,6 +14,10 @@ class @Route
     # TODO: Check for collisions with paths that follow same pattern with different parameter names
     if _.contains @api.config.paths, @path
       throw new Error "Cannot add a route at an existing path: #{@path}"
+
+    # Configure each endpoint on this route
+    _resolveEndpoints this
+    _configureEndpoints this
 
     # Append the path to the base API path
     fullPath = @api.config.apiPath + @path
