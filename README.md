@@ -10,6 +10,11 @@ Restivus makes building ReSTful APIs in Meteor 0.9.0+ an absolute breeze. The pa
 - **NEW!** Role permissions for limiting access to specific endpoints
   - Works alongside the [`alanning:roles`][alanning-roles] package - Meteor's accepted role 
     permission package
+- Coming soon:
+  - Easy setup of CRUD endpoints on Meteor Collections
+
+Restivus is still a work in progress. Feature requests are welcome, and can be created and voted on
+using [GitHub Issues][restivus-issues]!
 
 ## Installation
 
@@ -498,3 +503,4 @@ MIT License. See LICENSE for details.
 [jsend]:             http://labs.omniti.com/labs/jsend                               "JSend ReST API Standard"
 [apidoc]:            http://apidocjs.com/                                            "apiDoc"
 [alanning-roles]:    https://github.com/alanning/meteor-roles                        "Meteor Roles Package"
+[restivus-issues]:   https://github.com/kahmali/meteor-restivus/issues               "Restivus Issues"
