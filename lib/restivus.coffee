@@ -76,31 +76,53 @@ class @Restivus
     else
       collection = new Mongo.Collection name
 
-    # Get the path or use name as default
-    path = options.path or name
+    # Flatten the options and set defaults if necessary
+    configurableEndpoints = options.endpoints
+    defaultOptions = options.default or {}
+    blacklist = options.blacklist or []
 
-    # Get the endpoints and any global options
-    requestedEndpoints = options.endpoints
-    endpointOptions = options.endpointOptions or {}
+    # Use collection name as default path 
+    path = options.path or name
 
     # Separate the requested endpoints by the route they belong to (one for operating on the entire collection and one
     # for operating on a single entity within the collection)
     collectionEndpoints = {}
     entityEndpoints = {}
-    if requestedEndpoints
-      console.log requestedEndpoints
-      console.log "Setting up a #{method} endpoint at #{path} with options #{endpointOptions.toString()}"
-    else
+    if not configurableEndpoints  # Generate all endpoints on this collection
+      # Partition the endpoints into their respective routes
       _.each methods, (method) ->
         if method in methodsOnCollection
           _.extend collectionEndpoints, @_collectionEndpoints[method](collection)
         else _.extend entityEndpoints, @_collectionEndpoints[method](collection)
         return
       , this
+    else
+      # Generate any endpoints that haven't been explicitly blacklisted
+      _.each methods, (method) ->
+        if method not in blacklist and configurableEndpoints[method] isnt false
+          # Set endpoint-specific options if provided
+          endpointOptions = _.clone defaultOptions
+          if configurableEndpoints[method]
+            _.extend endpointOptions, configurableEndpoints[method]
+          # Configure endpoint and map to it's http method
+          # TODO: Consider predefining a map of methods to their http method type (e.g., deleteAll: delete)
+          configuredEndpoint = {}
+          _.each @_collectionEndpoints[method](collection), (action, methodType) ->
+            configuredEndpoint[methodType] =
+              _.chain action
+              .clone()
+              .extend endpointOptions
+              .value()
+          # Partition the endpoints into their respective routes
+          if method in methodsOnCollection
+            _.extend collectionEndpoints, configuredEndpoint
+          else _.extend entityEndpoints, configuredEndpoint
+          return
+      , this
 
     # Add the routes to the API
-    @add path, endpointOptions, collectionEndpoints
-    @add "#{path}/:id", endpointOptions, entityEndpoints
+    @add path, defaultOptions, collectionEndpoints
+    @add "#{path}/:id", defaultOptions, entityEndpoints
 
     return
 
@@ -119,30 +141,33 @@ class @Restivus
             statusCode: 404
             body: {status: "fail", message: "Item not found"}
     put: (collection) ->
-      put: ->
-        entityIsUpdated = collection.update @urlParams.id, @bodyParams
-        if entityIsUpdated
-          entity = collection.findOne @urlParams.id
-          {status: "success", data: entity}
-        else
-          statusCode: 404
-          body: {status: "fail", message: "Item not found"}
+      put:
+        action: ->
+          entityIsUpdated = collection.update @urlParams.id, @bodyParams
+          if entityIsUpdated
+            entity = collection.findOne @urlParams.id
+            {status: "success", data: entity}
+          else
+            statusCode: 404
+            body: {status: "fail", message: "Item not found"}
     delete: (collection) ->
-      delete: ->
-        if collection.remove @urlParams.id
-          {status: "success", data: message: "Item removed"}
-        else
-          statusCode: 404
-          body: {status: "fail", message: "Item not found"}
+      delete:
+        action: ->
+          if collection.remove @urlParams.id
+            {status: "success", data: message: "Item removed"}
+          else
+            statusCode: 404
+            body: {status: "fail", message: "Item not found"}
     post: (collection) ->
-      post: ->
-        entityId = collection.insert @bodyParams
-        entity = collection.findOne entityId
-        if entity
-          {status: "success", data: entity}
-        else
-          statusCode: 400
-          {status: "fail", message: "No item added"}
+      post:
+        action: ->
+          entityId = collection.insert @bodyParams
+          entity = collection.findOne entityId
+          if entity
+            {status: "success", data: entity}
+          else
+            statusCode: 400
+            {status: "fail", message: "No item added"}
     getAll: (collection) ->
       get:
         action: ->
@@ -153,13 +178,14 @@ class @Restivus
             statusCode: 404
             body: {status: "fail", message: "Unable to retrieve items from collection"}
     deleteAll: (collection) ->
-      delete: ->
-        itemsRemoved = collection.remove()
-        if itemsRemoved
-          {status: "success", data: message: "Removed #{itemsRemoved} items"}
-        else
-          statusCode: 404
-          body: {status: "fail", message: "No items found"}
+      delete:
+        action: ->
+          itemsRemoved = collection.remove()
+          if itemsRemoved
+            {status: "success", data: message: "Removed #{itemsRemoved} items"}
+          else
+            statusCode: 404
+            body: {status: "fail", message: "No items found"}
 
 
   ###
