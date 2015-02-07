@@ -66,34 +66,40 @@ class @Restivus
   ###*
     Generate routes for the Meteor Collection with the given name
   ###
-  addCollection: (name, options = {}) ->
-    methods = ['get', 'post', 'put', 'delete', 'getAll', 'deleteAll']
-    methodsOnCollection = ['post', 'getAll', 'deleteAll']
-
+  addCollection: (name, options) ->
     # Get the collection from the db
     if name.toLowerCase() is 'users'
-      collection = Meteor.users
+      @_addCollection @_userCollectionEndpoints, Meteor.users, name, options
     else
-      collection = new Mongo.Collection name
+      @_addCollection @_collectionEndpoints, new Mongo.Collection(name), name, options
+    return
+
+
+  ###*
+    Generate routes for the Meteor Collection with the given name
+  ###
+  _addCollection: (collectionEndpoints, collection, name, options = {}) ->
+    methods = ['get', 'post', 'put', 'delete', 'getAll', 'deleteAll']
+    methodsOnCollection = ['post', 'getAll', 'deleteAll']
 
     # Flatten the options and set defaults if necessary
     configurableEndpoints = options.endpoints
     defaultOptions = options.default or {}
     blacklist = options.blacklist or []
 
-    # Use collection name as default path 
+    # Use collection name as default path
     path = options.path or name
 
     # Separate the requested endpoints by the route they belong to (one for operating on the entire collection and one
     # for operating on a single entity within the collection)
-    collectionEndpoints = {}
-    entityEndpoints = {}
+    collectionRouteEndpoints = {}
+    entityRouteEndpoints = {}
     if not configurableEndpoints  # Generate all endpoints on this collection
       # Partition the endpoints into their respective routes
       _.each methods, (method) ->
         if method in methodsOnCollection
-          _.extend collectionEndpoints, @_collectionEndpoints[method](collection)
-        else _.extend entityEndpoints, @_collectionEndpoints[method](collection)
+          _.extend collectionRouteEndpoints, collectionEndpoints[method].call(this, collection)
+        else _.extend entityRouteEndpoints, collectionEndpoints[method].call(this, collection)
         return
       , this
     else
@@ -107,7 +113,7 @@ class @Restivus
           # Configure endpoint and map to it's http method
           # TODO: Consider predefining a map of methods to their http method type (e.g., deleteAll: delete)
           configuredEndpoint = {}
-          _.each @_collectionEndpoints[method](collection), (action, methodType) ->
+          _.each collectionEndpoints[method].call(this, collection), (action, methodType) ->
             configuredEndpoint[methodType] =
               _.chain action
               .clone()
@@ -115,14 +121,14 @@ class @Restivus
               .value()
           # Partition the endpoints into their respective routes
           if method in methodsOnCollection
-            _.extend collectionEndpoints, configuredEndpoint
-          else _.extend entityEndpoints, configuredEndpoint
+            _.extend collectionRouteEndpoints, configuredEndpoint
+          else _.extend entityRouteEndpoints, configuredEndpoint
           return
       , this
 
     # Add the routes to the API
-    @add path, defaultOptions, collectionEndpoints
-    @add "#{path}/:id", defaultOptions, entityEndpoints
+    @add path, defaultOptions, collectionRouteEndpoints
+    @add "#{path}/:id", defaultOptions, entityRouteEndpoints
 
     return
 
@@ -172,7 +178,7 @@ class @Restivus
       get:
         action: ->
           entities = collection.find().fetch()
-          if not entities
+          if entities
             {status: "success", data: entities}
           else
             statusCode: 404
@@ -186,6 +192,55 @@ class @Restivus
           else
             statusCode: 404
             body: {status: "fail", message: "No items found"}
+
+
+  ###*
+    A set of endpoints that can be applied to a Meteor.users Collection Route
+  ###
+  _userCollectionEndpoints:
+    get: (collection) ->
+      get:
+        action: ->
+          entity = collection.findOne @urlParams.id, fields: profile: 1
+          if entity
+            {status: "success", data: entity}
+          else
+            statusCode: 404
+            body: {status: "fail", message: "User not found"}
+    put: (collection) ->
+      put:
+        action: ->
+          entityIsUpdated = collection.update @urlParams.id, $set: profile: @bodyParams
+          if entityIsUpdated
+            entity = collection.findOne @urlParams.id, fields: profile: 1
+            {status: "success", data: entity}
+          else
+            statusCode: 404
+            body: {status: "fail", message: "User not found"}
+    delete: (collection) ->
+      @_collectionEndpoints.delete collection
+    post: (collection) ->
+      post:
+        action: ->
+          # Create a new user account
+          entityId = Accounts.createUser @bodyParams
+          entity = collection.findOne entityId, fields: profile: 1
+          if entity
+            {status: "success", data: entity}
+          else
+            statusCode: 400
+            {status: "fail", message: "No user added"}
+    getAll: (collection) ->
+      get:
+        action: ->
+          entities = collection.find({}, fields: profile: 1).fetch()
+          if entities
+            {status: "success", data: entities}
+          else
+            statusCode: 404
+            body: {status: "fail", message: "Unable to retrieve users"}
+    deleteAll: (collection) ->
+      @_collectionEndpoints.deleteAll collection
 
 
   ###
