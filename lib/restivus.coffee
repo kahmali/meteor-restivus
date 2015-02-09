@@ -53,7 +53,7 @@ class @Restivus
   ###*
     Add endpoints for the given HTTP methods at the given path
   ###
-  add: (path, options, methods) ->
+  addRoute: (path, options, methods) ->
     # Create a new route and add it to our list of existing routes
     route = new Route(this, path, options, methods)
     @routes.push(route)
@@ -127,8 +127,8 @@ class @Restivus
       , this
 
     # Add the routes to the API
-    @add path, defaultOptions, collectionRouteEndpoints
-    @add "#{path}/:id", defaultOptions, entityRouteEndpoints
+    @addRoute path, defaultOptions, collectionRouteEndpoints
+    @addRoute "#{path}/:id", defaultOptions, entityRouteEndpoints
 
     return
 
@@ -253,7 +253,7 @@ class @Restivus
 
       After the user is logged in, the onLoggedIn hook is called (see Restfully.configure() for adding hook).
     ###
-    @add 'login', {authRequired: false},
+    @addRoute 'login', {authRequired: false},
       post: ->
         # Grab the username or email that the user is logging in with
         user = {}
@@ -288,7 +288,7 @@ class @Restivus
 
       After the user is logged out, the onLoggedOut hook is called (see Restfully.configure() for adding hook).
     ###
-    @add 'logout', {authRequired: true},
+    @addRoute 'logout', {authRequired: true},
       get: ->
         # Remove the given auth token from the user's account
         authToken = @request.headers['x-auth-token']
