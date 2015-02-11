@@ -157,23 +157,56 @@ if(Meteor.isServer) {
 ## Configuration Options
 
 The following configuration options are available with `Restivus.configure`:
-- `useAuth`
+- `apiPath`  _String_
+  - Default: `'api/'`
+  - The base path for your API. If you use `'api'` and add a route called `'users'`, the URL will be
+    `https://yoursite.com/api/users/`.
+- `useAuth`  _Boolean_
   - Default: `false`
   - If true, `POST /login` and `GET /logout` endpoints are added to the API. You can access
     `this.user` and `this.userId` in [authenticated](#authenticating) endpoints.
-- `apiPath`
-  - Default: `'api'`
-  - The base path for your API. If you use 'api' and add a route called 'users', the URL will be
-    `https://yoursite.com/api/users/`.
-- `prettyJson`
+- `auth`  _Object_
+  - `token`  _String_
+    - Default: `'services.resume.loginTokens.token'`
+    - The path to the auth token in the `Meteor.user` document. This location will be checked for a
+      matching token if one is returned in `auth.user()`.
+  - `user`  _Function_
+    - Default: Get user ID and auth token from `X-User-Id` and `X-Auth-Token` headers
+        ```javascript
+        function() {
+          return {
+            userId: this.request.headers['x-user-id'],
+            token: this.request.headers['x-auth-token']
+          };
+        }
+        ```
+        
+    - Provides one of two levels of authentication, depending on the data returned. The context
+      within this function is the [endpoint context](#endpoint-context) without `this.user` and
+      `this.userId` (well, that's what we're working on here!). Once the user authentication
+      completes successfully, the authenticated user and their ID will be attached to the [endpoint
+      context](#endpoint-context). The two levels of custom authentication and their required return
+      data are:
+      - Partial auth
+        - `userId`: The ID of the user being authenticated
+        - `token`: The auth token to be verified
+        - If both a `userId` and `token` are returned, authentication will succeed if the `token`
+          exists in the given `Meteor.user` document at the location specified in `auth.token`
+      - Complete auth
+        - `user`: The fully authenticated `Meteor.user`
+        - This is your chance to completely override the user authentication process. If a `user` is
+          returned, any `userId` and `token` will be ignored, as it's assumed that you have already
+          successfully authenticated the user (by whatever means you deem necessary). The given user
+          is simply attached to the [endpoint context](#endpoint-context), no questions asked.
+- `prettyJson`  _Boolean_
   - Default: `false`
   - If true, render formatted JSON in response.
-- `onLoggedIn`
+- `onLoggedIn`  _Function_
   - Default: `undefined`
   - A hook that runs once a user has been successfully logged into their account via the `/login`
     endpoint. [Context](#endpoint-context) is the same as within authenticated endpoints. Any
     returned data will be added to the response body as `data.extra` (coming soon).
-- `onLoggedOut`
+- `onLoggedOut`  _Function_
   - Default: `undefined`
   - Same as onLoggedIn, but runs once a user has been successfully logged out of their account via
     the `/logout` endpoint. [Context](#endpoint-context) is the same as within authenticated
@@ -369,8 +402,8 @@ Each endpoint has access to:
   - The authenticated `Meteor.user`. Only available if `useAuth` and
     `authRequired` are both `true`. If not, it will be `undefined`.
 - `this.userId`
-  - The authenticated user's `Meteor.userId`. Only available if `useAuth` and `authRequired` are both `true`. If
-    not, it will be `undefined`.
+  - The authenticated user's `Meteor.userId`. Only available if `useAuth` and `authRequired` are
+    both `true`. If not, it will be `undefined`.
 - `this.urlParams`
   - Non-optional parameters extracted from the URL. A parameter `id` on the path `posts/:id` would
     be available as `this.urlParams.id`.

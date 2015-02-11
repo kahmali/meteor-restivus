@@ -1,5 +1,20 @@
 # Change Log
 
+## Unreleased
+
+#### Added
+- The following options have been added in `Restivus.configure()` to allow for custom user
+  authentication on endpoints (see [Configuration Options] for a much more detailed breakdown):
+    - `auth.token`: The path to the auth token in the `Meteor.user` document
+    - `auth.user`: A function providing one of two levels of authentication, depending on the data
+      it returns. Once the user authentication completes successfully, the authenticated user and
+      their ID will be attached to the [endpoint context].
+
+#### Updated
+- README
+  - Add `auth.token` and `auth.user` to [Configuration Options]
+
+
 ## [v0.5.7] - 2015-02-02
 
 #### Fixed

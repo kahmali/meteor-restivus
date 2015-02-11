@@ -8,6 +8,11 @@ class @Restivus
       apiPath: 'api/'
       version: 1
       prettyJson: false
+      auth:
+        token: 'services.resume.loginTokens.token'
+        user: ->
+          userId: @request.headers['x-user-id']
+          token: @request.headers['x-auth-token']
       onLoggedIn: -> {}
       onLoggedOut: -> {}
     @configured = false

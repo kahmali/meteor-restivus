@@ -112,7 +112,6 @@ class @Route
   ###
     Authenticate an endpoint if required, and return the result of calling it
 
-    @context: IronRouter.Router.route()
     @returns The endpoint response or a 401 if authentication fails
   ###
   _callEndpoint: (endpointContext, endpoint) ->
@@ -135,7 +134,6 @@ class @Route
     endpoints. If required on an entire endpoint, that serves as the default. If required in any individual endpoints, that
     will override the default.
 
-    @context: IronRouter.Router.route()
     @returns False if authentication fails, and true otherwise
   ###
   _authAccepted: (endpointContext, endpoint) ->
@@ -149,22 +147,23 @@ class @Route
 
     If verified, attach the authenticated user to the context.
 
-    @context: IronRouter.Router.route()
     @returns {Boolean} True if the authentication was successful
   ###
   _authenticate: (endpointContext) ->
-    # Get the auth info from header
-    userId = endpointContext.request.headers['x-user-id']
-    authToken = endpointContext.request.headers['x-auth-token']
+    # Get auth info
+    auth = @api.config.auth.user.call(endpointContext)
 
     # Get the user from the database
-    if userId and authToken
-      user = Meteor.users.findOne {'_id': userId, 'services.resume.loginTokens.token': authToken}
+    if not auth?.user and auth?.userId and auth?.token
+      userSelector = {}
+      userSelector._id = auth.userId
+      userSelector[@api.config.auth.token] = auth.token
+      auth.user = Meteor.users.findOne userSelector
 
     # Attach the user and their ID to the context if the authentication was successful
-    if user
-      endpointContext.user = user
-      endpointContext.userId = user._id
+    if auth?.user
+      endpointContext.user = auth.user
+      endpointContext.userId = auth.user._id
       true
     else false
 
@@ -185,8 +184,6 @@ class @Route
 
   ###
     Respond to an HTTP request
-
-    @context: IronRouter.Router.route()
   ###
   _respond: (endpointContext, body, statusCode=200, headers) ->
     # Allow cross-domain requests to be made from the browser
