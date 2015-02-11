@@ -1,6 +1,6 @@
 # Change Log
 
-## Unreleased
+## [v0.5.8] - 2015-02-11
 
 #### Added
 - The following options have been added in `Restivus.configure()` to allow for custom user
@@ -122,6 +122,7 @@
 
 
 
+[v0.5.8]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.7...v0.5.8 "Version 0.5.8"
 [v0.5.7]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.6...v0.5.7 "Version 0.5.7"
 [v0.5.6]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.5...v0.5.6 "Version 0.5.6"
 [v0.5.5]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.4...v0.5.5 "Version 0.5.5"
