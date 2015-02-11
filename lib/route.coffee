@@ -16,8 +16,8 @@ class @Route
       throw new Error "Cannot add a route at an existing path: #{@path}"
 
     # Configure each endpoint on this route
-    _resolveEndpoints this
-    _configureEndpoints this
+    @_resolveEndpoints()
+    @_configureEndpoints()
 
     # Append the path to the base API path
     fullPath = @api.config.apiPath + @path
@@ -35,15 +35,15 @@ class @Route
         # Respond to the requested HTTP method if an endpoint has been provided for it
         method = @request.method
         if method is 'GET' and self.endpoints.get
-          responseData = _callEndpoint.call(this, self, self.endpoints.get)
+          responseData = self._callEndpoint this, self.endpoints.get
         else if method is 'POST' and self.endpoints.post
-          responseData = _callEndpoint.call(this, self, self.endpoints.post)
+          responseData = self._callEndpoint this, self.endpoints.post
         else if method is 'PUT' and self.endpoints.put
-          responseData = _callEndpoint.call(this, self, self.endpoints.put)
+          responseData = self._callEndpoint this, self.endpoints.put
         else if method is 'PATCH' and self.endpoints.patch
-          responseData = _callEndpoint.call(this, self, self.endpoints.patch)
+          responseData = self._callEndpoint this, self.endpoints.patch
         else if method is 'DELETE' and self.endpoints.delete
-          responseData = _callEndpoint.call(this, self, self.endpoints.delete)
+          responseData = self._callEndpoint this, self.endpoints.delete
         else
           responseData = {statusCode: 404, body: {success: false, message:'API endpoint not found'}}
 
@@ -51,9 +51,9 @@ class @Route
         if responseData.body and (responseData.statusCode or responseData.headers)
           responseData.statusCode or= 200
           responseData.headers or= {'Content-Type': 'text/json'}
-          _respond.call this, self, responseData.body, responseData.statusCode, responseData.headers
+          self._respond this, responseData.body, responseData.statusCode, responseData.headers
         else
-          _respond.call this, self, responseData
+          self._respond this, responseData
 
     # Add the path to our list of existing paths
     @api.config.paths.push @path
@@ -64,8 +64,8 @@ class @Route
 
     @param {Route} route The route the endpoints belong to
   ###
-  _resolveEndpoints = (route) ->
-    _.each route.endpoints, (endpoint, method, endpoints) ->
+  _resolveEndpoints: ->
+    _.each @endpoints, (endpoint, method, endpoints) ->
       if _.isFunction(endpoint)
         endpoints[method] = {action: endpoint}
     return
@@ -84,27 +84,28 @@ class @Route
     @param {Route} route The route the endpoints belong to
     @param {Endpoint} endpoint The endpoint to configure
   ###
-  _configureEndpoints = (route) ->
-    _.each route.endpoints, (endpoint) ->
+  _configureEndpoints: ->
+    _.each @endpoints, (endpoint) ->
         # Configure acceptable roles
-      if not route.options?.roleRequired
-        route.options.roleRequired = []
+      if not @options?.roleRequired
+        @options.roleRequired = []
       if not endpoint.roleRequired
         endpoint.roleRequired = []
-      endpoint.roleRequired = _.union endpoint.roleRequired, route.options.roleRequired
+      endpoint.roleRequired = _.union endpoint.roleRequired, @options.roleRequired
       # Make it easier to check if no roles are required
       if _.isEmpty endpoint.roleRequired
         endpoint.roleRequired = false
 
       # Configure auth requirement
-      if not route.api.config.useAuth
+      if not @api.config.useAuth
         endpoint.authRequired = false
       else if endpoint.authRequired is undefined
-        if route.options?.authRequired or endpoint.roleRequired
+        if @options?.authRequired or endpoint.roleRequired
           endpoint.authRequired = true
         else
           endpoint.authRequired = false
-
+      return
+    , this
     return
 
 
@@ -114,11 +115,11 @@ class @Route
     @context: IronRouter.Router.route()
     @returns The endpoint response or a 401 if authentication fails
   ###
-  _callEndpoint = (route, endpoint) ->
+  _callEndpoint: (endpointContext, endpoint) ->
     # Call the endpoint if authentication doesn't fail
-    if _authAccepted.call this, route, endpoint
-      if _roleAccepted.call this, route, endpoint
-        endpoint.action.call this
+    if @_authAccepted endpointContext, endpoint
+      if @_roleAccepted endpointContext, endpoint
+        endpoint.action.call endpointContext
       else
         statusCode: 401
         body: {success: false, message: "You do not have permission to do this."}
@@ -137,9 +138,9 @@ class @Route
     @context: IronRouter.Router.route()
     @returns False if authentication fails, and true otherwise
   ###
-  _authAccepted = (route, endpoint) ->
+  _authAccepted: (endpointContext, endpoint) ->
     if endpoint.authRequired
-      _authenticate.call this, route
+      @_authenticate endpointContext
     else true
 
 
@@ -151,10 +152,10 @@ class @Route
     @context: IronRouter.Router.route()
     @returns {Boolean} True if the authentication was successful
   ###
-  _authenticate = ->
+  _authenticate: (endpointContext) ->
     # Get the auth info from header
-    userId = @request.headers['x-user-id']
-    authToken = @request.headers['x-auth-token']
+    userId = endpointContext.request.headers['x-user-id']
+    authToken = endpointContext.request.headers['x-auth-token']
 
     # Get the user from the database
     if userId and authToken
@@ -162,8 +163,8 @@ class @Route
 
     # Attach the user and their ID to the context if the authentication was successful
     if user
-      @user = user
-      @userId = user._id
+      endpointContext.user = user
+      endpointContext.userId = user._id
       true
     else false
 
@@ -173,12 +174,11 @@ class @Route
 
     Must be called after _authAccepted().
 
-    @context: IronRouter.Router.route() (after authentication)
     @returns True if the authenticated user belongs to <i>any</i> of the acceptable roles on the endpoint
   ###
-  _roleAccepted = (route, endpoint) ->
+  _roleAccepted: (endpointContext, endpoint) ->
     if endpoint.roleRequired
-      if _.isEmpty _.intersection(endpoint.roleRequired, @user.roles)
+      if _.isEmpty _.intersection(endpoint.roleRequired, endpointContext.user.roles)
         return false
     true
 
@@ -188,21 +188,21 @@ class @Route
 
     @context: IronRouter.Router.route()
   ###
-  _respond = (route, body, statusCode=200, headers) ->
+  _respond: (endpointContext, body, statusCode=200, headers) ->
     # Allow cross-domain requests to be made from the browser
-    @response.setHeader 'Access-Control-Allow-Origin', '*'
+    endpointContext.response.setHeader 'Access-Control-Allow-Origin', '*'
 
     # Ensure that a content type is set (will be overridden if also included in given headers)
     # TODO: Consider enforcing a text/json-only content type (override any user-defined content-type)
-    @response.setHeader 'Content-Type', 'text/json'
+    endpointContext.response.setHeader 'Content-Type', 'text/json'
 
     # Prettify JSON if configured in API
-    if route.api.config.prettyJson
+    if @api.config.prettyJson
       bodyAsJson = JSON.stringify body, undefined, 2
     else
       bodyAsJson = JSON.stringify body
 
     # Send response
-    @response.writeHead statusCode, headers
-    @response.write bodyAsJson
-    @response.end()
+    endpointContext.response.writeHead statusCode, headers
+    endpointContext.response.write bodyAsJson
+    endpointContext.response.end()
