@@ -44,6 +44,8 @@ class @Route
           responseData = self._callEndpoint this, self.endpoints.patch
         else if method is 'DELETE' and self.endpoints.delete
           responseData = self._callEndpoint this, self.endpoints.delete
+        else if method is 'OPTIONS' and self.endpoints.options
+          responseData = self._callEndpoint this, self.endpoints.options
         else
           responseData = {statusCode: 404, body: {success: false, message:'API endpoint not found'}}
 
