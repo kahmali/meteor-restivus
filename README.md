@@ -326,8 +326,9 @@ defined in Restivus:
 - `get`
 - `post`
 - `put`
-- `delete`
 - `patch`
+- `delete`
+- `options`
 
 These endpoints can be defined one of two ways. First, you can simply provide a function for each
 method you want to support at the given path. The corresponding endpoint will be executed when that
@@ -368,6 +369,8 @@ Restivus.add 'posts', {authRequired: true},
     # PATCH api/posts
   delete: ->
     # DELETE api/posts
+  options: ->
+    # OPTIONS api/posts
 ```
 
 ###### JavaScript
@@ -390,6 +393,9 @@ Restivus.add('posts', {authRequired: true}, {
   },
   delete: function () {
     // DELETE api/posts
+  },
+  options: function () {
+    // OPTIONS api/posts
   }
 ```
 In the above examples, all the endpoints except the GETs will require

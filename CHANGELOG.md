@@ -1,5 +1,16 @@
 # Change Log
 
+## Unreleased
+
+#### Added
+- Allow user-defined OPTIONS endpoints on routes
+
+#### Updated
+- README
+  - Show support for OPTIONS endpoints in description and code examples in the
+    [Defining Endpoints] section of README
+
+
 ## [v0.5.8] - 2015-02-11
 
 #### Added
