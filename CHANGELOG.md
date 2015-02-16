@@ -1,6 +1,6 @@
 # Change Log
 
-## Unreleased
+## [v0.5.9] - 2015-02-16
 
 #### Added
 - Allow user-defined OPTIONS endpoints on routes
@@ -133,6 +133,7 @@
 
 
 
+[v0.5.9]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.8...v0.5.9 "Version 0.5.9"
 [v0.5.8]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.7...v0.5.8 "Version 0.5.8"
 [v0.5.7]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.6...v0.5.7 "Version 0.5.7"
 [v0.5.6]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.5...v0.5.6 "Version 0.5.6"
