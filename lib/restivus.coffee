@@ -83,10 +83,9 @@ class @Restivus
     methodsOnCollection = ['post', 'getAll', 'deleteAll']
 
     # Flatten the options and set defaults if necessary
-    configurableEndpoints = options.endpoints
-    defaultOptions = options.default or {}
-    blacklist = options.blacklist or []
-
+    endpointsAwaitingConfiguration = options.endpoints
+    routeOptions = options.routeOptions or {}
+    excludedEndpoints = options.excludedEndpoints or []
     # Use collection name as default path
     path = options.path or name
 
@@ -94,7 +93,7 @@ class @Restivus
     # for operating on a single entity within the collection)
     collectionRouteEndpoints = {}
     entityRouteEndpoints = {}
-    if not configurableEndpoints  # Generate all endpoints on this collection
+    if not endpointsAwaitingConfiguration  # Generate all endpoints on this collection
       # Partition the endpoints into their respective routes
       _.each methods, (method) ->
         if method in methodsOnCollection
@@ -103,15 +102,12 @@ class @Restivus
         return
       , this
     else
-      # Generate any endpoints that haven't been explicitly blacklisted
+      # Generate any endpoints that haven't been explicitly excluded
       _.each methods, (method) ->
-        if method not in blacklist and configurableEndpoints[method] isnt false
-          # Set endpoint-specific options if provided
-          endpointOptions = _.clone defaultOptions
-          if configurableEndpoints[method]
-            _.extend endpointOptions, configurableEndpoints[method]
+        if method not in excludedEndpoints and endpointsAwaitingConfiguration[method] isnt false
           # Configure endpoint and map to it's http method
           # TODO: Consider predefining a map of methods to their http method type (e.g., deleteAll: delete)
+          endpointOptions = endpointsAwaitingConfiguration[method]
           configuredEndpoint = {}
           _.each collectionEndpoints[method].call(this, collection), (action, methodType) ->
             configuredEndpoint[methodType] =
@@ -127,8 +123,8 @@ class @Restivus
       , this
 
     # Add the routes to the API
-    @addRoute path, defaultOptions, collectionRouteEndpoints
-    @addRoute "#{path}/:id", defaultOptions, entityRouteEndpoints
+    @addRoute path, routeOptions, collectionRouteEndpoints
+    @addRoute "#{path}/:id", routeOptions, entityRouteEndpoints
 
     return
 
@@ -186,7 +182,7 @@ class @Restivus
     deleteAll: (collection) ->
       delete:
         action: ->
-          itemsRemoved = collection.remove()
+          itemsRemoved = collection.remove({})
           if itemsRemoved
             {status: "success", data: message: "Removed #{itemsRemoved} items"}
           else
@@ -218,7 +214,13 @@ class @Restivus
             statusCode: 404
             body: {status: "fail", message: "User not found"}
     delete: (collection) ->
-      @_collectionEndpoints.delete collection
+      delete:
+        action: ->
+          if collection.remove @urlParams.id
+            {status: "success", data: message: "User removed"}
+          else
+            statusCode: 404
+            body: {status: "fail", message: "User not found"}
     post: (collection) ->
       post:
         action: ->
@@ -240,7 +242,14 @@ class @Restivus
             statusCode: 404
             body: {status: "fail", message: "Unable to retrieve users"}
     deleteAll: (collection) ->
-      @_collectionEndpoints.deleteAll collection
+      delete:
+        action: ->
+          usersRemoved = collection.remove({})
+          if usersRemoved
+            {status: "success", data: message: "Removed #{usersRemoved} users"}
+          else
+            statusCode: 404
+            body: {status: "fail", message: "No users found"}
 
 
   ###
@@ -266,7 +275,9 @@ class @Restivus
         try
           auth = Auth.loginWithPassword user, @bodyParams.password
         catch e
-          return [e.error, {success: false, message: e.reason}]
+          return {} =
+            statusCode: e.error
+            body: status: "error", message: e.reason
 
         # Get the authenticated user
         # TODO: Consider returning the user in Auth.loginWithPassword(), instead of fetching it again here
@@ -280,8 +291,7 @@ class @Restivus
         # Call the login hook with the authenticated user attached
         self.config.onLoggedIn.call this
 
-        auth.success = true
-        auth
+        {status: "success", data: auth}
 
     ###
       Add a logout endpoint to the API
@@ -298,6 +308,6 @@ class @Restivus
         # Call the logout hook with the logged out user attached
         self.config.onLoggedOut.call this
 
-        {success: true, message: 'You\'ve been logged out!'}
+        {status: "success", data: message: 'You\'ve been logged out!'}
 
 Restivus = new @Restivus

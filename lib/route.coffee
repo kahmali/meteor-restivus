@@ -47,7 +47,7 @@ class @Route
         else if method is 'OPTIONS' and self.endpoints.options
           responseData = self._callEndpoint this, self.endpoints.options
         else
-          responseData = {statusCode: 404, body: {success: false, message:'API endpoint not found'}}
+          responseData = {statusCode: 404, body: {status: "error", message:'API endpoint not found'}}
 
         # Generate and return the http response, handling the different endpoint response types
         if responseData.body and (responseData.statusCode or responseData.headers)
@@ -123,10 +123,10 @@ class @Route
         endpoint.action.call endpointContext
       else
         statusCode: 401
-        body: {success: false, message: "You do not have permission to do this."}
+        body: {status: "error", message: "You do not have permission to do this."}
     else
       statusCode: 401
-      body: {success: false, message: "You must be logged in to do this."}
+      body: {status: "error", message: "You must be logged in to do this."}
 
 
   ###
