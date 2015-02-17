@@ -1,6 +1,6 @@
 Package.describe({
   name: 'nimble:restivus',
-  summary: 'REST APIs for the Best of Us! - Create RESTful APIs in Meteor 0.9.0+',
+  summary: 'Create authenticated REST APIs in Meteor 0.9.0+. Setup CRUD endpoints for Collections.',
   version: '0.5.9',
   git: 'https://github.com/kahmali/meteor-restivus.git'
 });
@@ -18,7 +18,7 @@ Package.onUse(function (api) {
 
   // Package files
   api.addFiles('lib/restivus.coffee', 'server');
-  api.addFiles('lib/route.coffee', 'server');
+  api.addFiles('lib/route.coffee', 'server')
   api.addFiles('lib/auth.coffee', 'server');
 
   // Export Restfully
