@@ -1,6 +1,6 @@
 # Change Log
 
-## [v0.6.0] - Unreleased
+## [v0.6.0] - 2015-02-17
 **_WARNING!_ API-breaking changes! Please be aware when upgrading!**
 
 #### Added
@@ -19,8 +19,6 @@
   - Add "Terminology" section to the README for clarification on a few key terms that are heavily
     used throughout the docs
   - Add section on upgrading from v0.5.x
-
-
 
 
 ## [v0.5.9] - 2015-02-16
@@ -156,6 +154,7 @@
 
 
 
+[v0.6.0]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.9...v0.6.0 "Version 0.6.0"
 [v0.5.9]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.8...v0.5.9 "Version 0.5.9"
 [v0.5.8]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.7...v0.5.8 "Version 0.5.8"
 [v0.5.7]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.6...v0.5.7 "Version 0.5.7"
