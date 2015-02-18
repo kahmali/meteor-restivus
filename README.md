@@ -155,7 +155,7 @@ if(Meteor.isServer) {
         roleRequired: 'admin',
         action: function () {
           if (Posts.remove(this.urlParams.id)) {
-            return {status: "success", data: message: "Item removed"};
+            return {status: "success", data: {message: "Item removed"}};
           }
           return {
             statusCode: 404,
