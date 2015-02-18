@@ -1,13 +1,15 @@
 # Restivus
 #### REST APIs for the Best of Us!
 
-Restivus makes building REST APIs in Meteor 0.9.0+ an absolute breeze. The package is inspired by
-[RestStop2][reststop2-docs] and uses [Iron Router][iron-router]'s server-side routing to provide:
+Restivus makes building REST APIs in Meteor 0.9.0+ easier than ever before! The package is inspired
+by [RestStop2][reststop2-docs] and [Collection API](https://github.com/crazytoad/meteor-collectionapi),
+and is built on top of [Iron Router][iron-router]'s server-side routing to provide:
 - A simple interface for creating REST APIs
 - **NEW!** Ridiculously easy setup of CRUD endpoints for Mongo Collections
 - User authentication via the API
   - Optional login and logout endpoints
   - Access to `this.user` in authenticated endpoints
+  - Custom authentication if needed
 - Role permissions for limiting access to specific endpoints
   - Works alongside the [`alanning:roles`][alanning-roles] package - Meteor's accepted role
     permission package
@@ -65,7 +67,7 @@ if Meteor.isServer
     # Maps to: /api/posts/:id
     Restivus.addRoute 'posts/:id', authRequired: true,
       get: ->
-        post = Posts.findOne @urlParams
+        post = Posts.findOne @urlParams.id
         if post
           status: 'success', data: post
         else
@@ -74,8 +76,7 @@ if Meteor.isServer
       post:
         roleRequired: ['author', 'admin']
         action: ->
-          postId = Posts.insert @bodyParams
-          post = Posts.findOne postId
+          post = Posts.findOne @urlParams.id
           if post
             status: "success", data: post
           else
@@ -128,45 +129,38 @@ if(Meteor.isServer) {
     // Maps to: /api/posts/:id
     Restivus.addRoute('posts/:id', {authRequired: true}, {
       get: function () {
-        var post = Posts.findOne(this.urlParams);
+        var post = Posts.findOne(this.urlParams.id);
         if (post) {
           return {status: 'success', data: post};
         }
-        else {
-          return {
-            statusCode: 404,
-            body: {status: 'fail', message: 'Post not found'}
-          }
-        }
+        return {
+          statusCode: 404,
+          body: {status: 'fail', message: 'Post not found'}
+        };
       },
       post: {
         roleRequired: ['author', 'admin'],
         action: function () {
-          var postId = Posts.insert(this.bodyParams);
-          var post = Posts.findOne(postId);
+          var post = Posts.findOne(this.urlParams.id);
           if (post) {
-            return {status: "success", data: post}
+            return {status: "success", data: post};
           }
-          else {
-            return {
-              statusCode: 400,
-              body: {status: "fail", message: "Unable to add post"}
-            }
-          }
+          return {
+            statusCode: 400,
+            body: {status: "fail", message: "Unable to add post"}
+          };
         }
       },
       delete: {
         roleRequired: 'admin',
         action: function () {
           if (Posts.remove(this.urlParams.id)) {
-            return {status: "success", data: message: "Item removed"}
+            return {status: "success", data: message: "Item removed"};
           }
-          else {
-            return {
-              statusCode: 404,
-              body: {status: "fail", message: "Item not found"}
-            }
-          }
+          return {
+            statusCode: 404,
+            body: {status: "fail", message: "Item not found"}
+          };
         }
       }
     });
