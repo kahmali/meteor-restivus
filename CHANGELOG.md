@@ -1,6 +1,6 @@
 # Change Log
 
-## Unreleased
+## [v0.6.1] - 2015-02-19
 **_WARNING!_ API-breaking changes! Please be aware when upgrading!**
 
 #### Fixed
@@ -167,6 +167,7 @@
 
 
 
+[v0.6.1]:  https://github.com/kahmali/meteor-restivus/compare/v0.6.0...v0.6.1 "Version 0.6.1"
 [v0.6.0]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.9...v0.6.0 "Version 0.6.0"
 [v0.5.9]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.8...v0.5.9 "Version 0.5.9"
 [v0.5.8]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.7...v0.5.8 "Version 0.5.8"
