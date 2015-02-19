@@ -1,6 +1,19 @@
 # Change Log
 
+## Unreleased
+**_WARNING!_ API-breaking changes! Please be aware when upgrading!**
+
+#### Fixed
+- Allow existing collections to be added to API
+  - v0.6.0 did not allow you to work with existing collections, or access collections created in
+    Restivus elsewhere in your app, which is not the intended behavior. Since Meteor expects you to
+    construct each collection only once (using `new Mongo.Collection()`), and store that globally,
+    Restivus now requires that you pass an existing collection in `Restivus.addCollection()`,
+    in place of the name.
+
+
 ## [v0.6.0] - 2015-02-17
+**_WARNING!_ Do not use v0.6.0! Please upgrade to v0.6.1 or above.**
 **_WARNING!_ API-breaking changes! Please be aware when upgrading!**
 
 #### Added

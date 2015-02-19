@@ -66,28 +66,22 @@ class @Restivus
   ###*
     Generate routes for the Meteor Collection with the given name
   ###
-  addCollection: (name, options) ->
-    # Get the collection from the db
-    if name.toLowerCase() is 'users'
-      @_addCollection @_userCollectionEndpoints, Meteor.users, name, options
-    else
-      @_addCollection @_collectionEndpoints, new Mongo.Collection(name), name, options
-    return
-
-
-  ###*
-    Generate routes for the Meteor Collection with the given name
-  ###
-  _addCollection: (collectionEndpoints, collection, name, options = {}) ->
+  addCollection: (collection, options={}) ->
     methods = ['get', 'post', 'put', 'delete', 'getAll', 'deleteAll']
     methodsOnCollection = ['post', 'getAll', 'deleteAll']
+
+    # Grab the set of endpoints
+    if collection is Meteor.users
+      collectionEndpoints = @_userCollectionEndpoints
+    else
+      collectionEndpoints = @_collectionEndpoints
 
     # Flatten the options and set defaults if necessary
     endpointsAwaitingConfiguration = options.endpoints
     routeOptions = options.routeOptions or {}
     excludedEndpoints = options.excludedEndpoints or []
     # Use collection name as default path
-    path = options.path or name
+    path = options.path or collection._name
 
     # Separate the requested endpoints by the route they belong to (one for operating on the entire collection and one
     # for operating on a single entity within the collection)

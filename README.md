@@ -38,6 +38,8 @@ And update Restivus to the latest version:
 
 ###### CoffeeScript:
 ```coffeescript
+Items = new Mongo.Collection 'items'
+
 if Meteor.isServer
 
   # API must be configured and built after startup!
@@ -49,12 +51,12 @@ if Meteor.isServer
       prettyJson: true
 
     # Generates: GET, POST, DELETE on /api/items and GET, PUT, DELETE on
-    # /api/items/:id for "Items" collection
-    Restivus.addCollection "Items"
+    # /api/items/:id for Items collection
+    Restivus.addCollection Items
 
     # Generates: GET, POST on /api/users and GET, DELETE /api/users/:id for
     # Meteor.users collection
-    Restivus.addCollection 'Users',
+    Restivus.addCollection Meteor.users
       excludedEndpoints: ['deleteAll', 'put']
       routeOptions:
         authRequired: true
@@ -94,6 +96,8 @@ if Meteor.isServer
 
 ###### JavaScript:
 ```javascript
+Items = new Mongo.Collection('items');
+
 if(Meteor.isServer) {
 
   // API must be configured and built after startup!
@@ -106,14 +110,14 @@ if(Meteor.isServer) {
     });
 
     // Generates: GET, POST, DELETE on /api/items and GET, PUT, DELETE on
-    // /api/items/:id for "Items" collection
-    Restivus.addCollection("Items");
+    // /api/items/:id for Items collection
+    Restivus.addCollection(Items);
 
     // Generates: GET, POST on /api/users and GET, DELETE /api/users/:id for
     // Meteor.users collection
-    Restivus.addCollection('Users', {
+    Restivus.addCollection(Meteor.users, {
       excludedEndpoints: ['deleteAll', 'put'],
-      defaultOptions: {
+      routeOptions: {
         authRequired: true
       },
       endpoints: {
@@ -171,11 +175,12 @@ if(Meteor.isServer) {
 ## Table of Contents
 
 - [Upgrading from 0.5.x](#upgrading-from-05x)
+- [Upgrading from 0.6.0](#upgrading-from-060)
 - [Terminology](#terminology)
 - [Writing a Restivus API](#writing-a-restivus-api)
   - [Configuration Options](#configuration-options)
   - [Defining Collection Routes](#defining-collection-routes)
-    - [Collection Name](#collection-name)
+    - [Collection](#collection)
     - [Collection Options](#collection-options)
       - [Route Configuration](#route-configuration)
       - [Endpoint Configuration](#endpoint-configuration)
@@ -195,7 +200,7 @@ if(Meteor.isServer) {
 
 ## Upgrading from 0.5.x
 
-Restivus v0.6.0 brings support for easily generating REST endpoints for your Mongo Collections, and
+Restivus v0.6.1 brings support for easily generating REST endpoints for your Mongo Collections, and
 with that comes a few API-breaking changes:
 
 - The `Restivus.add()` method has been changed to `Restivus.addRoute()` for clarity, now that the
@@ -208,6 +213,17 @@ with that comes a few API-breaking changes:
 
 Please see the [change log][restivus-change-log] for more information about the changes between each
 version.
+
+## Upgrading from 0.6.0
+
+**_WARNING!_ Do not use v0.6.0! Please upgrade to v0.6.1 or above.**
+
+v0.6.0 does not allow you to work with existing collections, or access collections created in
+Restivus elsewhere in your app, which is not the intended behavior. Since Meteor expects you to
+construct each collection only once (using `new Mongo.Collection()`), and store that globally,
+Restivus now requires that you pass an existing collection in `Restivus.addCollection()`. Please
+check out the updated section on [defining collection routes](#defining-collection-routes) for a
+detailed breakdown of the parameters to `Restivus.addCollection()`.
 
 ## Terminology
 
@@ -327,14 +343,12 @@ Well, you're in luck, because this is almost _too easy_ with Restivus! All avail
 - Operations on a single entity within the collection
 - `GET`, `PUT`, and `DELETE`
 
-A new collection will be created if one does not exist.
+### Collection
 
-### Collection Name
-
-The first - and only required - parameter of `Restivus.addCollection()` is a **case-sensitive**
-string matching the name of the collection. So if the collection was created using
-`new Mongo.Collection('Items')`, its REST endpoints can be generated using
-`Restivus.addCollection('Items')`.
+The first - and only required - parameter of `Restivus.addCollection()` is a Mongo Collection.
+Please check out the [Meteor docs](http://docs.meteor.com/#/full/collections) for more on creating
+collections. The `Meteor.users` collection will have [special endpoints]
+(#users-collection-endpoints) generated.
 
 ### Collection Options
 
@@ -343,12 +357,13 @@ optional parameter).
 
 #### Route Configuration
 
-All the top level properties of the options apply to both routes that will be generated
+The top level properties of the options apply to both routes that will be generated
 (`/api/<collection>` and `/api/<collection>/:id`):
 
 ##### `path`
 - _String_
-- Default: Name of the collection (passed in as 1st parameter)
+- Default: Name of the collection (the name passed to `new Mongo.Collection()`, or `'users'` for
+  `Meteor.users`)
 - The base path for the generated routes. Given a path `'other-path'`, routes will be generated at
   `'api/other-path'` and `'api/other-path/:id'`
 
@@ -556,19 +571,18 @@ Response:
 
 ### Users Collection Endpoints
 
-A few special exceptions have been made for the Meteor.users collection. Any collection route added
-with the name `"Users"` or any capitalization of that will access Meteor.users as its underlying
-collection. For now, the majority of the operations are limited to read access to the `user._id` and
-read/write access to the `user.profile`. All route and endpoint options are identical to those
-described for all other collections above. No options have been configured in the examples below;
-however, it is highly recommended that role permissions be setup (or at the absolute least,
-authentication required) for the `delete` and `deleteAll` endpoints. Below are sample requests and
-responses for the users collection.
+A few special exceptions have been made for routes added for the `Meteor.users` collection. For now,
+the majority of the operations are limited to read access to the `user._id` and read/write access to
+the `user.profile`. All route and endpoint options are identical to those described for all other
+collections above. No options have been configured in the examples below; however, it is highly
+recommended that role permissions be setup (or at the absolute least, authentication required) for
+the `delete` and `deleteAll` endpoints. Below are sample requests and responses for the users
+collection.
 
 Create collection:
 ```coffeescript
 if Meteor.startup ->
-  Restivus.addCollection 'Users'
+  Restivus.addCollection Meteor.users
 ```
 
 #### `post`
