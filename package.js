@@ -31,8 +31,8 @@ Package.onTest(function (api) {
   api.use('test-helpers');
   api.use('nimble:restivus');
   api.use('http');
-  api.use('coffeescript')
-  api.use('peterellisjones:describe')
+  api.use('coffeescript');
+  api.use('peterellisjones:describe');
 
   api.addFiles('test/route_tests.coffee');
   api.addFiles('test/api_tests.coffee');
