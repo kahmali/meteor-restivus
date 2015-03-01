@@ -23,7 +23,7 @@ class @Restivus
 
     Must be called exactly once, from anywhere on the server.
   ###
-  configure: (config) ->
+  configure: (config) =>
     if @configured
       throw new Error 'Restivus.configure() can only be called once'
 
