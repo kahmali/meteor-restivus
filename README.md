@@ -56,7 +56,7 @@ if Meteor.isServer
 
     # Generates: GET, POST on /api/users and GET, DELETE /api/users/:id for
     # Meteor.users collection
-    Restivus.addCollection Meteor.users
+    Restivus.addCollection Meteor.users,
       excludedEndpoints: ['deleteAll', 'put']
       routeOptions:
         authRequired: true
