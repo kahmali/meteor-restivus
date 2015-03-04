@@ -1,5 +1,18 @@
 # Change Log
 
+## Unreleased
+
+#### Fixed
+- Issue #14: Prevent endpoints from being generated for any `excludedEndpoints` configured on
+  collection routes (previously generated when no options were configured for any `endpoints`).
+- Restivus.configure() is now bound to the Restivus object context
+
+#### Added
+- Basic set of Tinytests for testing configuration of an API and any of its routes
+- Tests for Issue #14
+- Support for Travis CI (build still failing although tests pass locally)
+
+
 ## [v0.6.1] - 2015-02-19
 **_WARNING!_ API-breaking changes! Please be aware when upgrading!**
 
@@ -103,8 +116,8 @@
 ## [v0.5.4] - 2015-01-27
 
 #### Fixed
-- Issue #1: The default api path ('api/') is used if no apiPath is provided in Restivus.configure() (would
-  previously crash Meteor).
+- Issue #1: The default api path ('api/') is used if no apiPath is provided in Restivus.configure()
+  (would previously crash Meteor).
 - Only a `config.apiPath` that is missing the trailing '/' will have it appended during API
   configuration
 
@@ -158,7 +171,8 @@
   - Make it more readable in plain-text format
 - Terminology (in code, comments, and README)
   - `Method`: The type of HTTP request (e.g., GET, PUT, POST, etc.)
-  - `Endpoint`: The function executed when a request is made at a given path for a specific HTTP method
+  - `Endpoint`: The function executed when a request is made at a given path for a specific HTTP
+    method
   - `Route`: A path and a set of endpoints
 
 
