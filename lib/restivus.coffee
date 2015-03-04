@@ -77,7 +77,7 @@ class @Restivus
       collectionEndpoints = @_collectionEndpoints
 
     # Flatten the options and set defaults if necessary
-    endpointsAwaitingConfiguration = options.endpoints
+    endpointsAwaitingConfiguration = options.endpoints or {}
     routeOptions = options.routeOptions or {}
     excludedEndpoints = options.excludedEndpoints or []
     # Use collection name as default path
@@ -87,9 +87,10 @@ class @Restivus
     # for operating on a single entity within the collection)
     collectionRouteEndpoints = {}
     entityRouteEndpoints = {}
-    if not endpointsAwaitingConfiguration  # Generate all endpoints on this collection
-      # Partition the endpoints into their respective routes
+    if _.isEmpty(endpointsAwaitingConfiguration) and _.isEmpty(excludedEndpoints)
+      # Generate all endpoints on this collection
       _.each methods, (method) ->
+        # Partition the endpoints into their respective routes
         if method in methodsOnCollection
           _.extend collectionRouteEndpoints, collectionEndpoints[method].call(this, collection)
         else _.extend entityRouteEndpoints, collectionEndpoints[method].call(this, collection)

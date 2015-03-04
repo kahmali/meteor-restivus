@@ -44,13 +44,11 @@ if Meteor.isServer
           Restivus.configure
             apiPath: 'api/v1'
             useAuth: true
-            prettyJson: true
             auth: token: 'apiKey'
 
           config = Restivus.config
           test.equal config.apiPath, 'api/v1/'
           test.equal config.useAuth, true
-          test.equal config.prettyJson, true
           test.equal config.auth.token, 'apiKey'
 
       context 'that has been configured', ->
@@ -68,6 +66,34 @@ if Meteor.isServer
           test.equal route.endpoints.get.action(), 2
           test.isTrue route.endpoints.get.authRequired
           test.equal route.endpoints.get.roleRequired, ['admin']
+
+    describe 'A collection route', ->
+      it 'should be able to exclude endpoints using just the excludedEndpoints option', (test, next) ->
+        Restivus.addCollection new Mongo.Collection('tests2'),
+          excludedEndpoints: ['get', 'getAll']
+#          endpoints:
+#            post: false
+
+
+        HTTP.get 'http://localhost:3000/api/v1/tests2/10', (error, result) ->
+          response = JSON.parse result.content
+          test.isTrue error
+          test.equal result.statusCode, 404
+          test.equal response.status, 'error'
+          test.equal response.message, 'API endpoint not found'
+
+        HTTP.get 'http://localhost:3000/api/v1/tests2/', (error, result) ->
+          response = JSON.parse result.content
+          test.isTrue error
+          test.equal result.statusCode, 404
+          test.equal response.status, 'error'
+          test.equal response.message, 'API endpoint not found'
+          next()
+
+#    describe 'A route', ->
+#      context 'that has been authenticated', ->
+#        it 'should have access to this.user and this.userId', (test) ->
+
 
 
 
