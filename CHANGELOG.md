@@ -1,6 +1,6 @@
 # Change Log
 
-## Unreleased
+## [v0.6.2] - 2015-03-04
 
 #### Fixed
 - Issue #14: Prevent endpoints from being generated for any `excludedEndpoints` configured on
@@ -181,6 +181,7 @@
 
 
 
+[v0.6.2]:  https://github.com/kahmali/meteor-restivus/compare/v0.6.1...v0.6.2 "Version 0.6.2"
 [v0.6.1]:  https://github.com/kahmali/meteor-restivus/compare/v0.6.0...v0.6.1 "Version 0.6.1"
 [v0.6.0]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.9...v0.6.0 "Version 0.6.0"
 [v0.5.9]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.8...v0.5.9 "Version 0.5.9"
