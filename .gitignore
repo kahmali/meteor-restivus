@@ -13,3 +13,6 @@
 
 ## Dependency versions
 .versions
+
+# Mac OSX
+.DS_Store
