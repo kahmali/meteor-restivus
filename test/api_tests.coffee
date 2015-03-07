@@ -157,6 +157,19 @@ Meteor.startup ->
       test.equal result.headers['access-control-allow-origin'], 'https://mywebsite.com'
       test.isTrue result.content
 
+    it 'should have access to multiple query params', (test, next) ->
+      Restivus.addRoute 'mult-query-params',
+        get: ->
+          test.equal @queryParams.key1, '1234'
+          test.equal @queryParams.key2, 'abcd'
+          test.equal @queryParams.key3, 'a1b2'
+          true
+
+
+      HTTP.get 'http://localhost:3000/api/v1/mult-query-params?key1=1234&key2=abcd&key3=a1b2', (error, result) ->
+        test.isTrue result
+        next()
+
     it 'should cause an error when it returns null', (test, next) ->
       Restivus.addRoute 'testNullResponse',
         get: ->
