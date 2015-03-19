@@ -1021,19 +1021,26 @@ curl -d "message=Some message details" http://localhost:3000/api/posts/3/comment
 
 ## Authenticating
 
-If you have `useAuth` set to `true`, you now have a `/login` endpoint that returns a `userId` and
-`authToken`. You must save these, and include them in subsequent requests.
+If you have `useAuth` set to `true`, you now have a `POST /login` endpoint that returns a `userId`
+and `authToken`. You must save these, and include them in subsequent requests.
 
-**Note: Make absolute certain you're using HTTPS, otherwise this is insecure. In an ideal world,
+**Warning: Make absolute certain you're using HTTPS, otherwise this is insecure. In an ideal world,
 this should only be done with DDP and SRP, but, alas, this is a REST API.**
 
 ```bash
 curl -d "password=testpassword&user=test" http://localhost:3000/api/login/
 ```
 
-The response will look like this, which you must save (for subsequent requests):
+The response will look like this, which you must save (for subsequent authenticated requests):
 ```javascript
 { status: "success", data: {authToken: "f2KpRW7KeN9aPmjSZ", userId: fbdpsNf4oHiX79vMJ} }
+```
+
+You also have an authenticated `GET /logout` endpoint for logging a user out. If successful, the
+auth token that is passed in the request header will be invalidated (removed from the user account),
+so it will not work in any subsequent requests.
+```bash
+curl -H "X-Auth-Token: f2KpRW7KeN9aPmjSZ" -H "X-User-Id: fbdpsNf4oHiX79vMJ" http://localhost:3000/api/logout/
 ```
 
 ## Authenticated Calls
