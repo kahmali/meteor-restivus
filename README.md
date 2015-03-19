@@ -1021,32 +1021,32 @@ curl -d "message=Some message details" http://localhost:3000/api/posts/3/comment
 
 ## Authenticating
 
-If you have `useAuth` set to `true`, you now have a `POST /login` endpoint that returns a `userId`
-and `authToken`. You must save these, and include them in subsequent requests.
+If you have `useAuth` set to `true`, you now have a `POST /api/login` endpoint that returns a
+`userId` and `authToken`. You must save these, and include them in subsequent requests.
 
-**Warning: Make absolute certain you're using HTTPS, otherwise this is insecure. In an ideal world,
-this should only be done with DDP and SRP, but, alas, this is a REST API.**
+**Warning: Make sure you're using HTTPS, otherwise this is insecure! In an ideal world, this should
+only be done with DDP and SRP, but, alas, this is a REST API.**
 
 ```bash
-curl -d "password=testpassword&user=test" http://localhost:3000/api/login/
+curl http://localhost:3000/api/login/ -d "password=testpassword&user=test"
 ```
 
 The response will look like this, which you must save (for subsequent authenticated requests):
 ```javascript
 { status: "success", data: {authToken: "f2KpRW7KeN9aPmjSZ", userId: fbdpsNf4oHiX79vMJ} }
 ```
-
-You also have an authenticated `GET /logout` endpoint for logging a user out. If successful, the
+  
+You also have an authenticated `GET /api/logout` endpoint for logging a user out. If successful, the
 auth token that is passed in the request header will be invalidated (removed from the user account),
 so it will not work in any subsequent requests.
 ```bash
-curl -H "X-Auth-Token: f2KpRW7KeN9aPmjSZ" -H "X-User-Id: fbdpsNf4oHiX79vMJ" http://localhost:3000/api/logout/
+curl http://localhost:3000/api/logout -H "X-Auth-Token: f2KpRW7KeN9aPmjSZ" -H "X-User-Id: fbdpsNf4oHiX79vMJ"
 ```
 
 ## Authenticated Calls
 
-Since this is a REST API (and it's meant to be used by non-browsers), you must include the
-`userId` and `authToken` with each request under the following headers:
+For any endpoints that require the default authentication, you must include the `userId` and
+`authToken` with each request under the following headers:
 - X-User-Id
 - X-Auth-Token
 
