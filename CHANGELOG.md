@@ -1,6 +1,6 @@
 # Change Log
 
-## Unreleased
+## [v0.6.3] - 2015-04-03
 
 #### Fixed
 - Issue #20: Allow [manual response](https://github.com/kahmali/meteor-restivus#thisresponse) in
@@ -187,6 +187,7 @@
 
 
 
+[v0.6.3]:  https://github.com/kahmali/meteor-restivus/compare/v0.6.2...v0.6.3 "Version 0.6.3"
 [v0.6.2]:  https://github.com/kahmali/meteor-restivus/compare/v0.6.1...v0.6.2 "Version 0.6.2"
 [v0.6.1]:  https://github.com/kahmali/meteor-restivus/compare/v0.6.0...v0.6.1 "Version 0.6.1"
 [v0.6.0]:  https://github.com/kahmali/meteor-restivus/compare/v0.5.9...v0.6.0 "Version 0.6.0"
