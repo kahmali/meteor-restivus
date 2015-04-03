@@ -19,18 +19,23 @@ class @Route
     @_resolveEndpoints()
     @_configureEndpoints()
 
-    # Append the path to the base API path
-    fullPath = @api.config.apiPath + @path
+    # Add the path to our list of existing paths
+    @api.config.paths.push @path
 
     # Setup endpoints on route using Iron Router
+    fullPath = @api.config.apiPath + @path
     Router.route fullPath,
       where: 'server'
       action: ->
-        # Flatten parameters in the URL and request body (and give them better names)
+        # Add parameters in the URL and request body to the endpoint context
         # TODO: Decide whether or not to nullify the copied objects. Makes sense to do it, right?
         @urlParams = @params
         @queryParams = @params.query
         @bodyParams = @request.body
+
+        # Add function to endpoint context for indicating a response has been initiated manually
+        @done = =>
+          @_responseInitiated = true
 
         # Respond to the requested HTTP method if an endpoint has been provided for it
         method = @request.method
@@ -49,6 +54,16 @@ class @Route
         else
           responseData = {statusCode: 404, body: {status: "error", message:'API endpoint not found'}}
 
+        if responseData is null or responseData is undefined
+          throw new Error "Cannot return null or undefined from an endpoint: #{method} #{fullPath}"
+        if @response.headersSent and not @_responseInitiated
+          throw new Error "Must call this.done() after handling endpoint response manually: #{method} #{fullPath}"
+
+        if @_responseInitiated
+          # Ensure the response is properly completed
+          @response.end()
+          return
+
         # Generate and return the http response, handling the different endpoint response types
         if responseData.body and (responseData.statusCode or responseData.headers)
           responseData.statusCode or= 200
@@ -56,9 +71,6 @@ class @Route
           self._respond this, responseData.body, responseData.statusCode, responseData.headers
         else
           self._respond this, responseData
-
-    # Add the path to our list of existing paths
-    @api.config.paths.push @path
 
 
   ###

@@ -926,30 +926,54 @@ In the above examples, all the endpoints except the GETs will require [authentic
 Each endpoint has access to:
 
 ##### `this.user`
+- _Meteor.user_
 - The authenticated `Meteor.user`. Only available if `useAuth` and `authRequired` are both `true`.
   If not, it will be `undefined`.
 
 ##### `this.userId`
+- _String_
 - The authenticated user's `Meteor.userId`. Only available if `useAuth` and `authRequired` are both
   `true`. If not, it will be `undefined`.
 
 ##### `this.urlParams`
+- _Object_
 - Non-optional parameters extracted from the URL. A parameter `id` on the path `posts/:id` would be
   available as `this.urlParams.id`.
 
 ##### `this.queryParams`
+- _Object_
 - Optional query parameters from the URL. Given the url `https://yoursite.com/posts?likes=true`,
   `this.queryParams.likes => true`.
 
 ##### `this.bodyParams`
+- _Object_
 - Parameters passed in the request body. Given the request body `{ "friend": { "name": "Jack" } }`,
   `this.bodyParams.friend.name => "Jack"`.
 
 ##### `this.request`
-- The [Node request object][node-request]
+- [_Node request object_][node-request]
 
 ##### `this.response`
-- The [Node response object][node-response]
+- [_Node response object_][node-response]
+- If you handle the response yourself using `this.response.write()` or `this.response.writeHead()`
+  you **must** call `this.done()`. In addition to preventing the default response (which will throw
+  an error if you've initiated the response yourself), it will also close the connection using
+  `this.response.end()`, so you can safely omit that from your endpoint.
+
+##### `this.done()`
+- _Function_
+- **Must** be called after handling the response manually with `this.response.write()` or
+  `this.response.writeHead()`. This must be called immediately before returning from an endpoint.
+
+  ```javascript
+  Restivus.addRoute('manualResponse', {
+    get: function () {
+      console.log('Testing manual response');
+      this.response.write('This is a manual response');
+      this.done();  // Must call this immediately before return!
+    }
+  });
+  ```
 
 ### Response Data
 

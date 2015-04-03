@@ -1,7 +1,7 @@
 if Meteor.isServer
   Meteor.startup ->
 
-    describe 'A Restivus API', ->
+    describe 'An API', ->
       context 'that hasn\'t been configured', ->
         it 'should have default settings', (test) ->
           test.equal Restivus.config.apiPath, 'api/'
@@ -90,18 +90,80 @@ if Meteor.isServer
           test.equal response.message, 'API endpoint not found'
           next()
 
-#    describe 'A route', ->
+    describe 'An endpoint', ->
+
+      it 'should cause an error when it returns null', (test, next) ->
+        Restivus.addRoute 'testNullResponse',
+          get: ->
+            null
+
+        HTTP.get 'http://localhost:3000/api/v1/testNullResponse', (error, result) ->
+          test.isTrue error
+          test.equal result.statusCode, 500
+          next()
+
+      it 'should cause an error when it returns undefined', (test, next) ->
+        Restivus.addRoute 'testUndefinedResponse',
+          get: ->
+            undefined
+
+        HTTP.get 'http://localhost:3000/api/v1/testUndefinedResponse', (error, result) ->
+          test.isTrue error
+          test.equal result.statusCode, 500
+          next()
+
+      it 'should be able to handle it\'s response manually', (test, next) ->
+        Restivus.addRoute 'testManualResponse',
+          get: ->
+            @response.write 'Testing manual response.'
+            @response.end()
+            @done()
+
+        HTTP.get 'http://localhost:3000/api/v1/testManualResponse', (error, result) ->
+          response = result.content
+
+          test.equal result.statusCode, 200
+          test.equal response, 'Testing manual response.'
+          next()
+
+      it 'should not have to call this.response.end() when handling the response manually', (test, next) ->
+        Restivus.addRoute 'testManualResponseNoEnd',
+          get: ->
+            @response.write 'Testing this.end()'
+            @done()
+
+        HTTP.get 'http://localhost:3000/api/v1/testManualResponseNoEnd', (error, result) ->
+          response = result.content
+
+          test.isFalse error
+          test.equal result.statusCode, 200
+          test.equal response, 'Testing this.end()'
+          next()
+
+      it 'should be able to send it\'s response in chunks', (test, next) ->
+        Restivus.addRoute 'testChunkedResponse',
+          get: ->
+            @response.write 'Testing '
+            @response.write 'chunked response.'
+#            @done()
+
+        HTTP.get 'http://localhost:3000/api/v1/testChunkedResponse', (error, result) ->
+          response = result.content
+
+          test.equal result.statusCode, 200
+          test.equal response, 'Testing chunked response.'
+          next()
+
+      it 'should respond with an error if this.done() isn\'t called after response is handled manually', (test, next) ->
+        Restivus.addRoute 'testManualResponseWithoutDone',
+          get: ->
+            undefined
+
+        HTTP.get 'http://localhost:3000/api/v1/testManualResponseWithoutDone', (error, result) ->
+          test.isTrue error
+          test.equal result.statusCode, 500
+          next()
+
+
 #      context 'that has been authenticated', ->
 #        it 'should have access to this.user and this.userId', (test) ->
-
-
-
-
-#Tinytest.add 'A route - should be configurable', (test)->
-#  Restivus.configure
-#    apiPath: '/api/v1'
-#    prettyJson: true
-#    auth:
-#      token: 'apiKey'
-#
-#  test.equal Restivus.config.apiPath, '/api/v1'
