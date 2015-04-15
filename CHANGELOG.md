@@ -1,9 +1,10 @@
 # Change Log
 
-## Unreleased
+## [v0.6.4] - 2015-04-14
 
 #### Added
-- Configuration option to disable Iron Router on the client (resolves Issue #24)
+- [Configuration option](https://github.com/kahmali/meteor-restivus#useclientrouter) to disable Iron
+  Router on the client (resolves Issue #24)
 
 #### Changed
 - Allow API to be configured and added to before Meteor starts (previously required within
@@ -198,6 +199,7 @@
 
 
 
+[v0.6.4]:  https://github.com/kahmali/meteor-restivus/compare/v0.6.3...v0.6.4 "Version 0.6.4"
 [v0.6.3]:  https://github.com/kahmali/meteor-restivus/compare/v0.6.2...v0.6.3 "Version 0.6.3"
 [v0.6.2]:  https://github.com/kahmali/meteor-restivus/compare/v0.6.1...v0.6.2 "Version 0.6.2"
 [v0.6.1]:  https://github.com/kahmali/meteor-restivus/compare/v0.6.0...v0.6.1 "Version 0.6.1"
