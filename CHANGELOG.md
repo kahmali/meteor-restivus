@@ -5,6 +5,10 @@
 #### Added
 - Configuration option to disable Iron Router on the client (resolves Issue #24)
 
+#### Changed
+- Allow API to be configured and added to before Meteor starts (previously required within
+  `Meteor.startup()`)
+
 
 ## [v0.6.3] - 2015-04-03
 

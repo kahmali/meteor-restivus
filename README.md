@@ -42,56 +42,53 @@ Items = new Mongo.Collection 'items'
 
 if Meteor.isServer
 
-  # API must be configured and built after startup!
-  Meteor.startup ->
+  # Global API configuration
+  Restivus.configure
+    useAuth: true
+    prettyJson: true
 
-    # Global API configuration
-    Restivus.configure
-      useAuth: true
-      prettyJson: true
+  # Generates: GET, POST, DELETE on /api/items and GET, PUT, DELETE on
+  # /api/items/:id for Items collection
+  Restivus.addCollection Items
 
-    # Generates: GET, POST, DELETE on /api/items and GET, PUT, DELETE on
-    # /api/items/:id for Items collection
-    Restivus.addCollection Items
-
-    # Generates: GET, POST on /api/users and GET, DELETE /api/users/:id for
-    # Meteor.users collection
-    Restivus.addCollection Meteor.users,
-      excludedEndpoints: ['deleteAll', 'put']
-      routeOptions:
-        authRequired: true
-      endpoints:
-        post:
-          authRequired: false
-        delete:
-          roleRequired: 'admin'
-
-    # Maps to: /api/posts/:id
-    Restivus.addRoute 'posts/:id', authRequired: true,
-      get: ->
-        post = Posts.findOne @urlParams.id
-        if post
-          status: 'success', data: post
-        else
-          statusCode: 404
-          body: status: 'fail', message: 'Post not found'
+  # Generates: GET, POST on /api/users and GET, DELETE /api/users/:id for
+  # Meteor.users collection
+  Restivus.addCollection Meteor.users,
+    excludedEndpoints: ['deleteAll', 'put']
+    routeOptions:
+      authRequired: true
+    endpoints:
       post:
-        roleRequired: ['author', 'admin']
-        action: ->
-          post = Posts.findOne @urlParams.id
-          if post
-            status: "success", data: post
-          else
-            statusCode: 400
-            body: status: "fail", message: "Unable to add post"
+        authRequired: false
       delete:
         roleRequired: 'admin'
-        action: ->
-          if Posts.remove @urlParams.id
-            status: "success", data: message: "Item removed"
-          else
-            statusCode: 404
-            body: status: "fail", message: "Item not found"
+
+  # Maps to: /api/posts/:id
+  Restivus.addRoute 'posts/:id', authRequired: true,
+    get: ->
+      post = Posts.findOne @urlParams.id
+      if post
+        status: 'success', data: post
+      else
+        statusCode: 404
+        body: status: 'fail', message: 'Post not found'
+    post:
+      roleRequired: ['author', 'admin']
+      action: ->
+        post = Posts.findOne @urlParams.id
+        if post
+          status: "success", data: post
+        else
+          statusCode: 400
+          body: status: "fail", message: "Unable to add post"
+    delete:
+      roleRequired: 'admin'
+      action: ->
+        if Posts.remove @urlParams.id
+          status: "success", data: message: "Item removed"
+        else
+          statusCode: 404
+          body: status: "fail", message: "Item not found"
 ```
 
 ###### JavaScript:
@@ -100,74 +97,70 @@ Items = new Mongo.Collection('items');
 
 if(Meteor.isServer) {
 
-  // API must be configured and built after startup!
-  Meteor.startup(function () {
+  // Global API configuration
+  Restivus.configure({
+    useAuth: true,
+    prettyJson: true
+  });
 
-    // Global API configuration
-    Restivus.configure({
-      useAuth: true,
-      prettyJson: true
-    });
+  // Generates: GET, POST, DELETE on /api/items and GET, PUT, DELETE on
+  // /api/items/:id for Items collection
+  Restivus.addCollection(Items);
 
-    // Generates: GET, POST, DELETE on /api/items and GET, PUT, DELETE on
-    // /api/items/:id for Items collection
-    Restivus.addCollection(Items);
-
-    // Generates: GET, POST on /api/users and GET, DELETE /api/users/:id for
-    // Meteor.users collection
-    Restivus.addCollection(Meteor.users, {
-      excludedEndpoints: ['deleteAll', 'put'],
-      routeOptions: {
-        authRequired: true
+  // Generates: GET, POST on /api/users and GET, DELETE /api/users/:id for
+  // Meteor.users collection
+  Restivus.addCollection(Meteor.users, {
+    excludedEndpoints: ['deleteAll', 'put'],
+    routeOptions: {
+      authRequired: true
+    },
+    endpoints: {
+      post: {
+        authRequired: false
       },
-      endpoints: {
-        post: {
-          authRequired: false
-        },
-        delete: {
-          roleRequired: 'admin'
-        }
+      delete: {
+        roleRequired: 'admin'
       }
-    });
+    }
+  });
 
-    // Maps to: /api/posts/:id
-    Restivus.addRoute('posts/:id', {authRequired: true}, {
-      get: function () {
+  // Maps to: /api/posts/:id
+  Restivus.addRoute('posts/:id', {authRequired: true}, {
+    get: function () {
+      var post = Posts.findOne(this.urlParams.id);
+      if (post) {
+        return {status: 'success', data: post};
+      }
+      return {
+        statusCode: 404,
+        body: {status: 'fail', message: 'Post not found'}
+      };
+    },
+    post: {
+      roleRequired: ['author', 'admin'],
+      action: function () {
         var post = Posts.findOne(this.urlParams.id);
         if (post) {
-          return {status: 'success', data: post};
+          return {status: "success", data: post};
+        }
+        return {
+          statusCode: 400,
+          body: {status: "fail", message: "Unable to add post"}
+        };
+      }
+    },
+    delete: {
+      roleRequired: 'admin',
+      action: function () {
+        if (Posts.remove(this.urlParams.id)) {
+          return {status: "success", data: {message: "Item removed"}};
         }
         return {
           statusCode: 404,
-          body: {status: 'fail', message: 'Post not found'}
+          body: {status: "fail", message: "Item not found"}
         };
-      },
-      post: {
-        roleRequired: ['author', 'admin'],
-        action: function () {
-          var post = Posts.findOne(this.urlParams.id);
-          if (post) {
-            return {status: "success", data: post};
-          }
-          return {
-            statusCode: 400,
-            body: {status: "fail", message: "Unable to add post"}
-          };
-        }
-      },
-      delete: {
-        roleRequired: 'admin',
-        action: function () {
-          if (Posts.remove(this.urlParams.id)) {
-            return {status: "success", data: {message: "Item removed"}};
-          }
-          return {
-            statusCode: 404,
-            body: {status: "fail", message: "Item not found"}
-          };
-        }
       }
-    });
+    }
   });
 }
 ```
@@ -586,9 +579,8 @@ the `delete` and `deleteAll` endpoints. Below are sample requests and responses 
 collection.
 
 Create collection:
-```coffeescript
-if Meteor.startup ->
-  Restivus.addCollection Meteor.users
+```javascript
+Restivus.addCollection(Meteor.users);
 ```
 
 #### `post`
@@ -735,9 +727,6 @@ Response:
 
 Routes are defined using `Restivus.addRoute()`. A route consists of a path and a set of endpoints
 defined at that path.
-
-**Important!** Adding routes must also be done from within the [`Meteor.startup()`](#quick-start)
-callback.
 
 ### Path Structure
 
