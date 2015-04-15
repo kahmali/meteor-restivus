@@ -15,6 +15,7 @@ class @Restivus
           token: @request.headers['x-auth-token']
       onLoggedIn: -> {}
       onLoggedOut: -> {}
+      useClientRouter: true
     @configured = false
 
 
@@ -37,6 +38,10 @@ class @Restivus
       @config.apiPath = @config.apiPath.slice 1
     if _.last(@config.apiPath) isnt '/'
       @config.apiPath = @config.apiPath + '/'
+
+    # Disable Iron Router on the client if it's not needed
+    if not @config.useClientRouter and Meteor.isClient
+      Router.options.autoStart = false
 
     # Add any existing routes to the API now that it's configured
     _.each @routes, (route) -> route.addToApi()

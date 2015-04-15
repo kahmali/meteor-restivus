@@ -29,7 +29,7 @@ You can install Restivus using Meteor's package manager:
 > meteor add nimble:restivus
 ```
 
-And update Restivus to the latest version:
+And to update Restivus to the latest version:
 ```bash
 > meteor update nimble:restivus
 ```
@@ -103,7 +103,7 @@ if(Meteor.isServer) {
   // API must be configured and built after startup!
   Meteor.startup(function () {
 
-    // Global configuration
+    // Global API configuration
     Restivus.configure({
       useAuth: true,
       prettyJson: true
@@ -242,7 +242,8 @@ _**Route:**_
 
 ## Configuration Options
 
-The following configuration options are available with `Restivus.configure`:
+The following configuration options are available with `Restivus.configure` (must be called once,
+but all properties are optional):
 
 ##### `apiPath`
 - _String_
@@ -253,7 +254,7 @@ The following configuration options are available with `Restivus.configure`:
 ##### `useAuth`
 - _Boolean_
 - Default: `false`
-- If true, `POST /login` and `GET /logout` endpoints are added to the API. You can access
+- If `true`, `POST /login` and `GET /logout` endpoints are added to the API. You can access
   `this.user` and `this.userId` in [authenticated](#authenticating) endpoints.
 
 ##### `auth`
@@ -294,7 +295,7 @@ The following configuration options are available with `Restivus.configure`:
 ##### `prettyJson`
 - _Boolean_
 - Default: `false`
-- If true, render formatted JSON in response.
+- If `true`, render formatted JSON in response.
 
 ##### `onLoggedIn`
 - _Function_
@@ -310,11 +311,15 @@ The following configuration options are available with `Restivus.configure`:
   the `/logout` endpoint. [Context](#endpoint-context) is the same as within authenticated
   endpoints. Any returned data will be added to the response body as `data.extra` (coming soon).
 
-**Important!** Restivus must be configured from within the `Meteor.startup()` callback. Check out
-the [Quick Start](#quick-start) example.
+##### `useClientRouter`
+- _Boolean_
+- Default: `true`
+- If `false`, disable Iron Router on the client. This is recommended if you're not using Iron Router
+  for your client-side routing. **Note: Since this needs to be configured on the client, you must
+  call `Restivus.configure()` in a file available on both the client and server (e.g., common.js)
+  for this to actually take effect.**
 
 ```coffeescript
-Meteor.startup ->
   Restivus.configure
     useAuth: true
     apiPath: 'my-api/'
@@ -326,6 +331,7 @@ Meteor.startup ->
         token: @request.headers['login-token']
     onLoggedIn: -> console.log "#{@user.username} (#{@userId}) logged in"
     onLoggedOut: -> console.log "#{@user.username} (#{@userId}) logged out"
+    useClientRouter: false
 ```
 
 ## Defining Collection Routes

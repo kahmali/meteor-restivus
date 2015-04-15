@@ -1,10 +1,17 @@
 # Change Log
 
+## Unreleased
+
+#### Added
+- Configuration option to disable Iron Router on the client (resolves Issue #24)
+
+
 ## [v0.6.3] - 2015-04-03
 
 #### Fixed
 - Issue #20: Allow [manual response](https://github.com/kahmali/meteor-restivus#thisresponse) in
   endpoints using underlying [Node response object](https://nodejs.org/api/http.html#http_class_http_serverresponse).
+
 
 ## [v0.6.2] - 2015-03-04
 

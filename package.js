@@ -17,11 +17,11 @@ Package.onUse(function (api) {
   api.use('iron:router@1.0.6');
 
   // Package files
-  api.addFiles('lib/restivus.coffee', 'server');
+  api.addFiles('lib/restivus.coffee');
   api.addFiles('lib/route.coffee', 'server')
   api.addFiles('lib/auth.coffee', 'server');
 
-  // Export Restfully
+  // Exports
   api.export('Restivus');
 });
 
