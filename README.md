@@ -976,7 +976,7 @@ Each endpoint has access to:
 
 You can return a raw string:
 ```javascript
-return 'That's current!';
+return "That's current!";
 ```
 
 A JSON object:
