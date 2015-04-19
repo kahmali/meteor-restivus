@@ -992,13 +992,13 @@ Or include a `statusCode` or `headers`. At least one must be provided along with
 return {
   statusCode: 404,
   headers: {
-    "Content-Type": "text/plain"
-    "X-Custom-Header": "custom value"
+    'Content-Type': 'text/plain',
+    'X-Custom-Header': 'custom value'
   },
   body: {
-    status: "success",
+    status: 'success',
     data: {
-      message: "There's nothing here!"
+      message: 'There is nothing here!'
     }
   }
 };
