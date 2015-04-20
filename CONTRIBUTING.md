@@ -23,13 +23,19 @@ release.
 
 ### Pull Requests
 
-All pull requests should be made to the `dev` branch, unless **all** changes in the request are to
-the README or CHANGELOG **and** all of those changes are already reflected in the latest released
-version. If that's the case, the pull request should be made to `master`. If you're not familiar
-with [forks](https://help.github.com/articles/fork-a-repo/) and [pull requests]
-(https://help.github.com/articles/using-pull-requests/), please check out those resources for more
-information.
+All code contributions can be submitted via GitHub Pull Requests. Here are a few guidelines you
+must adhere to when contributing to this project:
 
+1. **All pull requests should be made to the `dev` branch!** Since `dev` is not the default branch,
+   you'll need to be sure to change it when making the pull request. If you're not familiar with
+   [forks](https://help.github.com/articles/fork-a-repo/) and [pull requests]
+   (https://help.github.com/articles/using-pull-requests/), please check out those resources for
+   more information.
+1. Begin your feature branches from the latest version of `dev`.
+1. Before submitting a pull request:
+   - Rebase to the latest version of `dev`
+   - Ensure all automated tests are passing by running `meteor test-packages ./` from the root
+      directory of the project and viewing the Tinytest output at `http://localhost:3000`
 
 ### Committing
 
