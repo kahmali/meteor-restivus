@@ -192,21 +192,37 @@ class @Route
   ###
     Respond to an HTTP request
   ###
-  _respond: (endpointContext, body, statusCode=200, headers) ->
+  _respond: (endpointContext, body, statusCode=200, headers={}) ->
     # Allow cross-domain requests to be made from the browser
     endpointContext.response.setHeader 'Access-Control-Allow-Origin', '*'
 
-    # Ensure that a content type is set (will be overridden if also included in given headers)
-    # TODO: Consider enforcing a text/json-only content type (override any user-defined content-type)
-    endpointContext.response.setHeader 'Content-Type', 'text/json'
+    # TODO: Consider only lowercasing the header keys we need normalized, like Content-Type
+    headers = @_lowerCaseKeys(headers)
 
-    # Prettify JSON if configured in API
-    if @api.config.prettyJson
-      bodyAsJson = JSON.stringify body, undefined, 2
-    else
-      bodyAsJson = JSON.stringify body
+    # Ensure that a Content-Type is set (will be overridden if also included in given headers)
+    if not headers['content-type']
+      headers['content-type'] = 'text/json'
+
+    # Prepare JSON body for response when Content-Type indicates JSON type
+    if headers['content-type'].indexOf('json') >= 0 or headers['content-type'].indexOf('javascript') >= 0
+      if @api.config.prettyJson
+        body = JSON.stringify body, undefined, 2
+      else
+        body = JSON.stringify body
 
     # Send response
     endpointContext.response.writeHead statusCode, headers
-    endpointContext.response.write bodyAsJson
+    endpointContext.response.write body
     endpointContext.response.end()
+
+
+  ###
+    Return the object with all of the keys converted to lowercase
+  ###
+  _lowerCaseKeys: (object) ->
+    _.chain object
+    .pairs()
+    .map (attr) ->
+      [attr[0].toLowerCase(), attr[1]]
+    .object()
+    .value()

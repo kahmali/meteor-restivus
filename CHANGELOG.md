@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+#### Fixed
+- Issue #32:
+  - Prevent non-JSON response types from being wrapped in quotes
+  - This bug required clients to do additional parsing of non-JSON types (removing quotes and 
+    escaped characters)
+
 #### Added
 - Include an endpoint's configuration options [in its context]
   (https://github.com/kahmali/meteor-restivus#thisendpointoption)
