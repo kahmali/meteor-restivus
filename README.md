@@ -180,8 +180,9 @@ if(Meteor.isServer) {
     - [Path Structure](#path-structure)
     - [Route Options](#route-options)
     - [Defining Endpoints](#defining-endpoints)
-    - [Endpoint Context](#endpoint-context)
-    - [Response Data](#response-data)
+      - [Endpoint Configuration](#endpoint-configuration-1)
+      - [Endpoint Context](#endpoint-context)
+      - [Response Data](#response-data)
   - [Documenting Your API](#documenting-your-api)
 - [Consuming a Restivus API](#consuming-a-restivus-api)
   - [Basic Usage](#basic-usage)
@@ -844,8 +845,13 @@ These endpoints can be defined one of two ways. First, you can simply provide a 
 method you want to support at the given path. The corresponding endpoint will be executed when that
 type of request is made at that path.
 
-Otherwise, for finer-grained control over each endpoint, you can also define each one as an object
-with the following properties:
+For finer-grained control over each endpoint, you can also define each one as an object
+containing the endpoint action and some addtional configuration options. 
+
+#### Endpoint Configuration
+
+An `action` is required when configuring an endpoint. All other configuration settings are optional, 
+and will get their default values from the route.
 
 ##### `action`
 - _Function_
@@ -854,14 +860,14 @@ with the following properties:
 
 ##### `authRequired`
 - _String_
-- Default: `false`
+- Default: [`Route.authRequired`](#authrequired-1)
 - If true, this endpoint will return a `401` if the user is not properly
   [authenticated](#authenticating). Overrides the option of the same name defined on the entire
   route.
 
 ##### `roleRequired`
 - _String or Array of Strings_
-- Default: `undefined` (no role required)
+- Default: [`Route.roleRequired`](#rolerequired-1)
 - The acceptable user roles for this endpoint (e.g.,
   `'admin'`, `['admin', 'dev']`). These roles will be accepted in addition to any defined over the
   entire route. If the authenticated user does not belong to at least one of the accepted roles, a
@@ -918,7 +924,7 @@ Restivus.addRoute('posts', {authRequired: true}, {
 In the above examples, all the endpoints except the GETs will require [authentication]
 (#authenticating).
 
-### Endpoint Context
+#### Endpoint Context
 
 Each endpoint has access to:
 
@@ -971,8 +977,16 @@ Each endpoint has access to:
     }
   });
   ```
+  
+##### `this.<endpointOption>`
+All [endpoint configuration options](#endpoint-configuration-1) can be accessed by name (e.g., 
+`this.roleRequired`). Within an endpoint, all options have been completely resolved, meaning all 
+configuration options set on an endpoint's route will already be applied to the endpoint as
+defaults. So if you set `authRequired: true` on a route and do not set the `authRequired` option on 
+one if its endpoints, `this.authRequired` will still be `true` within that endpoint, since the 
+default will already have been applied from the route. 
 
-### Response Data
+#### Response Data
 
 You can return a raw string:
 ```javascript

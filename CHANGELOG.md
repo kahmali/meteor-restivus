@@ -1,5 +1,12 @@
 # Change Log
 
+## Unreleased
+
+#### Added
+- Include an endpoint's configuration options [in its context]
+  (https://github.com/kahmali/meteor-restivus#thisendpointoption)
+
+
 ## [v0.6.4] - 2015-04-14
 
 #### Added

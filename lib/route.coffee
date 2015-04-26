@@ -37,20 +37,13 @@ class @Route
         @done = =>
           @_responseInitiated = true
 
-        # Respond to the requested HTTP method if an endpoint has been provided for it
+        # Run the requested endpoint
+        responseData = null
         method = @request.method
-        if method is 'GET' and self.endpoints.get
-          responseData = self._callEndpoint this, self.endpoints.get
-        else if method is 'POST' and self.endpoints.post
-          responseData = self._callEndpoint this, self.endpoints.post
-        else if method is 'PUT' and self.endpoints.put
-          responseData = self._callEndpoint this, self.endpoints.put
-        else if method is 'PATCH' and self.endpoints.patch
-          responseData = self._callEndpoint this, self.endpoints.patch
-        else if method is 'DELETE' and self.endpoints.delete
-          responseData = self._callEndpoint this, self.endpoints.delete
-        else if method is 'OPTIONS' and self.endpoints.options
-          responseData = self._callEndpoint this, self.endpoints.options
+        if self.endpoints[method.toLowerCase()]
+          # Add the endpoint's resolved configuration options to its context
+          _.extend this, self.endpoints[method.toLowerCase()]
+          responseData = self._callEndpoint this, self.endpoints[method.toLowerCase()]
         else
           responseData = {statusCode: 404, body: {status: "error", message:'API endpoint not found'}}
 

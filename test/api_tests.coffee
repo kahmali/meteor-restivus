@@ -207,6 +207,26 @@ if Meteor.isServer
           test.equal result.statusCode, 500
           next()
 
+      it 'should have its context set', (test) ->
+        Restivus.addRoute 'testContext/:test',
+          post: ->
+            test.equal @urlParams.test, '100'
+            test.equal @queryParams.test, "query"
+            test.equal @bodyParams.test, "body"
+            test.isNotNull @request
+            test.isNotNull @response
+            test.isTrue _.isFunction @done
+            test.isFalse @authRequired
+            test.isFalse @roleRequired
+            true
+
+        result = HTTP.post 'http://localhost:3000/api/v1/testContext/100?test=query',
+          data:
+            test: 'body'
+
+        test.equal result.statusCode, 200
+        test.isTrue result.content
+
 
 #      context 'that has been authenticated', ->
 #        it 'should have access to this.user and this.userId', (test) ->
