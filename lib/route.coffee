@@ -24,44 +24,57 @@ class @Route
 
     # Setup endpoints on route using Iron Router
     fullPath = @api.config.apiPath + @path
-    Router.route fullPath,
-      where: 'server'
-      action: ->
+
+    _.each @endpoints, (options, method) ->
+      JsonRoutes.add method, fullPath, (req, res, next) ->
         # Add parameters in the URL and request body to the endpoint context
         # TODO: Decide whether or not to nullify the copied objects. Makes sense to do it, right?
-        @urlParams = @params
-        @queryParams = @params.query
-        @bodyParams = @request.body
-
-        # Add function to endpoint context for indicating a response has been initiated manually
-        @done = =>
-          @_responseInitiated = true
+        @urlParams = req.params
+        @queryParams = req.query
+        @bodyParams = req.body
 
         # Run the requested endpoint
         responseData = null
-        method = @request.method
-        if self.endpoints[method.toLowerCase()]
-          # Add the endpoint's resolved configuration options to its context
-          _.extend this, self.endpoints[method.toLowerCase()]
-          responseData = self._callEndpoint this, self.endpoints[method.toLowerCase()]
-        else
-          responseData = {statusCode: 404, body: {status: "error", message:'API endpoint not found'}}
 
-        if responseData is null or responseData is undefined
-          throw new Error "Cannot return null or undefined from an endpoint: #{method} #{fullPath}"
-        if @response.headersSent and not @_responseInitiated
-          throw new Error "Must call this.done() after handling endpoint response manually: #{method} #{fullPath}"
+        # Add the endpoint's resolved configuration options to its context
+        endpointContext = {};
+        _.extend endpointContext, options
 
-        if @_responseInitiated
+        # Add function to endpoint context for indicating a response has been initiated manually
+        responseInitiated = false
+        doneFunc = ->
+          responseInitiated = true
+
+        endpointContext =
+          urlParams: req.params
+          queryParams: req.query
+          bodyParams: req.body
+          request: req
+          response: res
+          done: doneFunc
+
+        try
+          responseData = self._callEndpoint endpointContext, options
+
+          if responseData is null or responseData is undefined
+            throw new Error "Cannot return null or undefined from an endpoint: #{method} #{fullPath}"
+          if res.headersSent and not responseInitiated
+            throw new Error "Must call this.done() after handling endpoint response manually: #{method} #{fullPath}"
+        catch error
+          # Do exactly what Iron Router would have done, to avoid changing the API
+          ironRouterSendErrorToResponse(error, req, res);
+          return
+
+        if responseInitiated
           # Ensure the response is properly completed
-          @response.end()
+          res.end()
           return
 
         # Generate and return the http response, handling the different endpoint response types
         if responseData.body and (responseData.statusCode or responseData.headers)
-          self._respond this, responseData.body, responseData.statusCode, responseData.headers
+          self._respond res, responseData.body, responseData.statusCode, responseData.headers
         else
-          self._respond this, responseData
+          self._respond res, responseData
 
 
   ###
@@ -190,7 +203,7 @@ class @Route
   ###
     Respond to an HTTP request
   ###
-  _respond: (endpointContext, body, statusCode=200, headers={}) ->
+  _respond: (response, body, statusCode=200, headers={}) ->
     # Override any default headers that have been provided (keys are normalized to be case insensitive)
     # TODO: Consider only lowercasing the header keys we need normalized, like Content-Type
     defaultHeaders = @_lowerCaseKeys @api.config.defaultHeaders
@@ -206,9 +219,9 @@ class @Route
 
     # Send response
     sendResponse = ->
-      endpointContext.response.writeHead statusCode, headers
-      endpointContext.response.write body
-      endpointContext.response.end()
+      response.writeHead statusCode, headers
+      response.write body
+      response.end()
     if statusCode in [401, 403]
       # Hackers can measure the response time to determine things like whether the 401 response was 
       # caused by bad user id vs bad password.
