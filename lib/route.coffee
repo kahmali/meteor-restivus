@@ -59,8 +59,6 @@ class @Route
 
         # Generate and return the http response, handling the different endpoint response types
         if responseData.body and (responseData.statusCode or responseData.headers)
-          responseData.statusCode or= 200
-          responseData.headers or= {'Content-Type': 'text/json'}
           self._respond this, responseData.body, responseData.statusCode, responseData.headers
         else
           self._respond this, responseData
@@ -195,8 +193,8 @@ class @Route
   _respond: (endpointContext, body, statusCode=200, headers={}) ->
     # Override any default headers that have been provided (keys are normalized to be case insensitive)
     # TODO: Consider only lowercasing the header keys we need normalized, like Content-Type
-    defaultHeaders = @_lowerCaseKeys(@api.config.defaultHeaders)
-    headers = @_lowerCaseKeys(headers)
+    defaultHeaders = @_lowerCaseKeys @api.config.defaultHeaders
+    headers = @_lowerCaseKeys headers
     headers = _.extend defaultHeaders, headers
 
     # Prepare JSON body for response when Content-Type indicates JSON type

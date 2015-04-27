@@ -18,7 +18,7 @@ class @Restivus
       useClientRouter: true
       defaultHeaders:
         'Content-Type': 'application/json'
-        'Access-Control-Allow-Origin': '*'
+      enableCors: true
     @configured = false
 
 
@@ -35,6 +35,10 @@ class @Restivus
 
     # Configure API with the given options
     _.extend @config, config
+
+    # Set default header to enable CORS if configured
+    if @config.enableCors
+      _.extend @config.defaultHeaders, 'Access-Control-Allow-Origin': '*'
 
     # Normalize the API path
     if @config.apiPath[0] is '/'

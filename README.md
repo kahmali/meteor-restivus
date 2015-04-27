@@ -247,13 +247,7 @@ but all properties are optional):
 
 ##### `defaultHeaders`
 - _Object_
-- Default: 
-    ```javascript
-    {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*' // Enables CORS
-    }
-    ```
+- Default: `{ 'Content-Type': 'application/json' }`
 - The response headers that will be returned from every endpoint by default. These can be overridden 
   by [returning `headers` of the same name from any endpoint](#response-data). 
 
@@ -339,6 +333,13 @@ but all properties are optional):
     onLoggedOut: -> console.log "#{@user.username} (#{@userId}) logged out"
     useClientRouter: false
 ```
+
+##### `enableCors`
+- _Boolean_
+- Default: `true`
+- If true, enables cross-origin resource sharing ([CORS]). This allows your API to receive requests 
+  from _any_ domain (when `false`, the API will only accept requests from the domain where the API 
+  is being hosted. _Note: Only applies to requests originating from browsers)._
 
 ## Defining Collection Routes
 
@@ -1039,12 +1040,14 @@ All responses contain the following defaults, which will be overridden with any 
 
 ##### headers
 - Default:
-  - `Content-Type`: `text/json`
+  - `Content-Type`: `application/json`
   - `Access-Control-Allow-Origin`: `*`
-    - This is a CORS-compliant header that allows requests to be made to the API from any domain.
-      Without this, requests from within the browser would only be allowed from the same domain the
-      API is hosted on, which is typically not the intended behavior. To prevent this, override it
-      with your domain.
+    - This is a [CORS-compliant header][cors] that allows requests to be made to the API from any 
+      domain. Without this, requests from within the browser would only be allowed from the same 
+      domain the API is hosted on, which is typically not the intended behavior. This can be 
+      [disabled by default](https://github.com/kahmali/meteor-restivus#enablecors), or also by 
+      returning a header of the same name with a domain specified (usually the domain the API is 
+      being hosted on).
 
 
 ## Documenting Your API
@@ -1141,3 +1144,4 @@ details.
 [jsend]:                http://labs.omniti.com/labs/jsend                                      "JSend REST API Standard"
 [apidoc]:               http://apidocjs.com/                                                   "apiDoc"
 [alanning-roles]:       https://github.com/alanning/meteor-roles                               "Meteor Roles Package"
+[cors]:                 https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS  "Cross Origin Resource Sharing (CORS)"

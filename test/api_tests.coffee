@@ -53,6 +53,8 @@ Meteor.startup ->
         test.equal config.useAuth, true
         test.equal config.auth.token, 'apiKey'
         test.equal config.defaultHeaders['Content-Type'], 'text/json'
+        test.equal config.defaultHeaders['X-Test-Header'], 'test header'
+        test.equal config.defaultHeaders['Access-Control-Allow-Origin'], '*'
 
     context 'that has been configured', ->
       it 'should not allow reconfiguration', (test) ->
@@ -146,6 +148,7 @@ Meteor.startup ->
       test.equal result.statusCode, 200
       test.equal result.headers['content-type'], 'text/json'
       test.equal result.headers['x-test-header'], 'test header'
+      test.equal result.headers['access-control-allow-origin'], '*'
       test.isTrue result.content
 
     it 'should allow default headers to be overridden', (test) ->
@@ -153,6 +156,7 @@ Meteor.startup ->
         get: ->
           headers:
             'Content-Type': 'application/json'
+            'Access-Control-Allow-Origin': 'https://mywebsite.com'
           body:
             true
 
@@ -160,6 +164,7 @@ Meteor.startup ->
 
       test.equal result.statusCode, 200
       test.equal result.headers['content-type'], 'application/json'
+      test.equal result.headers['access-control-allow-origin'], 'https://mywebsite.com'
       test.isTrue result.content
 
     it 'should cause an error when it returns null', (test, next) ->

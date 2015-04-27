@@ -18,7 +18,7 @@ Package.onUse(function (api) {
 
   // Package files
   api.addFiles('lib/restivus.coffee');
-  api.addFiles('lib/route.coffee', 'server')
+  api.addFiles('lib/route.coffee', 'server');
   api.addFiles('lib/auth.coffee', 'server');
 
   // Exports

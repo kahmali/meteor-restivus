@@ -13,6 +13,14 @@
   (https://github.com/kahmali/meteor-restivus#thisendpointoption)
 - Allow [default response headers](https://github.com/kahmali/meteor-restivus#defaultheaders) to be 
   configured
+- Allow CORS to be disabled in API config (using [`enableCors`]
+  (https://github.com/kahmali/meteor-restivus#enablecors) option)
+    - Resolves Issue #39
+    
+#### Changed
+- Default response Content-Type is now `application/json` instead of `text/json`
+  - This _shouldn't_ have any effect on existing APIs. Updating to match standard JSON type, 
+    according to [RFC 4627](http://www.ietf.org/rfc/rfc4627.txt).
 
 
 ## [v0.6.4] - 2015-04-14
