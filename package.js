@@ -14,10 +14,11 @@ Package.onUse(function (api) {
   api.use('check');
   api.use('coffeescript');
   api.use('underscore');
-  api.use('iron:router@1.0.6');
+  api.use('simple:json-routes@1.0.2');
 
   // Package files
   api.addFiles('lib/restivus.coffee');
+  api.addFiles('lib/iron-router-error-to-response.js', 'server');
   api.addFiles('lib/route.coffee', 'server');
   api.addFiles('lib/auth.coffee', 'server');
 
