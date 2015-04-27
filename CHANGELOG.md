@@ -1,6 +1,6 @@
 # Change Log
 
-## Unreleased
+## [v0.6.5] - 2015-04-27
 
 #### Fixed
 - Issue #32:
@@ -222,6 +222,7 @@
 
 
 
+[v0.6.5]:  https://github.com/kahmali/meteor-restivus/compare/v0.6.4...v0.6.5 "Version 0.6.5"
 [v0.6.4]:  https://github.com/kahmali/meteor-restivus/compare/v0.6.3...v0.6.4 "Version 0.6.4"
 [v0.6.3]:  https://github.com/kahmali/meteor-restivus/compare/v0.6.2...v0.6.3 "Version 0.6.3"
 [v0.6.2]:  https://github.com/kahmali/meteor-restivus/compare/v0.6.1...v0.6.2 "Version 0.6.2"
