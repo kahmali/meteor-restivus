@@ -245,6 +245,18 @@ but all properties are optional):
 - The base path for your API. If you use `'api'` and add a route called `'users'`, the URL will be
   `https://yoursite.com/api/users/`.
 
+##### `defaultHeaders`
+- _Object_
+- Default: 
+    ```javascript
+    {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*' // Enables CORS
+    }
+    ```
+- The response headers that will be returned from every endpoint by default. These can be overridden 
+  by [returning `headers` of the same name from any endpoint](#response-data). 
+
 ##### `useAuth`
 - _Boolean_
 - Default: `false`

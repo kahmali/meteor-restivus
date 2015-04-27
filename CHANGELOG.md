@@ -11,6 +11,8 @@
 #### Added
 - Include an endpoint's configuration options [in its context]
   (https://github.com/kahmali/meteor-restivus#thisendpointoption)
+- Allow [default response headers](https://github.com/kahmali/meteor-restivus#defaultheaders) to be 
+  configured
 
 
 ## [v0.6.4] - 2015-04-14

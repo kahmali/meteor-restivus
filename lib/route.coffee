@@ -193,18 +193,14 @@ class @Route
     Respond to an HTTP request
   ###
   _respond: (endpointContext, body, statusCode=200, headers={}) ->
-    # Allow cross-domain requests to be made from the browser
-    endpointContext.response.setHeader 'Access-Control-Allow-Origin', '*'
-
+    # Override any default headers that have been provided (keys are normalized to be case insensitive)
     # TODO: Consider only lowercasing the header keys we need normalized, like Content-Type
+    defaultHeaders = @_lowerCaseKeys(@api.config.defaultHeaders)
     headers = @_lowerCaseKeys(headers)
-
-    # Ensure that a Content-Type is set (will be overridden if also included in given headers)
-    if not headers['content-type']
-      headers['content-type'] = 'text/json'
+    headers = _.extend defaultHeaders, headers
 
     # Prepare JSON body for response when Content-Type indicates JSON type
-    if headers['content-type'].indexOf('json') >= 0 or headers['content-type'].indexOf('javascript') >= 0
+    if headers['content-type'].match(/json|javascript/) isnt null
       if @api.config.prettyJson
         body = JSON.stringify body, undefined, 2
       else

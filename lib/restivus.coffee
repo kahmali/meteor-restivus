@@ -16,6 +16,9 @@ class @Restivus
       onLoggedIn: -> {}
       onLoggedOut: -> {}
       useClientRouter: true
+      defaultHeaders:
+        'Content-Type': 'application/json'
+        'Access-Control-Allow-Origin': '*'
     @configured = false
 
 

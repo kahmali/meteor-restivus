@@ -44,11 +44,15 @@ Meteor.startup ->
           apiPath: 'api/v1'
           useAuth: true
           auth: token: 'apiKey'
+          defaultHeaders:
+            'Content-Type': 'text/json'
+            'X-Test-Header': 'test header'
 
         config = Restivus.config
         test.equal config.apiPath, 'api/v1/'
         test.equal config.useAuth, true
         test.equal config.auth.token, 'apiKey'
+        test.equal config.defaultHeaders['Content-Type'], 'text/json'
 
     context 'that has been configured', ->
       it 'should not allow reconfiguration', (test) ->
@@ -65,6 +69,7 @@ Meteor.startup ->
         test.equal route.endpoints.get.action(), 2
         test.isTrue route.endpoints.get.authRequired
         test.equal route.endpoints.get.roleRequired, ['admin']
+
 
   describe 'A collection route', ->
     it 'should be able to exclude endpoints using just the excludedEndpoints option', (test, next) ->
@@ -106,7 +111,6 @@ Meteor.startup ->
         # Persist the new resource id
         testId = responseData._id
 
-
       it 'should support a PUT on api/collection/:id', (test) ->
         result = HTTP.put "http://localhost:3000/api/v1/testAutogen/#{testId}",
           data:
@@ -131,6 +135,32 @@ Meteor.startup ->
 
 
   describe 'An endpoint', ->
+
+    it 'should respond with the default headers when not overridden', (test) ->
+      Restivus.addRoute 'testDefaultHeaders',
+        get: ->
+          true
+
+      result = HTTP.get 'http://localhost:3000/api/v1/testDefaultHeaders'
+
+      test.equal result.statusCode, 200
+      test.equal result.headers['content-type'], 'text/json'
+      test.equal result.headers['x-test-header'], 'test header'
+      test.isTrue result.content
+
+    it 'should allow default headers to be overridden', (test) ->
+      Restivus.addRoute 'testOverrideDefaultHeaders',
+        get: ->
+          headers:
+            'Content-Type': 'application/json'
+          body:
+            true
+
+      result = HTTP.get 'http://localhost:3000/api/v1/testOverrideDefaultHeaders'
+
+      test.equal result.statusCode, 200
+      test.equal result.headers['content-type'], 'application/json'
+      test.isTrue result.content
 
     it 'should cause an error when it returns null', (test, next) ->
       Restivus.addRoute 'testNullResponse',
