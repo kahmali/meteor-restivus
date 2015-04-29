@@ -14,7 +14,7 @@ Package.onUse(function (api) {
   api.use('check');
   api.use('coffeescript');
   api.use('underscore');
-  api.use('simple:json-routes@1.0.0');
+  api.use('simple:json-routes@1.0.2');
 
   // Package files
   api.addFiles('lib/restivus.coffee');
