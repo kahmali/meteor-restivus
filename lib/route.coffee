@@ -138,7 +138,7 @@ class @Route
       if @_roleAccepted endpointContext, endpoint
         endpoint.action.call endpointContext
       else
-        statusCode: 401
+        statusCode: 403
         body: {status: "error", message: "You do not have permission to do this."}
     else
       statusCode: 401

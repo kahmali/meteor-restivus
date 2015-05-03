@@ -395,7 +395,7 @@ The top level properties of the options apply to both routes that will be genera
   - Default: `undefined` (no role required)
   - The acceptable user roles for all endpoints on this route (e.g., `'admin'`, `['admin', 'dev']`).
     Additional role permissions can be defined on specific endpoints. If the authenticated user does
-    not belong to at least one of the accepted roles, a `401` is returned. Since a role cannot be
+    not belong to at least one of the accepted roles, a `403` is returned. Since a role cannot be
     verified without an authenticated user, setting the `roleRequired` implies `authRequired: true`,
     so that option can be omitted without any consequence. For more on setting up roles, check out
     the [`alanning:roles`][alanning-roles] package.
@@ -458,7 +458,7 @@ object containing the following properties:
 - The acceptable user roles for this endpoint (e.g.,
   `'admin'`, `['admin', 'dev']`). These roles will be accepted in addition to any defined over the
   entire route. If the authenticated user does not belong to at least one of the accepted roles, a
-  `401` is returned. Since a role cannot be verified without an authenticated user, setting the
+  `403` is returned. Since a role cannot be verified without an authenticated user, setting the
   `roleRequired` implies `authRequired: true`, so that option can be omitted without any
   consequence. For more on setting up roles, check out the [`alanning:roles`][alanning-roles]
   package.
@@ -846,7 +846,7 @@ The following options are available in Restivus.addRoute (as the 2nd, optional p
 - A string or array of strings corresponding to the acceptable user roles for all endpoints on
   this route (e.g., `'admin'`, `['admin', 'dev']`). Additional role permissions can be defined on
   specific endpoints. If the authenticated user does not belong to at least one of the accepted
-  roles, a `401` is returned. Since a role cannot be verified without an authenticated user,
+  roles, a `403` is returned. Since a role cannot be verified without an authenticated user,
   setting the `roleRequired` implies `authRequired: true`, so that option can be omitted without
   any consequence. For more on setting up roles, check out the [`alanning:roles`][alanning-roles]
   package.
@@ -893,7 +893,7 @@ and will get their default values from the route.
 - The acceptable user roles for this endpoint (e.g.,
   `'admin'`, `['admin', 'dev']`). These roles will be accepted in addition to any defined over the
   entire route. If the authenticated user does not belong to at least one of the accepted roles, a
-  `401` is returned. Since a role cannot be verified without an authenticated user, setting the
+  `403` is returned. Since a role cannot be verified without an authenticated user, setting the
   `roleRequired` implies `authRequired: true`, so that option can be omitted without any
   consequence. For more on setting up roles, check out the [`alanning:roles`][alanning-roles]
   package.
