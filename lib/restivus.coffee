@@ -168,10 +168,11 @@ class @Restivus
           entityId = collection.insert @bodyParams
           entity = collection.findOne entityId
           if entity
-            {status: "success", data: entity}
+            statusCode: 201
+            body: {status: "success", data: entity}
           else
             statusCode: 400
-            {status: "fail", message: "No item added"}
+            body: {status: "fail", message: "No item added"}
     getAll: (collection) ->
       get:
         action: ->
@@ -230,7 +231,8 @@ class @Restivus
           entityId = Accounts.createUser @bodyParams
           entity = collection.findOne entityId, fields: profile: 1
           if entity
-            {status: "success", data: entity}
+            statusCode: 201
+            body: {status: "success", data: entity}
           else
             statusCode: 400
             {status: "fail", message: "No user added"}
