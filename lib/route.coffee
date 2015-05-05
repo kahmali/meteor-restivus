@@ -9,76 +9,77 @@ class @Route
 
   addToApi: ->
     self = this
+    methods = ['get', 'post', 'put', 'patch', 'delete', 'options']
+    allowedMethods = _.filter methods, (method) -> _.contains(_.keys(self.endpoints), method)
+    unallowedMethods = _.reject methods, (method) -> _.contains(_.keys(self.endpoints), method)
 
-    # Throw an error if a route has already been added at this path
-    # TODO: Check for collisions with paths that follow same pattern with different parameter names
-    if _.contains @api.config.paths, @path
-      throw new Error "Cannot add a route at an existing path: #{@path}"
+    do =>
 
-    # Configure each endpoint on this route
-    @_resolveEndpoints()
-    @_configureEndpoints()
+      # Throw an error if a route has already been added at this path
+      # TODO: Check for collisions with paths that follow same pattern with different parameter names
+      if _.contains @api.config.paths, @path
+        throw new Error "Cannot add a route at an existing path: #{@path}"
 
-    # Add the path to our list of existing paths
-    @api.config.paths.push @path
+      # Configure each endpoint on this route
+      @_resolveEndpoints()
+      @_configureEndpoints()
 
-    # Setup endpoints on route using Iron Router
-    fullPath = @api.config.apiPath + @path
+      # Add the path to our list of existing paths
+      @api.config.paths.push @path
 
-    _.each @endpoints, (options, method) ->
-      JsonRoutes.add method, fullPath, (req, res, next) ->
-        # Add parameters in the URL and request body to the endpoint context
-        # TODO: Decide whether or not to nullify the copied objects. Makes sense to do it, right?
-        @urlParams = req.params
-        @queryParams = req.query
-        @bodyParams = req.body
+      # Setup endpoints on route
+      fullPath = @api.config.apiPath + @path
+      _.each allowedMethods, (method) ->
+        endpoint = self.endpoints[method]
+        JsonRoutes.add method, fullPath, (req, res, next) ->
+          # Add function to endpoint context for indicating a response has been initiated manually
+          responseInitiated = false
+          doneFunc = ->
+            responseInitiated = true
 
-        # Run the requested endpoint
-        responseData = null
+          endpointContext =
+            urlParams: req.params
+            queryParams: req.query
+            bodyParams: req.body
+            request: req
+            response: res
+            done: doneFunc
+          # Add endpoint config options to context
+          _.extend endpointContext, endpoint
 
-        # Add the endpoint's resolved configuration options to its context
-        endpointContext = {};
-        _.extend endpointContext, options
+          # Run the requested endpoint
+          responseData = null
+          try
+            responseData = self._callEndpoint endpointContext, endpoint
+            if responseData is null or responseData is undefined
+              throw new Error "Cannot return null or undefined from an endpoint: #{method} #{fullPath}"
+            if res.headersSent and not responseInitiated
+              throw new Error "Must call this.done() after handling endpoint response manually: #{method} #{fullPath}"
+          catch error
+            # Do exactly what Iron Router would have done, to avoid changing the API
+            ironRouterSendErrorToResponse(error, req, res);
+            return
 
-        # Add function to endpoint context for indicating a response has been initiated manually
-        responseInitiated = false
-        doneFunc = ->
-          responseInitiated = true
+          if responseInitiated
+            # Ensure the response is properly completed
+            res.end()
+            return
 
-        endpointContext =
-          urlParams: req.params
-          queryParams: req.query
-          bodyParams: req.body
-          request: req
-          response: res
-          done: doneFunc
-
-        try
-          responseData = self._callEndpoint endpointContext, options
-
-          if responseData is null or responseData is undefined
-            throw new Error "Cannot return null or undefined from an endpoint: #{method} #{fullPath}"
-          if res.headersSent and not responseInitiated
-            throw new Error "Must call this.done() after handling endpoint response manually: #{method} #{fullPath}"
-        catch error
-          # Do exactly what Iron Router would have done, to avoid changing the API
-          ironRouterSendErrorToResponse(error, req, res);
-          return
-
-        if responseInitiated
-          # Ensure the response is properly completed
-          res.end()
-          return
-
-        # Generate and return the http response, handling the different endpoint response types
-        if responseData.body and (responseData.statusCode or responseData.headers)
-          self._respond res, responseData.body, responseData.statusCode, responseData.headers
-        else
-          self._respond res, responseData
+          # Generate and return the http response, handling the different endpoint response types
+          if responseData.body and (responseData.statusCode or responseData.headers)
+            self._respond res, responseData.body, responseData.statusCode, responseData.headers
+          else
+            self._respond res, responseData
+      _.each unallowedMethods, (method) ->
+        JsonRoutes.add method, fullPath, (req, res, next) ->
+          responseData = status: 'error', message: 'API endpoint does not exist'
+          headers = 'Allow': allowedMethods.join(', ').toUpperCase()
+          self._respond res, responseData, 405, headers
 
 
   ###
-    Convert all endpoints on the given route into our expected endpoint object if it is a bare function
+    Convert all endpoints on the given route into our expected endpoint object if it is a bare
+    function
 
     @param {Route} route The route the endpoints belong to
   ###
@@ -92,12 +93,13 @@ class @Route
   ###
     Configure the authentication and role requirement on an endpoint
 
-    Once it's globally configured in the API, authentication can be required on an entire route or individual
-    endpoints. If required on an entire route, that serves as the default. If required in any individual endpoints, that
-    will override the default.
+    Once it's globally configured in the API, authentication can be required on an entire route or
+    individual endpoints. If required on an entire route, that serves as the default. If required in
+    any individual endpoints, that will override the default.
 
-    After the endpoint is configured, all authentication and role requirements of an endpoint can be accessed at
-    <code>endpoint.authRequired</code> and <code>endpoint.roleRequired</code>, respectively.
+    After the endpoint is configured, all authentication and role requirements of an endpoint can be
+    accessed at <code>endpoint.authRequired</code> and <code>endpoint.roleRequired</code>,
+    respectively.
 
     @param {Route} route The route the endpoints belong to
     @param {Endpoint} endpoint The endpoint to configure
@@ -148,9 +150,9 @@ class @Route
   ###
     Authenticate the given endpoint if required
 
-    Once it's globally configured in the API, authentication can be required on an entire route or individual
-    endpoints. If required on an entire endpoint, that serves as the default. If required in any individual endpoints, that
-    will override the default.
+    Once it's globally configured in the API, authentication can be required on an entire route or
+    individual endpoints. If required on an entire endpoint, that serves as the default. If required
+    in any individual endpoints, that will override the default.
 
     @returns False if authentication fails, and true otherwise
   ###
@@ -191,7 +193,8 @@ class @Route
 
     Must be called after _authAccepted().
 
-    @returns True if the authenticated user belongs to <i>any</i> of the acceptable roles on the endpoint
+    @returns True if the authenticated user belongs to <i>any</i> of the acceptable roles on the
+             endpoint
   ###
   _roleAccepted: (endpointContext, endpoint) ->
     if endpoint.roleRequired
