@@ -118,6 +118,17 @@ Meteor.startup ->
         # Persist the new resource id
         testId = responseData._id
 
+      it 'should not support a DELETE on api/collection', (test, next) ->
+        HTTP.del "http://localhost:3000/api/v1/testAutogen", (error, result) ->
+          response = JSON.parse result.content
+          test.isTrue error
+          test.equal result.statusCode, 405
+          test.isTrue result.headers['allow'].indexOf('POST') != -1
+          test.isTrue result.headers['allow'].indexOf('GET') != -1
+          test.equal response.status, 'error'
+          test.equal response.message, 'API endpoint does not exist'
+          next()
+
       it 'should support a PUT on api/collection/:id', (test) ->
         result = HTTP.put "http://localhost:3000/api/v1/testAutogen/#{testId}",
           data:
@@ -194,7 +205,6 @@ Meteor.startup ->
         test.isTrue error
         test.equal result.statusCode, 405
         test.isTrue result.headers['allow'].indexOf('POST') != -1
-        test.isTrue result.headers['allow'].indexOf('DELETE') != -1
         test.equal response.status, 'error'
         test.equal response.message, 'API endpoint does not exist'
 

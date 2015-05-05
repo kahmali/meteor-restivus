@@ -44,14 +44,14 @@ if Meteor.isServer
     useAuth: true
     prettyJson: true
 
-  # Generates: GET, POST, DELETE on /api/items and GET, PUT, DELETE on
+  # Generates: GET, POST on /api/items and GET, PUT, DELETE on
   # /api/items/:id for Items collection
   Restivus.addCollection Items
 
-  # Generates: GET, POST on /api/users and GET, DELETE /api/users/:id for
+  # Generates: POST on /api/users and GET, DELETE /api/users/:id for
   # Meteor.users collection
   Restivus.addCollection Meteor.users,
-    excludedEndpoints: ['deleteAll', 'put']
+    excludedEndpoints: ['getAll', 'put']
     routeOptions:
       authRequired: true
     endpoints:
@@ -100,14 +100,14 @@ if (Meteor.isServer) {
     prettyJson: true
   });
 
-  // Generates: GET, POST, DELETE on /api/items and GET, PUT, DELETE on
+  // Generates: GET, POST on /api/items and GET, PUT, DELETE on
   // /api/items/:id for Items collection
   Restivus.addCollection(Items);
 
-  // Generates: GET, POST on /api/users and GET, DELETE /api/users/:id for
+  // Generates: POST on /api/users and GET, DELETE /api/users/:id for
   // Meteor.users collection
   Restivus.addCollection(Meteor.users, {
-    excludedEndpoints: ['deleteAll', 'put'],
+    excludedEndpoints: ['getAll', 'put'],
     routeOptions: {
       authRequired: true
     },
@@ -355,7 +355,7 @@ Well, you're in luck, because this is almost _too easy_ with Restivus! All avail
 
 **`/api/<collection>`**
 - Operations on the entire collection
--  `GET`,`POST`, and `DELETE`
+-  `GET` and `POST`
 
 **`/api/<collection>/:id`**
 - Operations on a single entity within the collection
@@ -419,10 +419,6 @@ The top level properties of the options apply to both routes that will be genera
     - `GET /api/collection`
     - Return a list of all entities within the collection (filtered searching via query params
       coming soon!).
-  - `deleteAll` _Endpoint_
-    - `DELETE /api/collection`
-    - Remove all entities in the collection. **Be very careful with this endpoint!** This should
-      probably only be used for development or by users with a specific role, like 'admin'.
   - `post` _Endpoint_
     - `POST /api/collection`
     - Add a new entity to the collection. All data passed in the request body will be copied into
@@ -523,22 +519,6 @@ Response:
 }
 ```
 
-#### `deleteAll`
-Request:
-```bash
-curl -X DELETE http://localhost:3000/api/posts/
-```
-
-Response:
-```json
-{
-  "status": "success",
-  "data": {
-    "message": "Removed 2 items"
-  }
-}
-```
-
 #### `get`
 Request:
 ```bash
@@ -598,7 +578,7 @@ the majority of the operations are limited to read access to the `user._id` and 
 the `user.profile`. All route and endpoint options are identical to those described for all other
 collections above. No options have been configured in the examples below; however, it is highly
 recommended that role permissions be setup (or at the absolute least, authentication required) for
-the `delete` and `deleteAll` endpoints. Below are sample requests and responses for the users
+the `delete` endpoint. Below are sample requests and responses for the users
 collection.
 
 Create collection:
@@ -666,23 +646,6 @@ Response:
       }
     }
   ]
-}
-```
-
-
-#### `deleteAll`
-Request:
-```bash
-curl -X DELETE http://localhost:3000/api/users/
-```
-
-Response:
-```json
-{
-  "status": "success",
-  "data": {
-    "message": "Removed 2 users"
-  }
 }
 ```
 

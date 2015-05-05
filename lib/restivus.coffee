@@ -74,8 +74,8 @@ class @Restivus
     Generate routes for the Meteor Collection with the given name
   ###
   addCollection: (collection, options={}) ->
-    methods = ['get', 'post', 'put', 'delete', 'getAll', 'deleteAll']
-    methodsOnCollection = ['post', 'getAll', 'deleteAll']
+    methods = ['get', 'post', 'put', 'delete', 'getAll']
+    methodsOnCollection = ['post', 'getAll']
 
     # Grab the set of endpoints
     if collection is Meteor.users
@@ -90,8 +90,8 @@ class @Restivus
     # Use collection name as default path
     path = options.path or collection._name
 
-    # Separate the requested endpoints by the route they belong to (one for operating on the entire collection and one
-    # for operating on a single entity within the collection)
+    # Separate the requested endpoints by the route they belong to (one for operating on the entire
+    # collection and one for operating on a single entity within the collection)
     collectionRouteEndpoints = {}
     entityRouteEndpoints = {}
     if _.isEmpty(endpointsAwaitingConfiguration) and _.isEmpty(excludedEndpoints)
@@ -108,7 +108,7 @@ class @Restivus
       _.each methods, (method) ->
         if method not in excludedEndpoints and endpointsAwaitingConfiguration[method] isnt false
           # Configure endpoint and map to it's http method
-          # TODO: Consider predefining a map of methods to their http method type (e.g., deleteAll: delete)
+          # TODO: Consider predefining a map of methods to their http method type (e.g., getAll: get)
           endpointOptions = endpointsAwaitingConfiguration[method]
           configuredEndpoint = {}
           _.each collectionEndpoints[method].call(this, collection), (action, methodType) ->
@@ -182,15 +182,6 @@ class @Restivus
           else
             statusCode: 404
             body: {status: "fail", message: "Unable to retrieve items from collection"}
-    deleteAll: (collection) ->
-      delete:
-        action: ->
-          itemsRemoved = collection.remove({})
-          if itemsRemoved
-            {status: "success", data: message: "Removed #{itemsRemoved} items"}
-          else
-            statusCode: 404
-            body: {status: "fail", message: "No items found"}
 
 
   ###*
@@ -245,15 +236,6 @@ class @Restivus
           else
             statusCode: 404
             body: {status: "fail", message: "Unable to retrieve users"}
-    deleteAll: (collection) ->
-      delete:
-        action: ->
-          usersRemoved = collection.remove({})
-          if usersRemoved
-            {status: "success", data: message: "Removed #{usersRemoved} users"}
-          else
-            statusCode: 404
-            body: {status: "fail", message: "No users found"}
 
 
   ###
@@ -264,7 +246,8 @@ class @Restivus
     ###
       Add a login endpoint to the API
 
-      After the user is logged in, the onLoggedIn hook is called (see Restfully.configure() for adding hook).
+      After the user is logged in, the onLoggedIn hook is called (see Restfully.configure() for
+      adding hook).
     ###
     @addRoute 'login', {authRequired: false},
       post: ->
@@ -302,7 +285,8 @@ class @Restivus
     ###
       Add a logout endpoint to the API
 
-      After the user is logged out, the onLoggedOut hook is called (see Restfully.configure() for adding hook).
+      After the user is logged out, the onLoggedOut hook is called (see Restfully.configure() for
+      adding hook).
     ###
     @addRoute 'logout', {authRequired: true},
       get: ->
