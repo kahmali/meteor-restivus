@@ -46,6 +46,11 @@ Meteor.startup ->
           defaultHeaders:
             'Content-Type': 'text/json'
             'X-Test-Header': 'test header'
+          defaultOptionsEndpoint: ->
+            headers:
+              'Content-Type': 'text/plain'
+            body:
+              'options'
 
         config = Restivus.config
         test.equal config.apiPath, 'api/v1/'
@@ -72,7 +77,20 @@ Meteor.startup ->
         test.equal route.endpoints.get.roleRequired, ['admin']
 
 
-  describe 'A collection route', ->
+  describe 'An API route', ->
+    it 'should use the default OPTIONS endpoint if none is defined for the requested method', (test, next) ->
+      Restivus.addRoute 'default-endpoints',
+        get: ->
+          'get'
+
+      HTTP.call 'OPTIONS', 'http://localhost:3000/api/v1/default-endpoints', (error, result) ->
+        response = result.content
+        test.equal result.statusCode, 200
+        test.equal response, 'options'
+        next()
+
+
+  describe 'An API collection route', ->
     it 'should be able to exclude endpoints using just the excludedEndpoints option', (test, next) ->
       Restivus.addCollection new Mongo.Collection('excluded-endpoints'),
         excludedEndpoints: ['get', 'getAll']
@@ -92,7 +110,7 @@ Meteor.startup ->
         test.equal response.message, 'API endpoint does not exist'
 
       # Make sure it doesn't exclude any endpoints it shouldn't
-      HTTP.post 'http://localhost:3000/api/v1/excluded-endpoints/', data: test: 'abc', (error, result) ->
+      HTTP.post 'http://localhost:3000/api/v1/excluded-endpoints/', {data: test: 'abc'}, (error, result) ->
         response = JSON.parse result.content
         test.equal result.statusCode, 201
         test.equal response.status, 'success'
@@ -152,7 +170,7 @@ Meteor.startup ->
         test.isUndefined responseData.description
 
 
-  describe 'An endpoint', ->
+  describe 'An API endpoint', ->
 
     it 'should respond with the default headers when not overridden', (test) ->
       Restivus.addRoute 'default-headers',
@@ -190,7 +208,6 @@ Meteor.startup ->
           test.equal @queryParams.key2, 'abcd'
           test.equal @queryParams.key3, 'a1b2'
           true
-
 
       HTTP.get 'http://localhost:3000/api/v1/mult-query-params?key1=1234&key2=abcd&key3=a1b2', (error, result) ->
         test.isTrue result

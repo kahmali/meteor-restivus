@@ -16,6 +16,7 @@ Package.onUse(function (api) {
   api.use('underscore');
   api.use('accounts-base@1.2.0');
   api.use('simple:json-routes@1.0.2');
+
   api.addFiles('lib/restivus.coffee', 'server');
   api.addFiles('lib/iron-router-error-to-response.js', 'server');
   api.addFiles('lib/route.coffee', 'server');
@@ -36,7 +37,7 @@ Package.onTest(function (api) {
   api.use('accounts-base');
   api.use('accounts-password');
 
-  api.addFiles('test/route_tests.coffee', 'server');
   api.addFiles('test/api_tests.coffee', 'server');
   api.addFiles('test/authentication_tests.coffee', 'server');
+  api.addFiles('test/route_unit_tests.coffee', 'server');
 });

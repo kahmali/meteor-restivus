@@ -7,25 +7,32 @@ class @Route
       @options = {}
 
 
-  addToApi: ->
-    self = this
-    methods = ['get', 'post', 'put', 'patch', 'delete', 'options']
-    allowedMethods = _.filter methods, (method) -> _.contains(_.keys(self.endpoints), method)
-    unallowedMethods = _.reject methods, (method) -> _.contains(_.keys(self.endpoints), method)
+  addToApi: do ->
+    availableMethods = ['get', 'post', 'put', 'patch', 'delete', 'options']
 
-    do =>
+    return ->
+      self = this
 
       # Throw an error if a route has already been added at this path
       # TODO: Check for collisions with paths that follow same pattern with different parameter names
       if _.contains @api.config.paths, @path
         throw new Error "Cannot add a route at an existing path: #{@path}"
 
+      # Override the default OPTIONS endpoint with our own (if it's defined)
+      if @api.config.defaultOptionsEndpoint
+        @endpoints = _.extend options: @api.config.defaultOptionsEndpoint, @endpoints
+
       # Configure each endpoint on this route
       @_resolveEndpoints()
       @_configureEndpoints()
 
-      # Add the path to our list of existing paths
+      # Add to our list of existing paths
       @api.config.paths.push @path
+
+      allowedMethods = _.filter availableMethods, (method) ->
+        _.contains(_.keys(self.endpoints), method)
+      rejectedMethods = _.reject availableMethods, (method) ->
+        _.contains(_.keys(self.endpoints), method)
 
       # Setup endpoints on route
       fullPath = @api.config.apiPath + @path
@@ -70,7 +77,7 @@ class @Route
             self._respond res, responseData.body, responseData.statusCode, responseData.headers
           else
             self._respond res, responseData
-      _.each unallowedMethods, (method) ->
+      _.each rejectedMethods, (method) ->
         JsonRoutes.add method, fullPath, (req, res, next) ->
           responseData = status: 'error', message: 'API endpoint does not exist'
           headers = 'Allow': allowedMethods.join(', ').toUpperCase()
@@ -91,7 +98,8 @@ class @Route
 
 
   ###
-    Configure the authentication and role requirement on an endpoint
+    Configure the authentication and role requirement on all endpoints (except OPTIONS, which must
+    be configured directly on the endpoint)
 
     Once it's globally configured in the API, authentication can be required on an entire route or
     individual endpoints. If required on an entire route, that serves as the default. If required in
@@ -105,26 +113,27 @@ class @Route
     @param {Endpoint} endpoint The endpoint to configure
   ###
   _configureEndpoints: ->
-    _.each @endpoints, (endpoint) ->
+    _.each @endpoints, (endpoint, method) ->
+      if method isnt 'options'
         # Configure acceptable roles
-      if not @options?.roleRequired
-        @options.roleRequired = []
-      if not endpoint.roleRequired
-        endpoint.roleRequired = []
-      endpoint.roleRequired = _.union endpoint.roleRequired, @options.roleRequired
-      # Make it easier to check if no roles are required
-      if _.isEmpty endpoint.roleRequired
-        endpoint.roleRequired = false
+        if not @options?.roleRequired
+          @options.roleRequired = []
+        if not endpoint.roleRequired
+          endpoint.roleRequired = []
+        endpoint.roleRequired = _.union endpoint.roleRequired, @options.roleRequired
+        # Make it easier to check if no roles are required
+        if _.isEmpty endpoint.roleRequired
+          endpoint.roleRequired = false
 
-      # Configure auth requirement
-      if not @api.config.useAuth
-        endpoint.authRequired = false
-      else if endpoint.authRequired is undefined
-        if @options?.authRequired or endpoint.roleRequired
-          endpoint.authRequired = true
-        else
+        # Configure auth requirement
+        if not @api.config.useAuth
           endpoint.authRequired = false
-      return
+        else if endpoint.authRequired is undefined
+          if @options?.authRequired or endpoint.roleRequired
+            endpoint.authRequired = true
+          else
+            endpoint.authRequired = false
+        return
     , this
     return
 

@@ -249,18 +249,6 @@ but all properties are optional):
 - The base path for your API. If you use `'api'` and add a route called `'users'`, the URL will be
   `https://yoursite.com/api/users/`.
 
-##### `defaultHeaders`
-- _Object_
-- Default: `{ 'Content-Type': 'application/json' }`
-- The response headers that will be returned from every endpoint by default. These can be overridden 
-  by [returning `headers` of the same name from any endpoint](#response-data). 
-
-##### `useAuth`
-- _Boolean_
-- Default: `false`
-- If `true`, `POST /login` and `GET /logout` endpoints are added to the API. You can access
-  `this.user` and `this.userId` in [authenticated](#authenticating) endpoints.
-
 ##### `auth`
 - _Object_
   - `token`  _String_
@@ -297,10 +285,26 @@ but all properties are optional):
           successfully authenticated the user (by whatever means you deem necessary). The given user
           is simply attached to the [endpoint context](#endpoint-context), no questions asked.
 
-##### `prettyJson`
+##### `defaultHeaders`
+- _Object_
+- Default: `{ 'Content-Type': 'application/json' }`
+- The response headers that will be returned from every endpoint by default. These can be overridden 
+  by [returning `headers` of the same name from any endpoint](#response-data). 
+
+##### `defaultOptionsEndpoint`
+- [_Endpoint_](#endpoint-configuration)
+- Default: undefined
+- If an endpoint is provided, it will be used as the OPTIONS endpoint on all routes, except those 
+  that have one manually defined. This can be used to DRY up your API, since OPTIONS endpoints will
+  frequently [respond generically](http://zacstewart.com/2012/04/14/http-options-method.html) across 
+  all routes. 
+
+##### `enableCors`
 - _Boolean_
-- Default: `false`
-- If `true`, render formatted JSON in response.
+- Default: `true`
+- If true, enables cross-origin resource sharing ([CORS]). This allows your API to receive requests 
+  from _any_ domain (when `false`, the API will only accept requests from the domain where the API 
+  is being hosted. _Note: Only applies to requests originating from browsers)._
 
 ##### `onLoggedIn`
 - _Function_
@@ -316,13 +320,16 @@ but all properties are optional):
   the `/logout` endpoint. [Context](#endpoint-context) is the same as within authenticated
   endpoints. Any returned data will be added to the response body as `data.extra` (coming soon).
 
-##### `useClientRouter`
+##### `prettyJson`
 - _Boolean_
-- Default: `true`
-- If `false`, disable Iron Router on the client. This is recommended if you're not using Iron Router
-  for your client-side routing. **Note: Since this needs to be configured on the client, you must
-  call `Restivus.configure()` in a file available on both the client and server (e.g., common.js)
-  for this to actually take effect.**
+- Default: `false`
+- If `true`, render formatted JSON in response.
+
+##### `useAuth`
+- _Boolean_
+- Default: `false`
+- If `true`, `POST /login` and `GET /logout` endpoints are added to the API. You can access
+  `this.user` and `this.userId` in [authenticated](#authenticating) endpoints.
 
 ```coffeescript
   Restivus.configure
@@ -338,13 +345,6 @@ but all properties are optional):
     onLoggedOut: -> console.log "#{@user.username} (#{@userId}) logged out"
     useClientRouter: false
 ```
-
-##### `enableCors`
-- _Boolean_
-- Default: `true`
-- If true, enables cross-origin resource sharing ([CORS]). This allows your API to receive requests 
-  from _any_ domain (when `false`, the API will only accept requests from the domain where the API 
-  is being hosted. _Note: Only applies to requests originating from browsers)._
 
 ## Defining Collection Routes
 

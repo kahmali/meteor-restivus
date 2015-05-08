@@ -1,6 +1,10 @@
 # Change Log
 
 ## Unreleased
+
+#### Added
+- API configuration option for defining a default OPTIONS endpoint (used on any route that doesn't 
+  define it's own OPTIONS endpoint)
     
 #### Changed
 - Remove the non-standard `deleteAll` collection endpoint, as it had the potential to be quite 
