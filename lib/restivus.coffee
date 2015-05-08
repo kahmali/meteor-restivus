@@ -273,6 +273,10 @@ class @Restivus
       post: ->
         # Grab the username or email that the user is logging in with
         user = {}
+        if @bodyParams.user is undefined || @bodyParams.password is undefined
+          return {} =
+          statusCode: 400,
+          body: {status: "error", message: "user or password missing"}
         if @bodyParams.user.indexOf('@') is -1
           user.username = @bodyParams.user
         else
