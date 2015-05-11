@@ -1,4 +1,5 @@
-# Restivus 
+# Restivus [![Build Status](https://travis-ci.org/kahmali/meteor-restivus.svg)](https://travis-ci.org/kahmali/meteor-restivus)
+
 #### REST APIs for the Best of Us!
 
 Restivus makes building REST APIs in Meteor 0.9.0+ easier than ever before! The package is inspired

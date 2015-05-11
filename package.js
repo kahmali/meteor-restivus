@@ -33,9 +33,9 @@ Package.onTest(function (api) {
   api.use('nimble:restivus');
   api.use('http');
   api.use('coffeescript');
-  api.use('peterellisjones:describe');
   api.use('accounts-base');
   api.use('accounts-password');
+  api.use('practicalmeteor:munit');
 
   api.addFiles('test/api_tests.coffee', 'server');
   api.addFiles('test/authentication_tests.coffee', 'server');
