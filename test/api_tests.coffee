@@ -72,7 +72,7 @@ Meteor.startup ->
         test.isTrue route.endpoints.get.authRequired
         test.equal route.endpoints.get.roleRequired, ['admin']
 
-  describe 'A authentication endpoint', ->
+  describe 'A default login endpoint', ->
     it 'should return error when user or password not provided', (test, next) ->
       HTTP.post 'http://localhost:3000/api/v1/login', (error, result) ->
         response = JSON.parse result.content
