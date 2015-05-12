@@ -271,6 +271,12 @@ class @Restivus
     ###
     @addRoute 'login', {authRequired: false},
       post: ->
+        # Validate if user and password is provided in request
+        if @bodyParams.user is undefined or @bodyParams.password is undefined
+          return {} =
+            statusCode: 400,
+            body: {status: "error", message: "User or password missing"}
+
         # Grab the username or email that the user is logging in with
         user = {}
         if @bodyParams.user.indexOf('@') is -1

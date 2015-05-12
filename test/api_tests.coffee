@@ -72,6 +72,14 @@ Meteor.startup ->
         test.isTrue route.endpoints.get.authRequired
         test.equal route.endpoints.get.roleRequired, ['admin']
 
+  describe 'A default login endpoint', ->
+    it 'should return error when user or password not provided', (test, next) ->
+      HTTP.post 'http://localhost:3000/api/v1/login', (error, result) ->
+        response = JSON.parse result.content
+        test.isTrue error
+        test.equal result.statusCode, 400
+        test.equal response.status, 'error'
+        test.equal response.message, 'User or password missing'
 
   describe 'A collection route', ->
     it 'should be able to exclude endpoints using just the excludedEndpoints option', (test, next) ->
