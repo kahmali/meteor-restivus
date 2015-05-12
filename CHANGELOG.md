@@ -1,5 +1,11 @@
 # Change Log
 
+## [v0.6.6] - 2015-05-12
+
+#### Changed
+- Default login response when no user or password provided is now 400 (with error message "User or password missing")
+  instead of 500 with internal error message
+    
 ## [v0.6.5] - 2015-04-27
 
 #### Fixed
