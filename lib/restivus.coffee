@@ -140,28 +140,28 @@ class @Restivus
         action: ->
           entity = collection.findOne @urlParams.id
           if entity
-            {status: "success", data: entity}
+            {status: 'success', data: entity}
           else
             statusCode: 404
-            body: {status: "fail", message: "Item not found"}
+            body: {status: 'fail', message: 'Item not found'}
     put: (collection) ->
       put:
         action: ->
           entityIsUpdated = collection.update @urlParams.id, @bodyParams
           if entityIsUpdated
             entity = collection.findOne @urlParams.id
-            {status: "success", data: entity}
+            {status: 'success', data: entity}
           else
             statusCode: 404
-            body: {status: "fail", message: "Item not found"}
+            body: {status: 'fail', message: 'Item not found'}
     delete: (collection) ->
       delete:
         action: ->
           if collection.remove @urlParams.id
-            {status: "success", data: message: "Item removed"}
+            {status: 'success', data: message: 'Item removed'}
           else
             statusCode: 404
-            body: {status: "fail", message: "Item not found"}
+            body: {status: 'fail', message: 'Item not found'}
     post: (collection) ->
       post:
         action: ->
@@ -169,19 +169,19 @@ class @Restivus
           entity = collection.findOne entityId
           if entity
             statusCode: 201
-            body: {status: "success", data: entity}
+            body: {status: 'success', data: entity}
           else
             statusCode: 400
-            body: {status: "fail", message: "No item added"}
+            body: {status: 'fail', message: 'No item added'}
     getAll: (collection) ->
       get:
         action: ->
           entities = collection.find().fetch()
           if entities
-            {status: "success", data: entities}
+            {status: 'success', data: entities}
           else
             statusCode: 404
-            body: {status: "fail", message: "Unable to retrieve items from collection"}
+            body: {status: 'fail', message: 'Unable to retrieve items from collection'}
 
 
   ###*
@@ -193,10 +193,10 @@ class @Restivus
         action: ->
           entity = collection.findOne @urlParams.id, fields: profile: 1
           if entity
-            {status: "success", data: entity}
+            {status: 'success', data: entity}
           else
             statusCode: 404
-            body: {status: "fail", message: "User not found"}
+            body: {status: 'fail', message: 'User not found'}
     put: (collection) ->
       put:
         action: ->
@@ -206,15 +206,15 @@ class @Restivus
             {status: "success", data: entity}
           else
             statusCode: 404
-            body: {status: "fail", message: "User not found"}
+            body: {status: 'fail', message: 'User not found'}
     delete: (collection) ->
       delete:
         action: ->
           if collection.remove @urlParams.id
-            {status: "success", data: message: "User removed"}
+            {status: 'success', data: message: 'User removed'}
           else
             statusCode: 404
-            body: {status: "fail", message: "User not found"}
+            body: {status: 'fail', message: 'User not found'}
     post: (collection) ->
       post:
         action: ->
@@ -223,19 +223,19 @@ class @Restivus
           entity = collection.findOne entityId, fields: profile: 1
           if entity
             statusCode: 201
-            body: {status: "success", data: entity}
+            body: {status: 'success', data: entity}
           else
             statusCode: 400
-            {status: "fail", message: "No user added"}
+            {status: 'fail', message: 'No user added'}
     getAll: (collection) ->
       get:
         action: ->
           entities = collection.find({}, fields: profile: 1).fetch()
           if entities
-            {status: "success", data: entities}
+            {status: 'success', data: entities}
           else
             statusCode: 404
-            body: {status: "fail", message: "Unable to retrieve users"}
+            body: {status: 'fail', message: 'Unable to retrieve users'}
 
 
   ###
@@ -264,7 +264,7 @@ class @Restivus
         catch e
           return {} =
             statusCode: e.error
-            body: status: "error", message: e.reason
+            body: status: 'error', message: e.reason
 
         # Get the authenticated user
         # TODO: Consider returning the user in Auth.loginWithPassword(), instead of fetching it again here
@@ -280,7 +280,7 @@ class @Restivus
         # Call the login hook with the authenticated user attached
         self.config.onLoggedIn.call this
 
-        {status: "success", data: auth}
+        {status: 'success', data: auth}
 
     ###
       Add a logout endpoint to the API
@@ -307,6 +307,6 @@ class @Restivus
         # Call the logout hook with the logged out user attached
         self.config.onLoggedOut?.call this
 
-        {status: "success", data: message: 'You\'ve been logged out!'}
+        {status: 'success', data: message: 'You\'ve been logged out!'}
 
 Restivus = new @Restivus

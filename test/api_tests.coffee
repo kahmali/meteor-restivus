@@ -312,8 +312,8 @@ Meteor.startup ->
       Restivus.addRoute 'context/:test',
         post: ->
           test.equal @urlParams.test, '100'
-          test.equal @queryParams.test, "query"
-          test.equal @bodyParams.test, "body"
+          test.equal @queryParams.test, 'query'
+          test.equal @bodyParams.test, 'body'
           test.isNotNull @request
           test.isNotNull @response
           test.isTrue _.isFunction @done

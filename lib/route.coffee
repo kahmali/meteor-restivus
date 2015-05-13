@@ -150,10 +150,10 @@ class @Route
         endpoint.action.call endpointContext
       else
         statusCode: 403
-        body: {status: "error", message: "You do not have permission to do this."}
+        body: {status: 'error', message: 'You do not have permission to do this.'}
     else
       statusCode: 401
-      body: {status: "error", message: "You must be logged in to do this."}
+      body: {status: 'error', message: 'You must be logged in to do this.'}
 
 
   ###
