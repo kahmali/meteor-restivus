@@ -1024,12 +1024,7 @@ return {
     'Content-Type': 'text/plain',
     'X-Custom-Header': 'custom value'
   },
-  body: {
-    status: 'success',
-    data: {
-      message: 'There is nothing here!'
-    }
-  }
+  body: 'There is nothing here!'
 };
 ```
 
