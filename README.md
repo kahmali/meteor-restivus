@@ -92,7 +92,7 @@ if Meteor.isServer
 ```javascript
 Items = new Mongo.Collection('items');
 
-if(Meteor.isServer) {
+if (Meteor.isServer) {
 
   // Global API configuration
   Restivus.configure({
@@ -233,6 +233,9 @@ _**Route:**_
 - A URL path and its set of configurable endpoints
 
 # Writing A Restivus API
+
+Restivus is a **server-only** package. Attempting to access any of its methods from the client will 
+result in an error.
 
 ## Configuration Options
 

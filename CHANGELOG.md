@@ -1,5 +1,11 @@
 # Change Log
 
+## Unreleased
+
+#### Fixed
+- Issue #68:
+  - Make Restivus a server-only package (`Restivus` is now `undefined` on the client)
+
 ## [v0.6.5] - 2015-04-27
 
 #### Fixed
