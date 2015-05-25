@@ -5,6 +5,12 @@
 #### Fixed
 - Issue #68:
   - Make Restivus a server-only package (`Restivus` is now `undefined` on the client)
+  
+#### Changed
+- Improve the Contributing Guidelines
+  - Tighten up some conventions
+  - Add more detailed information
+
 
 ## [v0.6.5] - 2015-04-27
 
