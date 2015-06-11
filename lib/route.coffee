@@ -159,10 +159,10 @@ class @Route
     auth = @api.config.auth.user.call(endpointContext)
 
     # Get the user from the database
-    if not auth?.user and auth?.userId and auth?.token
+    if auth?.userId and auth?.token and not auth?.user
       userSelector = {}
       userSelector._id = auth.userId
-      userSelector[@api.config.auth.token] = auth.token
+      userSelector[@api.config.auth.token] = Accounts._hashLoginToken auth.token
       auth.user = Meteor.users.findOne userSelector
 
     # Attach the user and their ID to the context if the authentication was successful

@@ -1,5 +1,20 @@
 # Change Log
 
+## [Unreleased]
+
+#### Warning - Potentially breaking change
+- Restivus used to store the account login token in the user document: `services.resume.loginTokens.token`
+- Restivus now stores the account login token as a hashed token, in the user document: `services.resume.loginTokens.hashedToken`
+- This means that all clients consuming a Restivus API will need to reauthenticate with their 
+  username/email and password after this update, as their existing tokens will be rendered invalid.
+
+#### Changed
+- Update default auth endpoints to match current Accounts token storage (see #79)
+- Return "Unauthorized" for failed authentication
+- To match Meteor, store password token as `hashedToken`
+- Add unit tests for authentication
+  
+
 ## [v0.6.6] - 2015-05-25
 
 #### Fixed
