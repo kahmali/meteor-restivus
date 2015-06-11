@@ -1,6 +1,11 @@
 # Change Log
 
-## [Unreleased] - 2015-06-11
+## [Unreleased]
+
+#### Warning - Potentially breaking change
+- Restivus used to store the account login token in the user document: services.resume.loginTokens.token
+- Restivus now stores the account login token as a hashed token, in the user document: services.resume.loginTokens.hashedToken
+- This matches Meteor Accounts package
 
 #### Fixed
 - Issue #79:
