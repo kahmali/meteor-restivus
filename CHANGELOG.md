@@ -12,6 +12,7 @@
 - Update default auth endpoints to match current Accounts token storage (see #79)
 - Return "Unauthorized" for failed authentication
 - To match Meteor, store password token as `hashedToken`
+- When logging in with bad credentials, randomly delay the response (See #81)
 - Add unit tests for authentication
   
 
