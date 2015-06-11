@@ -10,8 +10,6 @@
 #### Fixed
 - Issue #79:
   - Update to match standard Meteor login and Account token storage
-- Issue #81:
-  - When I login with bad credentials, I should get a randomly delayed response
 
 #### Changed
 - Return "Unauthorized" for failed authentication
