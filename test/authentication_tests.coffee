@@ -50,9 +50,7 @@ Meteor.startup ->
 
         next()
 
-    it 'should not allow a user with wrong password to login and respond after 500 msec', (test, next) ->
-      #This test should take 500 msec or more. To speed up testing, I have added it here.
-      startTime = new Date()
+    it 'should not allow a user with wrong password to login', (test, next) ->
       HTTP.post Meteor.absoluteUrl('/api/v1/login'), {
         data:
           user: username
@@ -61,8 +59,6 @@ Meteor.startup ->
         response = JSON.parse result.content
         test.equal result.statusCode, 403
         test.equal response.status, 'error'
-        durationInMilliseconds = new Date() - startTime
-        test.isTrue durationInMilliseconds >= 500
 
         next()
 
@@ -77,11 +73,10 @@ Meteor.startup ->
         test.equal response.status, 'success'
         next()
 
-    it 'should remove the logout token after logging out and respond after 500 msec', (test, next) ->
+    it 'should remove the logout token after logging out', (test, next) ->
       Restivus.addRoute 'prevent-access-after-logout', {authRequired: true},
         get: -> true
-      #This test should take 500 msec or more. To speed up testing, I have added it here.
-      startTime = new Date()
+
       HTTP.get Meteor.absoluteUrl('/api/v1/prevent-access-after-logout'), {
         headers:
           'X-User-Id': userId
@@ -91,8 +86,6 @@ Meteor.startup ->
         test.isTrue error
         test.equal result.statusCode, 401
         test.equal response.status, 'error'
-        durationInMilliseconds = new Date() - startTime
-        test.isTrue durationInMilliseconds >= 500
         next()
 
     it 'should allow a second logged in user to logout', (test, next) ->
