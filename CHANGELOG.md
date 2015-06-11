@@ -1,5 +1,19 @@
 # Change Log
 
+## [Unreleased] - 2015-06-11
+
+#### Fixed
+- Issue #79:
+  - Update to match standard Meteor login and Account token storage
+- Issue #81:
+  - When I login with bad credentials, I should get a randomly delayed response
+
+#### Changed
+- Return "Unauthorized" for failed authentication
+- To match Meteor, storepassword token as hashedToken
+- Add unit tests for authentication
+  
+
 ## [v0.6.6] - 2015-05-25
 
 #### Fixed
