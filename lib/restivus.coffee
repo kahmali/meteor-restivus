@@ -9,7 +9,7 @@ class @Restivus
       version: 1
       prettyJson: false
       auth:
-        token: 'services.resume.loginTokens.token'
+        token: 'services.resume.loginTokens.hashedToken'
         user: ->
           userId: @request.headers['x-user-id']
           token: @request.headers['x-auth-token']
@@ -289,10 +289,12 @@ class @Restivus
         # Get the authenticated user
         # TODO: Consider returning the user in Auth.loginWithPassword(), instead of fetching it again here
         if auth.userId and auth.authToken
+          searchQuery = {}
+          searchQuery[self.config.auth.token] = Accounts._hashLoginToken auth.authToken
           @user = Meteor.users.findOne
             '_id': auth.userId
-            'services.resume.loginTokens.token': auth.authToken
-          @userId = @user._id
+            searchQuery
+          @userId = @user?._id
 
         # TODO: Add any return data to response as data.extra
         # Call the login hook with the authenticated user attached
@@ -309,11 +311,19 @@ class @Restivus
       get: ->
         # Remove the given auth token from the user's account
         authToken = @request.headers['x-auth-token']
-        Meteor.users.update @user._id, {$pull: {'services.resume.loginTokens': {token: authToken}}}
+        hashedToken = Accounts._hashLoginToken authToken
+        tokenPaths = self.config.auth.token.split '.'
+        tokenPrefix = tokenPaths[..-2].join '.'
+        tokenSuffix = tokenPaths[-1..][0]
+        pullQueryTarget = {}
+        pullQueryTarget[tokenSuffix] = hashedToken
+        pullQuery = {}
+        pullQuery[tokenPrefix] = pullQueryTarget
+        Meteor.users.update @user._id, {$pull: pullQuery}
 
         # TODO: Add any return data to response as data.extra
         # Call the logout hook with the logged out user attached
-        self.config.onLoggedOut.call this
+        self.config.onLoggedOut?.call this
 
         {status: "success", data: message: 'You\'ve been logged out!'}
 
