@@ -208,8 +208,15 @@ class @Route
     # Send response
     endpointContext.response.writeHead statusCode, headers
     endpointContext.response.write body
-    endpointContext.response.end()
-
+    switch statusCode
+        when 401, 403
+            # This is a simple, but not really adequate way to slow down unauthorized scans of the server.
+            # It is not sufficient because hackers can DDOS across multiple threads and systems.
+            timeoutInMilliseconds = 500
+            timeoutInMilliseconds *= (1 + Math.random())
+            Meteor.setTimeout endpointContext.response.end, timeoutInMilliseconds
+        else
+            endpointContext.response.end()
 
   ###
     Return the object with all of the keys converted to lowercase
