@@ -15,6 +15,7 @@ Package.onUse(function (api) {
   api.use('coffeescript');
   api.use('underscore');
   api.use('iron:router@1.0.6');
+  api.use('accounts-base');
 
   // Package files
   api.addFiles('lib/restivus.coffee', 'server');
@@ -33,7 +34,10 @@ Package.onTest(function (api) {
   api.use('http');
   api.use('coffeescript');
   api.use('peterellisjones:describe');
+  api.use('accounts-base');
+  api.use('accounts-password');
 
   api.addFiles('test/route_tests.coffee', 'server');
   api.addFiles('test/api_tests.coffee', 'server');
+  api.addFiles('test/authentication_tests.coffee', 'server');
 });

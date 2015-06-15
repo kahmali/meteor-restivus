@@ -41,4 +41,4 @@ if Meteor.isServer
        test.equal Restivus.config.apiPath, 'api/'
        test.isFalse Restivus.config.useAuth
        test.isFalse Restivus.config.prettyJson
-       test.equal Restivus.config.auth.token, 'services.resume.loginTokens.token'
+       test.equal Restivus.config.auth.token, 'services.resume.loginTokens.hashedToken'

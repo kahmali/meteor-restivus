@@ -263,8 +263,8 @@ but all properties are optional):
 ##### `auth`
 - _Object_
   - `token`  _String_
-    - Default: `'services.resume.loginTokens.token'`
-    - The path to the auth token in the `Meteor.user` document. This location will be checked for a
+    - Default: `'services.resume.loginTokens.hashedToken'`
+    - The path to the hashed auth token in the `Meteor.user` document. This location will be checked for a
       matching token if one is returned in `auth.user()`.
   - `user`  _Function_
     - Default: Get user ID and auth token from `X-User-Id` and `X-Auth-Token` headers
@@ -286,7 +286,8 @@ but all properties are optional):
       - Partial auth
         - `userId`: The ID of the user being authenticated
         - `token`: The auth token to be verified
-        - If both a `userId` and `token` are returned, authentication will succeed if the `token`
+        - If both a `userId` and `token` are returned, Restivus will hash the token, then,
+          authentication will succeed if the `hashedToken`
           exists in the given `Meteor.user` document at the location specified in `auth.token`
       - Complete auth
         - `user`: The fully authenticated `Meteor.user`
