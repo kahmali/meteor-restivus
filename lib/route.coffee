@@ -207,8 +207,19 @@ class @Route
     # Send response
     endpointContext.response.writeHead statusCode, headers
     endpointContext.response.write body
-    endpointContext.response.end()
-
+    if statusCode in [401, 403]
+      # Hackers can measure the response time to determine things like whether the 401 response was 
+      # caused by bad user id vs bad password.
+      # In doing so, they can first scan for valid user ids regardless of valid passwords.
+      # Delay by a random amount to reduce the ability for a hacker to determine the response time.
+      # See https://www.owasp.org/index.php/Blocking_Brute_Force_Attacks#Finding_Other_Countermeasures
+      # See https://en.wikipedia.org/wiki/Timing_attack
+      minimumDelayInMilliseconds = 500
+      randomMultiplierBetweenOneAndTwo = 1 + Math.random()
+      delayInMilliseconds = minimumDelayInMilliseconds * randomMultiplierBetweenOneAndTwo
+      Meteor.setTimeout endpointContext.response.end, delayInMilliseconds
+    else
+      endpointContext.response.end()
 
   ###
     Return the object with all of the keys converted to lowercase
