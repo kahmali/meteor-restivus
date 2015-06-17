@@ -10,10 +10,9 @@
 
 #### Changed
 - Update default auth endpoints to match current Accounts token storage (see #79)
-- Return "Unauthorized" for failed authentication
-- To match Meteor, store password token as `hashedToken`
+  - Login token is now stored as `hashedToken` instead of `token`
+- Return `401 Unauthorized` for failed authentication
 - When logging in with bad credentials, randomly delay the response (See #81)
-- Add unit tests for authentication
   
 
 ## [v0.6.6] - 2015-05-25

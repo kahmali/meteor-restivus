@@ -59,7 +59,7 @@ Meteor.startup ->
           password: "NotAllowed"
       }, (error, result) ->
         response = JSON.parse result.content
-        test.equal result.statusCode, 403
+        test.equal result.statusCode, 401
         test.equal response.status, 'error'
         durationInMilliseconds = new Date() - startTime
         test.isTrue durationInMilliseconds >= 500
