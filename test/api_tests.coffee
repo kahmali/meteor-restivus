@@ -43,11 +43,6 @@ Meteor.startup ->
         Restivus.configure
           apiPath: 'api/v1'
           useAuth: true
-          auth:
-            token: 'services.resume.loginTokens.hashedToken'
-            user: ->
-              userId: @request.headers['x-user-id']
-              token: @request.headers['x-auth-token']
           defaultHeaders:
             'Content-Type': 'text/json'
             'X-Test-Header': 'test header'

@@ -5,7 +5,7 @@
 #### Warning - Potentially breaking change
 - Restivus used to store the account login token in the user document: `services.resume.loginTokens.token`
 - Restivus now stores the account login token as a hashed token, in the user document: `services.resume.loginTokens.hashedToken`
-- This means that all clients consuming a Restivus API will need to reauthenticate with their 
+- This means that all clients consuming a Restivus API _with default authentication_ will need to reauthenticate with their 
   username/email and password after this update, as their existing tokens will be rendered invalid.
 
 #### Changed
