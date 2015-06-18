@@ -2,14 +2,12 @@
 
 ## [Unreleased]
 
-#### Warning - Potentially breaking change
-- Restivus used to store the account login token in the user document: `services.resume.loginTokens.token`
-- Restivus now stores the account login token as a hashed token, in the user document: `services.resume.loginTokens.hashedToken`
-- This means that all clients consuming a Restivus API _with default authentication_ will need to reauthenticate with their 
-  username/email and password after this update, as their existing tokens will be rendered invalid.
+**_WARNING!_ Potentially breaking changes! Please be aware when upgrading!**
 
 #### Changed
 - Update default auth endpoints to match current Accounts token storage (see #79)
+  - **_WARNING!_ All clients consuming a Restivus API _with the default authentication_ will need to 
+    reauthenticate after this update**
   - Login token is now stored as `hashedToken` instead of `token`
 - Return `401 Unauthorized` for failed authentication
 - When logging in with bad credentials, randomly delay the response (See #81)
@@ -82,6 +80,7 @@
 
 
 ## [v0.6.1] - 2015-02-19
+
 **_WARNING!_ API-breaking changes! Please be aware when upgrading!**
 
 #### Fixed
@@ -94,6 +93,7 @@
 
 
 ## [v0.6.0] - 2015-02-17
+
 **_WARNING!_ Do not use v0.6.0! Please upgrade to v0.6.1 or above.**
 **_WARNING!_ API-breaking changes! Please be aware when upgrading!**
 

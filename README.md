@@ -164,8 +164,8 @@ if (Meteor.isServer) {
 
 ## Table of Contents
 
-- [Upgrading from 0.5.x](#upgrading-from-05x)
-- [Upgrading from 0.6.0](#upgrading-from-060)
+- [Upgrading to 0.7.0](#upgrading-to-070)
+- [Upgrading to 0.6.1](#upgrading-to-061)
 - [Terminology](#terminology)
 - [Writing a Restivus API](#writing-a-restivus-api)
   - [Configuration Options](#configuration-options)
@@ -192,7 +192,19 @@ if (Meteor.isServer) {
   - [Change Log](#change-log)
   - [Contributing](#contributing)
 
-## Upgrading from 0.5.x
+## Upgrading to 0.7.0
+
+**_WARNING!_ All clients consuming a Restivus API _with the default authentication_ will need to 
+reauthenticate after this update**
+
+Restivus used to store the account login token in the `Meteor.user` document at 
+`services.resume.loginTokens.token`. Now, to match Meteor's current implementation, the account 
+login token is stored as a hashed token at `services.resume.loginTokens.hashedToken`. This means 
+that all clients using the default authentication in a Restivus API will need to reauthenticate with 
+their username/email and password after this update, as their existing tokens will be rendered 
+invalid.
+
+## Upgrading to 0.6.1
 
 Restivus v0.6.1 brings support for easily generating REST endpoints for your Mongo Collections, and
 with that comes a few API-breaking changes:
@@ -207,17 +219,6 @@ with that comes a few API-breaking changes:
 
 Please see the [change log][restivus-change-log] for more information about the changes between each
 version.
-
-## Upgrading from 0.6.0
-
-**_WARNING!_ Do not use v0.6.0! Please upgrade to v0.6.1 or above.**
-
-v0.6.0 does not allow you to work with existing collections, or access collections created in
-Restivus elsewhere in your app, which is not the intended behavior. Since Meteor expects you to
-construct each collection only once (using `new Mongo.Collection()`), and store that globally,
-Restivus now requires that you pass an existing collection in `Restivus.addCollection()`. Please
-check out the updated section on [defining collection routes](#defining-collection-routes) for a
-detailed breakdown of the parameters to `Restivus.addCollection()`.
 
 ## Terminology
 
@@ -272,7 +273,7 @@ but all properties are optional):
         function() {
           return {
             userId: this.request.headers['x-user-id'],
-            token: this.request.headers['x-auth-token']
+            token: Accounts._hashLoginToken(this.request.headers['x-auth-token'])
           };
         }
         ```
