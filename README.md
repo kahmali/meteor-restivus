@@ -757,23 +757,23 @@ pass it `test/path`, the full path will be `https://yoursite.com/api/test/path`.
 Paths can have variable parameters. For example, you can create a route to show a post with a
 specific id. The `id` is variable depending on the post you want to see such as "/posts/1" or
 "/posts/2". To declare a named parameter in the path, use the `:` syntax followed by the parameter
-name. When a user goes to that url, the actual value of the parameter will be stored as a property
+name. When a user goes to that URL, the actual value of the parameter will be stored as a property
 on `this.urlParams` in your endpoint function.
 
-In this example we have a parameter named `_id`. If we navigate to the `/post/5` url in our browser,
+In this example we have a parameter named `_id`. If we navigate to the `/post/5` URL in our browser,
 inside of the GET endpoint function we can get the actual value of the `_id` from
 `this.urlParams._id`. In this case `this.urlParams._id => 5`.
 
 ###### CoffeeScript:
 ```coffeescript
-# Given a url like "/post/5"
+# Given a URL like "/post/5"
 Restivus.addRoute '/post/:_id',
   get: ->
     id = @urlParams._id # "5"
 ```
 ###### JavaScript:
 ```javascript
-// Given a url "/post/5"
+// Given a URL "/post/5"
 Restivus.addRoute('/post/:_id', {
   get: function () {
     var id = this.urlParams._id; // "5"
@@ -782,12 +782,12 @@ Restivus.addRoute('/post/:_id', {
 ```
 
 You can have multiple URL parameters. In this example, we have an `_id` parameter and a `commentId`
-parameter. If you navigate to the url `/post/5/comments/100` then inside your endpoint function
+parameter. If you navigate to the URL `/post/5/comments/100` then inside your endpoint function
 `this.urlParams._id => 5` and `this.urlParams.commentId => 100`.
 
 ###### CoffeeScript:
 ```coffeescript
-# Given a url "/post/5/comments/100"
+# Given a URL "/post/5/comments/100"
 Restivus.addRoute '/post/:_id/comments/:commentId',
   get: ->
     id = @urlParams._id # "5"
@@ -796,7 +796,7 @@ Restivus.addRoute '/post/:_id/comments/:commentId',
 
 ###### JavaScript:
 ```javascript
-// Given a url "/post/5/comments/100"
+// Given a URL "/post/5/comments/100"
 Restivus.addRoute('/post/:_id/comments/:commentId', {
   get: function () {
     var id = this.urlParams._id; // "5"
@@ -805,11 +805,11 @@ Restivus.addRoute('/post/:_id/comments/:commentId', {
 });
 ```
 
-If there is a query string in the url, you can access that using `this.queryParams`.
+If there is a query string in the URL, you can access that using `this.queryParams`.
 
 ###### Coffeescript:
 ```coffeescript
-# Given the url: "/post/5?q=liked#hash_fragment"
+# Given the URL: "/post/5?q=liked#hash_fragment"
 Restivus.addRoute '/post/:_id',
   get: ->
     id = @urlParams._id
@@ -818,7 +818,7 @@ Restivus.addRoute '/post/:_id',
 
 ###### JavaScript:
 ```javascript
-// Given the url: "/post/5?q=liked#hash_fragment"
+// Given the URL: "/post/5?q=liked#hash_fragment"
 Restivus.addRoute('/post/:_id', {
   get: function () {
     var id = this.urlParams._id;
@@ -963,7 +963,7 @@ Each endpoint has access to:
 
 ##### `this.queryParams`
 - _Object_
-- Optional query parameters from the URL. Given the url `https://yoursite.com/posts?likes=true`,
+- Optional query parameters from the URL. Given the URL `https://yoursite.com/posts?likes=true`,
   `this.queryParams.likes => true`.
 
 ##### `this.bodyParams`
