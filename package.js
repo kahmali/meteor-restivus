@@ -17,10 +17,10 @@ Package.onUse(function (api) {
   api.use('accounts-base@1.2.0');
   api.use('simple:json-routes@1.0.2');
 
-  api.addFiles('lib/restivus.coffee', 'server');
+  api.addFiles('lib/auth.coffee', 'server');
   api.addFiles('lib/iron-router-error-to-response.js', 'server');
   api.addFiles('lib/route.coffee', 'server');
-  api.addFiles('lib/auth.coffee', 'server');
+  api.addFiles('lib/restivus.coffee', 'server');
 
   // Exports
   api.export('Restivus', 'server');
@@ -29,15 +29,15 @@ Package.onUse(function (api) {
 
 Package.onTest(function (api) {
   // Meteor dependencies
+  api.use('practicalmeteor:munit');
   api.use('test-helpers');
   api.use('nimble:restivus');
   api.use('http');
   api.use('coffeescript');
   api.use('accounts-base');
   api.use('accounts-password');
-  api.use('practicalmeteor:munit');
 
   api.addFiles('test/api_tests.coffee', 'server');
-  api.addFiles('test/authentication_tests.coffee', 'server');
   api.addFiles('test/route_unit_tests.coffee', 'server');
+  api.addFiles('test/authentication_tests.coffee', 'server');
 });

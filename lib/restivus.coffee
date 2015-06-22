@@ -1,8 +1,8 @@
 class @Restivus
 
-  constructor: ->
-    @routes = []
-    @config =
+  constructor: (options) ->
+    @_routes = []
+    @_config =
       paths: []
       useAuth: false
       apiPath: 'api/'
@@ -18,56 +18,47 @@ class @Restivus
       defaultHeaders:
         'Content-Type': 'application/json'
       enableCors: true
-    @configured = false
-
-
-  ###*
-    Configure the ReST API
-
-    Must be called exactly once, from anywhere on the server.
-  ###
-  configure: (config) =>
-    if @configured
-      throw new Error 'Restivus.configure() can only be called once'
-
-    @configured = true
 
     # Configure API with the given options
-    _.extend @config, config
+    _.extend @_config, options
 
     # Set default header to enable CORS if configured
-    if @config.enableCors
-      _.extend @config.defaultHeaders, 'Access-Control-Allow-Origin': '*'
+    if @_config.enableCors
+      _.extend @_config.defaultHeaders, 'Access-Control-Allow-Origin': '*'
 
     # Normalize the API path
-    if @config.apiPath[0] is '/'
-      @config.apiPath = @config.apiPath.slice 1
-    if _.last(@config.apiPath) isnt '/'
-      @config.apiPath = @config.apiPath + '/'
-
-    # Add any existing routes to the API now that it's configured
-    _.each @routes, (route) -> route.addToApi()
+    if @_config.apiPath[0] is '/'
+      @_config.apiPath = @_config.apiPath.slice 1
+    if _.last(@_config.apiPath) isnt '/'
+      @_config.apiPath = @_config.apiPath + '/'
 
     # Add default login and logout endpoints if auth is configured
-    if @config.useAuth
+    if @_config.useAuth
       @_initAuth()
-      console.log "Restivus configured at #{@config.apiPath} with authentication"
-    else
-      console.log "Restivus configured at #{@config.apiPath} without authentication"
-    return
+
+    return this
 
 
   ###*
     Add endpoints for the given HTTP methods at the given path
-  ###
-  addRoute: (path, options, methods) ->
-    # Create a new route and add it to our list of existing routes
-    route = new Route(this, path, options, methods)
-    @routes.push(route)
 
-    # Don't add the route to the API until the API has been configured
-    route.addToApi() if @configured
-    return
+    @param path {String} The extended URL path (will be appended to base path of the API)
+    @param options {Object} Route configuration options
+    @param options.authRequired {Boolean} The default auth requirement for each endpoint on the route
+    @param options.roleRequired {String or String[]} The default role required for each endpoint on the route
+    @param endpoints {Object} A set of endpoints available on the new route (get, post, put, patch, delete, options)
+    @param endpoints.<method> {Function or Object} If a function is provided, all default route
+        configuration options will be applied to the endpoint. Otherwise an object with an `action`
+        and all other route config options available. An `action` must be provided with the object.
+  ###
+  addRoute: (path, options, endpoints) ->
+    # Create a new route and add it to our list of existing routes
+    route = new Route(this, path, options, endpoints)
+    @_routes.push(route)
+
+    route.addToApi()
+
+    return this
 
 
   ###*
@@ -128,7 +119,7 @@ class @Restivus
     @addRoute path, routeOptions, collectionRouteEndpoints
     @addRoute "#{path}/:id", routeOptions, entityRouteEndpoints
 
-    return
+    return this
 
 
   ###*
@@ -270,7 +261,7 @@ class @Restivus
         # TODO: Consider returning the user in Auth.loginWithPassword(), instead of fetching it again here
         if auth.userId and auth.authToken
           searchQuery = {}
-          searchQuery[self.config.auth.token] = Accounts._hashLoginToken auth.authToken
+          searchQuery[self._config.auth.token] = Accounts._hashLoginToken auth.authToken
           @user = Meteor.users.findOne
             '_id': auth.userId
             searchQuery
@@ -278,7 +269,7 @@ class @Restivus
 
         # TODO: Add any return data to response as data.extra
         # Call the login hook with the authenticated user attached
-        self.config.onLoggedIn.call this
+        self._config.onLoggedIn.call this
 
         {status: 'success', data: auth}
 
@@ -293,7 +284,7 @@ class @Restivus
         # Remove the given auth token from the user's account
         authToken = @request.headers['x-auth-token']
         hashedToken = Accounts._hashLoginToken authToken
-        tokenLocation = self.config.auth.token
+        tokenLocation = self._config.auth.token
         index = tokenLocation.lastIndexOf '.'
         tokenPath = tokenLocation.substring 0, index
         tokenFieldName = tokenLocation.substring index + 1
@@ -305,8 +296,9 @@ class @Restivus
 
         # TODO: Add any return data to response as data.extra
         # Call the logout hook with the logged out user attached
-        self.config.onLoggedOut?.call this
+        self._config.onLoggedOut?.call this
 
         {status: 'success', data: message: 'You\'ve been logged out!'}
 
-Restivus = new @Restivus
+
+Restivus = @Restivus

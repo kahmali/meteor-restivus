@@ -15,19 +15,19 @@ class @Route
 
       # Throw an error if a route has already been added at this path
       # TODO: Check for collisions with paths that follow same pattern with different parameter names
-      if _.contains @api.config.paths, @path
+      if _.contains @api._config.paths, @path
         throw new Error "Cannot add a route at an existing path: #{@path}"
 
       # Override the default OPTIONS endpoint with our own (if it's defined)
-      if @api.config.defaultOptionsEndpoint
-        @endpoints = _.extend options: @api.config.defaultOptionsEndpoint, @endpoints
+      if @api._config.defaultOptionsEndpoint
+        @endpoints = _.extend options: @api._config.defaultOptionsEndpoint, @endpoints
 
       # Configure each endpoint on this route
       @_resolveEndpoints()
       @_configureEndpoints()
 
       # Add to our list of existing paths
-      @api.config.paths.push @path
+      @api._config.paths.push @path
 
       allowedMethods = _.filter availableMethods, (method) ->
         _.contains(_.keys(self.endpoints), method)
@@ -35,10 +35,10 @@ class @Route
         _.contains(_.keys(self.endpoints), method)
 
       # Setup endpoints on route
-      fullPath = @api.config.apiPath + @path
+      fullPath = @api._config.apiPath + @path
       _.each allowedMethods, (method) ->
         endpoint = self.endpoints[method]
-        JsonRoutes.add method, fullPath, (req, res, next) ->
+        JsonRoutes.add method, fullPath, (req, res) ->
           # Add function to endpoint context for indicating a response has been initiated manually
           responseInitiated = false
           doneFunc = ->
@@ -78,7 +78,7 @@ class @Route
           else
             self._respond res, responseData
       _.each rejectedMethods, (method) ->
-        JsonRoutes.add method, fullPath, (req, res, next) ->
+        JsonRoutes.add method, fullPath, (req, res) ->
           responseData = status: 'error', message: 'API endpoint does not exist'
           headers = 'Allow': allowedMethods.join(', ').toUpperCase()
           self._respond res, responseData, 405, headers
@@ -126,7 +126,7 @@ class @Route
           endpoint.roleRequired = false
 
         # Configure auth requirement
-        if not @api.config.useAuth
+        if not @api._config.useAuth
           endpoint.authRequired = false
         else if endpoint.authRequired is undefined
           if @options?.authRequired or endpoint.roleRequired
@@ -180,13 +180,13 @@ class @Route
   ###
   _authenticate: (endpointContext) ->
     # Get auth info
-    auth = @api.config.auth.user.call(endpointContext)
+    auth = @api._config.auth.user.call(endpointContext)
 
     # Get the user from the database
     if auth?.userId and auth?.token and not auth?.user
       userSelector = {}
       userSelector._id = auth.userId
-      userSelector[@api.config.auth.token] = auth.token
+      userSelector[@api._config.auth.token] = auth.token
       auth.user = Meteor.users.findOne userSelector
 
     # Attach the user and their ID to the context if the authentication was successful
@@ -218,13 +218,13 @@ class @Route
   _respond: (response, body, statusCode=200, headers={}) ->
     # Override any default headers that have been provided (keys are normalized to be case insensitive)
     # TODO: Consider only lowercasing the header keys we need normalized, like Content-Type
-    defaultHeaders = @_lowerCaseKeys @api.config.defaultHeaders
+    defaultHeaders = @_lowerCaseKeys @api._config.defaultHeaders
     headers = @_lowerCaseKeys headers
     headers = _.extend defaultHeaders, headers
 
     # Prepare JSON body for response when Content-Type indicates JSON type
     if headers['content-type'].match(/json|javascript/) isnt null
-      if @api.config.prettyJson
+      if @api._config.prettyJson
         body = JSON.stringify body, undefined, 2
       else
         body = JSON.stringify body

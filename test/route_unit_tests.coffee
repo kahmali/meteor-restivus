@@ -1,7 +1,8 @@
 describe 'A route', =>
+  Api = new Restivus
 
   it 'can be constructed with options', (test) =>
-    route = new @Route new @Restivus, 'test-route-1', {authRequired: true, roleRequired: ['admin', 'dev']},
+    route = new @Route Api, 'test-route-1', {authRequired: true, roleRequired: ['admin', 'dev']},
       get: -> 'GET test-route-1'
 
     test.equal route.path, 'test-route-1'
@@ -11,14 +12,14 @@ describe 'A route', =>
     test.equal route.endpoints.get(), 'GET test-route-1'
 
   it 'can be constructed without options', (test) =>
-    route = new @Route new @Restivus, 'test-route-2',
+    route = new @Route Api, 'test-route-2',
       get: -> 'GET test-route-2'
 
     test.equal route.path, 'test-route-2'
     test.equal route.endpoints.get(), 'GET test-route-2'
 
   it 'should support endpoints for all HTTP methods', (test) =>
-    route = new @Route new @Restivus, 'test-route-3',
+    route = new @Route Api, 'test-route-3',
       get: -> 'GET test-route-2'
       post: -> 'POST test-route-2'
       put: -> 'PUT test-route-2'
@@ -36,7 +37,7 @@ describe 'A route', =>
 
   describe 'that\'s initialized without options', =>
    it 'should have the default configuration', (test) =>
-     test.equal Restivus.config.apiPath, 'api/'
-     test.isFalse Restivus.config.useAuth
-     test.isFalse Restivus.config.prettyJson
-     test.equal Restivus.config.auth.token, 'services.resume.loginTokens.hashedToken'
+     test.equal Api._config.apiPath, 'api/'
+     test.isFalse Api._config.useAuth
+     test.isFalse Api._config.prettyJson
+     test.equal Api._config.auth.token, 'services.resume.loginTokens.hashedToken'

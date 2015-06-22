@@ -34,24 +34,28 @@ And to update Restivus to the latest version:
 
 ## Quick Start
 
+Often, the easiest way to explain something is by example, so here's a short example of what it's 
+like to create an API with Restivus (keep scrolling for a JavaScript version): 
+
 ###### CoffeeScript:
 ```coffeescript
 Items = new Mongo.Collection 'items'
 
+# Restivus is only available on the server!
 if Meteor.isServer
 
   # Global API configuration
-  Restivus.configure
+  Api = new Restivus
     useAuth: true
     prettyJson: true
 
   # Generates: GET, POST on /api/items and GET, PUT, DELETE on
   # /api/items/:id for Items collection
-  Restivus.addCollection Items
+  Api.addCollection Items
 
   # Generates: POST on /api/users and GET, DELETE /api/users/:id for
   # Meteor.users collection
-  Restivus.addCollection Meteor.users,
+  Api.addCollection Meteor.users,
     excludedEndpoints: ['getAll', 'put']
     routeOptions:
       authRequired: true
@@ -62,7 +66,7 @@ if Meteor.isServer
         roleRequired: 'admin'
 
   # Maps to: /api/posts/:id
-  Restivus.addRoute 'posts/:id', authRequired: true,
+  Api.addRoute 'posts/:id', authRequired: true,
     get: ->
       post = Posts.findOne @urlParams.id
       if post
@@ -96,18 +100,18 @@ Items = new Mongo.Collection('items');
 if (Meteor.isServer) {
 
   // Global API configuration
-  Restivus.configure({
+  var Api = new Restivus({
     useAuth: true,
     prettyJson: true
   });
 
   // Generates: GET, POST on /api/items and GET, PUT, DELETE on
   // /api/items/:id for Items collection
-  Restivus.addCollection(Items);
+  Api.addCollection(Items);
 
   // Generates: POST on /api/users and GET, DELETE /api/users/:id for
   // Meteor.users collection
-  Restivus.addCollection(Meteor.users, {
+  Api.addCollection(Meteor.users, {
     excludedEndpoints: ['getAll', 'put'],
     routeOptions: {
       authRequired: true
@@ -123,7 +127,7 @@ if (Meteor.isServer) {
   });
 
   // Maps to: /api/posts/:id
-  Restivus.addRoute('posts/:id', {authRequired: true}, {
+  Api.addRoute('posts/:id', {authRequired: true}, {
     get: function () {
       var post = Posts.findOne(this.urlParams.id);
       if (post) {
@@ -162,7 +166,7 @@ if (Meteor.isServer) {
   });
 }
 ```
-
+Note that if you run Meteor from a git checkout, you cannot pin apps to specific
 ## Table of Contents
 
 - [Upgrading to 0.7.0](#upgrading-to-070)
@@ -236,13 +240,13 @@ _**Route:**_
 
 # Writing A Restivus API
 
-Restivus is a **server-only** package. Attempting to access any of its methods from the client will 
-result in an error.
+**Restivus is a _server-only_ package. Attempting to access any of its methods from the client will 
+result in an error.**
 
 ## Configuration Options
 
-The following configuration options are available with `Restivus.configure` (must be called once,
-but all properties are optional):
+The following configuration options are available when initializing an API using 
+`new Restivus(options)`:
 
 ##### `apiPath`
 - _String_
@@ -254,8 +258,8 @@ but all properties are optional):
 - _Object_
   - `token`  _String_
     - Default: `'services.resume.loginTokens.hashedToken'`
-    - The path to the hashed auth token in the `Meteor.user` document. This location will be checked for a
-      matching token if one is returned in `auth.user()`.
+    - The path to the hashed auth token in the `Meteor.user` document. This location will be checked 
+      for a matching token if one is returned in `auth.user()`.
   - `user`  _Function_
     - Default: Get user ID and auth token from `X-User-Id` and `X-Auth-Token` headers
         ```javascript
@@ -332,8 +336,9 @@ but all properties are optional):
 - If `true`, `POST /login` and `GET /logout` endpoints are added to the API. You can access
   `this.user` and `this.userId` in [authenticated](#authenticating) endpoints.
 
+###### CoffeeScript
 ```coffeescript
-  Restivus.configure
+  new Restivus
     useAuth: true
     apiPath: 'my-api/'
     prettyJson: true
@@ -344,7 +349,30 @@ but all properties are optional):
         token: @request.headers['login-token']
     onLoggedIn: -> console.log "#{@user.username} (#{@userId}) logged in"
     onLoggedOut: -> console.log "#{@user.username} (#{@userId}) logged out"
-    useClientRouter: false
+```
+
+###### JavaScript
+```javascript
+  new Restivus({
+    useAuth: true,
+    apiPath: 'my-api/',
+    prettyJson: true,
+    auth: {
+      token: 'auth.apiKey',
+      user: function () {
+        return {
+          userId: this.request.headers['user-id'],
+          token: this.request.headers['login-token']
+        };
+      }
+    },
+    onLoggedIn: function () {
+      console.log(this.user.username + ' (' + this.userId + ') logged in');
+    },
+    onLoggedOut: function () {
+      console.log(this.user.username + ' (' + this.userId + ') logged out');
+    }
+  });
 ```
 
 ## Defining Collection Routes
@@ -352,7 +380,7 @@ but all properties are optional):
 One of the most common uses for a REST API is exposing a set of operations on your collections.
 Well, you're in luck, because this is almost _too easy_ with Restivus! All available REST endpoints
 (except `patch` and `options`, for now) can be generated for a Mongo Collection using
-`Restivus.addCollection()`. This generates two routes by default:
+`Restivus#addCollection()`. This generates two routes by default:
 
 **`/api/<collection>`**
 - Operations on the entire collection
@@ -364,14 +392,14 @@ Well, you're in luck, because this is almost _too easy_ with Restivus! All avail
 
 ### Collection
 
-The first - and only required - parameter of `Restivus.addCollection()` is a Mongo Collection.
+The first - and only required - parameter of `Restivus#addCollection()` is a Mongo Collection.
 Please check out the [Meteor docs](http://docs.meteor.com/#/full/collections) for more on creating
 collections. The `Meteor.users` collection will have [special endpoints]
 (#users-collection-endpoints) generated.
 
 ### Collection Options
 
-Route and endpoint configuration options are available in `Restivus.addCollection()` (as the 2nd,
+Route and endpoint configuration options are available in `Restivus#addCollection()` (as the 2nd,
 optional parameter).
 
 #### Route Configuration
@@ -584,7 +612,7 @@ collection.
 
 Create collection:
 ```javascript
-Restivus.addCollection(Meteor.users);
+Api.addCollection(Meteor.users);
 ```
 
 #### `post`
@@ -714,12 +742,12 @@ Response:
 
 ## Defining Custom Routes
 
-Routes are defined using `Restivus.addRoute()`. A route consists of a path and a set of endpoints
+Routes are defined using `Restivus#addRoute()`. A route consists of a path and a set of endpoints
 defined at that path.
 
 ### Path Structure
 
-The `path` is the 1st parameter of `Restivus.addRoute`. You can pass it a string or regex. If you
+The `path` is the 1st parameter of `Restivus#addRoute`. You can pass it a string or regex. If you
 pass it `test/path`, the full path will be `https://yoursite.com/api/test/path`.
 
 Paths can have variable parameters. For example, you can create a route to show a post with a
@@ -735,14 +763,14 @@ inside of the GET endpoint function we can get the actual value of the `_id` fro
 ###### CoffeeScript:
 ```coffeescript
 # Given a URL like "/post/5"
-Restivus.addRoute '/post/:_id',
+Api.addRoute '/post/:_id',
   get: ->
     id = @urlParams._id # "5"
 ```
 ###### JavaScript:
 ```javascript
 // Given a URL "/post/5"
-Restivus.addRoute('/post/:_id', {
+Api.addRoute('/post/:_id', {
   get: function () {
     var id = this.urlParams._id; // "5"
   }
@@ -756,7 +784,7 @@ parameter. If you navigate to the URL `/post/5/comments/100` then inside your en
 ###### CoffeeScript:
 ```coffeescript
 # Given a URL "/post/5/comments/100"
-Restivus.addRoute '/post/:_id/comments/:commentId',
+Api.addRoute '/post/:_id/comments/:commentId',
   get: ->
     id = @urlParams._id # "5"
     commentId = @urlParams.commentId # "100"
@@ -765,7 +793,7 @@ Restivus.addRoute '/post/:_id/comments/:commentId',
 ###### JavaScript:
 ```javascript
 // Given a URL "/post/5/comments/100"
-Restivus.addRoute('/post/:_id/comments/:commentId', {
+Api.addRoute('/post/:_id/comments/:commentId', {
   get: function () {
     var id = this.urlParams._id; // "5"
     var commentId = this.urlParams.commentId; // "100"
@@ -778,7 +806,7 @@ If there is a query string in the URL, you can access that using `this.queryPara
 ###### Coffeescript:
 ```coffeescript
 # Given the URL: "/post/5?q=liked#hash_fragment"
-Restivus.addRoute '/post/:_id',
+Api.addRoute '/post/:_id',
   get: ->
     id = @urlParams._id
     query = @queryParams # query.q -> "liked"
@@ -787,7 +815,7 @@ Restivus.addRoute '/post/:_id',
 ###### JavaScript:
 ```javascript
 // Given the URL: "/post/5?q=liked#hash_fragment"
-Restivus.addRoute('/post/:_id', {
+Api.addRoute('/post/:_id', {
   get: function () {
     var id = this.urlParams._id;
     var query = this.queryParams; // query.q -> "liked"
@@ -797,7 +825,7 @@ Restivus.addRoute('/post/:_id', {
 
 ### Route Options
 
-The following options are available in Restivus.addRoute (as the 2nd, optional parameter):
+The following options are available in `Restivus#addRoute` (as the 2nd, optional parameter):
 ##### `authRequired`
 - _Boolean_
 - Default: `false`
@@ -817,7 +845,7 @@ The following options are available in Restivus.addRoute (as the 2nd, optional p
 
 ### Defining Endpoints
 
-The last parameter of Restivus.addRoute is an object with properties corresponding to the supported
+The last parameter of `Restivus#addRoute` is an object with properties corresponding to the supported
 HTTP methods. At least one method must have an endpoint defined on it. The following endpoints can
 be defined in Restivus:
 - `get`
@@ -864,7 +892,7 @@ and will get their default values from the route.
 
 ###### CoffeeScript
 ```coffeescript
-Restivus.addRoute 'posts', {authRequired: true},
+Api.addRoute 'posts', {authRequired: true},
   get:
     authRequired: false
     action: ->
@@ -883,7 +911,7 @@ Restivus.addRoute 'posts', {authRequired: true},
 
 ###### JavaScript
 ```javascript
-Restivus.addRoute('posts', {authRequired: true}, {
+Api.addRoute('posts', {authRequired: true}, {
   get: function () {
     authRequired: false
     action: function () {
@@ -955,7 +983,7 @@ Each endpoint has access to:
   `this.response.writeHead()`. This must be called immediately before returning from an endpoint.
 
   ```javascript
-  Restivus.addRoute('manualResponse', {
+  Api.addRoute('manualResponse', {
     get: function () {
       console.log('Testing manual response');
       this.response.write('This is a manual response');
