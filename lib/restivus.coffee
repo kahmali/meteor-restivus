@@ -6,7 +6,7 @@ class @Restivus
       paths: []
       useAuth: false
       apiPath: 'api/'
-      version: 1
+      version: null
       prettyJson: false
       auth:
         token: 'services.resume.loginTokens.hashedToken'
@@ -31,6 +31,11 @@ class @Restivus
       @_config.apiPath = @_config.apiPath.slice 1
     if _.last(@_config.apiPath) isnt '/'
       @_config.apiPath = @_config.apiPath + '/'
+
+    # URL path versioning is the only type of API versioning currently available, so if a version is
+    # provided, append it to the base path of the API
+    if @_config.version
+      @_config.apiPath += @_config.version + '/'
 
     # Add default login and logout endpoints if auth is configured
     if @_config.useAuth

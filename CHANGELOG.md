@@ -4,6 +4,7 @@
 **_WARNING!_ API-breaking changes! Please be aware when upgrading!**
 
 #### Added
+- Support [API versioning][versioning an api] via URL path
 - API configuration option for defining a default OPTIONS endpoint (used on 
   any route that doesn't define it's own OPTIONS endpoint): `defaultOptionsEndpoint`
     
@@ -302,4 +303,5 @@
 [endpoint context]:              https://github.com/kahmali/meteor-restivus#endpoint-context            "Endpoint Context"
 [defining endpoints]:            https://github.com/kahmali/meteor-restivus#defining-endpoints          "Defining Endpoints"
 [route options]:                 https://github.com/kahmali/meteor-restivus#route-options               "Route Options"
+[versioning an api]:             https://github.com/kahmali/meteor-restivus#versioning-an-api           "Versioning an API"
 [jsend]:                         http://labs.omniti.com/labs/jsend                                      "JSend REST API Standard"

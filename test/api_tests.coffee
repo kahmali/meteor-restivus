@@ -1,6 +1,5 @@
 Meteor.startup ->
   Api = new Restivus
-    apiPath: 'api/v1'
     useAuth: true
     auth: token: 'apiKey'
     defaultHeaders:
@@ -12,14 +11,50 @@ Meteor.startup ->
       body: 'options'
 
   describe 'An API', ->
-    it 'should be configurable', (test) ->
+    it 'should allow the default configuration to be overridden', (test) ->
       config = Api._config
-      test.equal config.apiPath, 'api/v1/'
       test.equal config.useAuth, true
       test.equal config.auth.token, 'apiKey'
       test.equal config.defaultHeaders['Content-Type'], 'text/json'
       test.equal config.defaultHeaders['X-Test-Header'], 'test header'
       test.equal config.defaultHeaders['Access-Control-Allow-Origin'], '*'
+
+    it 'should append its version to the base URL path', (test, waitFor) ->
+      AppendVersion = new Restivus
+        version: 'v1'
+      config = AppendVersion._config
+      test.equal config.apiPath, 'api/v1/'
+
+      # Test with custom base path
+      AppendVersion2 = new Restivus
+        apiPath: 'test'
+        version: 'v1'
+      config = AppendVersion2._config
+      test.equal config.apiPath, 'test/v1/'
+
+    it 'should support multiple versions of the same endpoint', (test, waitFor) ->
+      ApiV1 = new Restivus version: 'v1'
+      ApiV1.addRoute 'multiple-versions',
+        get: ->
+          'get something'
+
+      ApiV2 = new Restivus version: 'v2'
+      ApiV2.addRoute 'multiple-versions',
+        get: ->
+          status: 'success'
+          data: 'get something different'
+
+      HTTP.get Meteor.absoluteUrl('api/v1/multiple-versions'), waitFor (error, result) ->
+        response = JSON.parse result.content
+        test.equal result.statusCode, 200
+        test.equal response, 'get something'
+
+      HTTP.get Meteor.absoluteUrl('api/v2/multiple-versions'), waitFor (error, result) ->
+        response = JSON.parse result.content
+        test.equal result.statusCode, 200
+        test.equal response.status, 'success'
+        test.equal response.data, 'get something different'
+
 
   describe 'An API route', ->
     it 'should use the default OPTIONS endpoint if none is defined for the requested method', (test, waitFor) ->
@@ -27,7 +62,7 @@ Meteor.startup ->
         get: ->
           'get'
 
-      HTTP.call 'OPTIONS', Meteor.absoluteUrl('api/v1/default-endpoints'), waitFor (error, result) ->
+      HTTP.call 'OPTIONS', Meteor.absoluteUrl('api/default-endpoints'), waitFor (error, result) ->
         response = result.content
         test.equal result.statusCode, 200
         test.equal response, 'options'
@@ -38,14 +73,14 @@ Meteor.startup ->
       Api.addCollection new Mongo.Collection('excluded-endpoints'),
         excludedEndpoints: ['get', 'getAll']
 
-      HTTP.get Meteor.absoluteUrl('api/v1/excluded-endpoints/10'), waitFor (error, result) ->
+      HTTP.get Meteor.absoluteUrl('api/excluded-endpoints/10'), waitFor (error, result) ->
         response = JSON.parse result.content
         test.isTrue error
         test.equal result.statusCode, 405
         test.equal response.status, 'error'
         test.equal response.message, 'API endpoint does not exist'
 
-      HTTP.get Meteor.absoluteUrl('api/v1/excluded-endpoints/'), waitFor (error, result) ->
+      HTTP.get Meteor.absoluteUrl('api/excluded-endpoints/'), waitFor (error, result) ->
         response = JSON.parse result.content
         test.isTrue error
         test.equal result.statusCode, 405
@@ -53,7 +88,7 @@ Meteor.startup ->
         test.equal response.message, 'API endpoint does not exist'
 
       # Make sure it doesn't exclude any endpoints it shouldn't
-      HTTP.post Meteor.absoluteUrl('api/v1/excluded-endpoints/'), {data: test: 'abc'}, waitFor (error, result) ->
+      HTTP.post Meteor.absoluteUrl('api/excluded-endpoints/'), {data: test: 'abc'}, waitFor (error, result) ->
         response = JSON.parse result.content
         test.equal result.statusCode, 201
         test.equal response.status, 'success'
@@ -64,7 +99,7 @@ Meteor.startup ->
       testId = null
 
       it 'should support a POST on api/collection', (test) ->
-        result = HTTP.post Meteor.absoluteUrl('api/v1/autogen'),
+        result = HTTP.post Meteor.absoluteUrl('api/autogen'),
           data:
             name: 'test name'
             description: 'test description'
@@ -79,7 +114,7 @@ Meteor.startup ->
         testId = responseData._id
 
       it 'should not support a DELETE on api/collection', (test, waitFor) ->
-        HTTP.del Meteor.absoluteUrl('api/v1/autogen'), waitFor (error, result) ->
+        HTTP.del Meteor.absoluteUrl('api/autogen'), waitFor (error, result) ->
           response = JSON.parse result.content
           test.isTrue error
           test.equal result.statusCode, 405
@@ -89,7 +124,7 @@ Meteor.startup ->
           test.equal response.message, 'API endpoint does not exist'
 
       it 'should support a PUT on api/collection/:id', (test) ->
-        result = HTTP.put Meteor.absoluteUrl("api/v1/autogen/#{testId}"),
+        result = HTTP.put Meteor.absoluteUrl("api/autogen/#{testId}"),
           data:
             name: 'update name'
             description: 'update description'
@@ -100,7 +135,7 @@ Meteor.startup ->
         test.equal responseData.name, 'update name'
         test.equal responseData.description, 'update description'
 
-        result = HTTP.put Meteor.absoluteUrl("api/v1/autogen/#{testId}"),
+        result = HTTP.put Meteor.absoluteUrl("api/autogen/#{testId}"),
           data:
             name: 'update name with no description'
         response = JSON.parse result.content
@@ -118,7 +153,7 @@ Meteor.startup ->
         get: ->
           true
 
-      result = HTTP.get Meteor.absoluteUrl 'api/v1/default-headers'
+      result = HTTP.get Meteor.absoluteUrl 'api/default-headers'
 
       test.equal result.statusCode, 200
       test.equal result.headers['content-type'], 'text/json'
@@ -135,7 +170,7 @@ Meteor.startup ->
           body:
             true
 
-      result = HTTP.get Meteor.absoluteUrl 'api/v1/override-default-headers'
+      result = HTTP.get Meteor.absoluteUrl 'api/override-default-headers'
 
       test.equal result.statusCode, 200
       test.equal result.headers['content-type'], 'application/json'
@@ -150,21 +185,21 @@ Meteor.startup ->
           test.equal @queryParams.key3, 'a1b2'
           true
 
-      HTTP.get Meteor.absoluteUrl('api/v1/mult-query-params?key1=1234&key2=abcd&key3=a1b2'), waitFor (error, result) ->
+      HTTP.get Meteor.absoluteUrl('api/mult-query-params?key1=1234&key2=abcd&key3=a1b2'), waitFor (error, result) ->
         test.isTrue result
 
     it 'should return a 405 error if that method is not implemented on the route', (test, waitFor) ->
       Api.addCollection new Mongo.Collection('method-not-implemented'),
         excludedEndpoints: ['get', 'getAll']
 
-      HTTP.get Meteor.absoluteUrl('api/v1/method-not-implemented/'), waitFor (error, result) ->
+      HTTP.get Meteor.absoluteUrl('api/method-not-implemented/'), waitFor (error, result) ->
         response = JSON.parse result.content
         test.isTrue error
         test.equal result.statusCode, 405
         test.equal response.status, 'error'
         test.equal response.message, 'API endpoint does not exist'
 
-      HTTP.get Meteor.absoluteUrl('api/v1/method-not-implemented/10'), waitFor (error, result) ->
+      HTTP.get Meteor.absoluteUrl('api/method-not-implemented/10'), waitFor (error, result) ->
         response = JSON.parse result.content
         test.isTrue error
         test.equal result.statusCode, 405
@@ -178,7 +213,7 @@ Meteor.startup ->
         get: ->
           null
 
-      HTTP.get Meteor.absoluteUrl('api/v1/null-response'), waitFor (error, result) ->
+      HTTP.get Meteor.absoluteUrl('api/null-response'), waitFor (error, result) ->
         test.isTrue error
         test.equal result.statusCode, 500
 
@@ -187,7 +222,7 @@ Meteor.startup ->
         get: ->
           undefined
 
-      HTTP.get Meteor.absoluteUrl('api/v1/undefined-response'), waitFor (error, result) ->
+      HTTP.get Meteor.absoluteUrl('api/undefined-response'), waitFor (error, result) ->
         test.isTrue error
         test.equal result.statusCode, 500
 
@@ -198,7 +233,7 @@ Meteor.startup ->
           @response.end()
           @done()
 
-      HTTP.get Meteor.absoluteUrl('api/v1/manual-response'), waitFor (error, result) ->
+      HTTP.get Meteor.absoluteUrl('api/manual-response'), waitFor (error, result) ->
         response = result.content
 
         test.equal result.statusCode, 200
@@ -210,7 +245,7 @@ Meteor.startup ->
           @response.write 'Testing this.end()'
           @done()
 
-      HTTP.get Meteor.absoluteUrl('api/v1/manual-response-no-end'), waitFor (error, result) ->
+      HTTP.get Meteor.absoluteUrl('api/manual-response-no-end'), waitFor (error, result) ->
         response = result.content
 
         test.isFalse error
@@ -224,7 +259,7 @@ Meteor.startup ->
           @response.write 'chunked response.'
           @done()
 
-      HTTP.get Meteor.absoluteUrl('api/v1/chunked-response'), waitFor (error, result) ->
+      HTTP.get Meteor.absoluteUrl('api/chunked-response'), waitFor (error, result) ->
         response = result.content
 
         test.equal result.statusCode, 200
@@ -235,7 +270,7 @@ Meteor.startup ->
 #        get: ->
 #          @response.write 'Testing'
 #
-#      HTTP.get Meteor.absoluteUrl('api/v1/manual-response-without-done'), waitFor (error, result) ->
+#      HTTP.get Meteor.absoluteUrl('api/manual-response-without-done'), waitFor (error, result) ->
 #        test.isTrue error
 #        test.equal result.statusCode, 500
 
@@ -246,7 +281,7 @@ Meteor.startup ->
             'Content-Type': 'text/plain'
           body: 'foo"bar'
 
-      HTTP.get Meteor.absoluteUrl('api/v1/plain-text-response'), waitFor (error, result) ->
+      HTTP.get Meteor.absoluteUrl('api/plain-text-response'), waitFor (error, result) ->
         response = result.content
         test.equal result.statusCode, 200
         test.equal response, 'foo"bar'
@@ -264,7 +299,7 @@ Meteor.startup ->
           test.isFalse @roleRequired
           true
 
-      result = HTTP.post Meteor.absoluteUrl('api/v1/context/100?test=query'),
+      result = HTTP.post Meteor.absoluteUrl('api/context/100?test=query'),
         data:
           test: 'body'
 
