@@ -4,15 +4,17 @@ class @Restivus
     @_routes = []
     @_config =
       paths: []
-      useAuth: false
+      useDefaultAuth: false
       apiPath: 'api/'
       version: null
       prettyJson: false
       auth:
         token: 'services.resume.loginTokens.hashedToken'
         user: ->
+          if @request.headers['x-auth-token']
+            token = Accounts._hashLoginToken @request.headers['x-auth-token']
           userId: @request.headers['x-user-id']
-          token: Accounts._hashLoginToken @request.headers['x-auth-token']
+          token: token
       onLoggedIn: -> {}
       onLoggedOut: -> {}
       defaultHeaders:
@@ -37,8 +39,8 @@ class @Restivus
     if @_config.version
       @_config.apiPath += @_config.version + '/'
 
-    # Add default login and logout endpoints if auth is configured
-    if @_config.useAuth
+    # Add default login and logout endpoints if auth is configured (legacy config name: useAuth)
+    if @_config.useDefaultAuth or @_config.useAuth
       @_initAuth()
 
     return this

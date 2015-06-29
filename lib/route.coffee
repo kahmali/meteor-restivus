@@ -101,9 +101,9 @@ class @Route
     Configure the authentication and role requirement on all endpoints (except OPTIONS, which must
     be configured directly on the endpoint)
 
-    Once it's globally configured in the API, authentication can be required on an entire route or
-    individual endpoints. If required on an entire route, that serves as the default. If required in
-    any individual endpoints, that will override the default.
+    Authentication can be required on an entire route or individual endpoints. If required on an
+    entire route, that serves as the default. If required in any individual endpoints, that will
+    override the default.
 
     After the endpoint is configured, all authentication and role requirements of an endpoint can be
     accessed at <code>endpoint.authRequired</code> and <code>endpoint.roleRequired</code>,
@@ -126,9 +126,7 @@ class @Route
           endpoint.roleRequired = false
 
         # Configure auth requirement
-        if not @api._config.useAuth
-          endpoint.authRequired = false
-        else if endpoint.authRequired is undefined
+        if endpoint.authRequired is undefined
           if @options?.authRequired or endpoint.roleRequired
             endpoint.authRequired = true
           else

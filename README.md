@@ -82,7 +82,7 @@ if Meteor.isServer
 
   # Global API configuration
   Api = new Restivus
-    useAuth: true
+    useDefaultAuth: true
     prettyJson: true
 
   # Generates: GET, POST on /api/items and GET, PUT, DELETE on
@@ -137,7 +137,7 @@ if (Meteor.isServer) {
 
   // Global API configuration
   var Api = new Restivus({
-    useAuth: true,
+    useDefaultAuth: true,
     prettyJson: true
   });
 
@@ -336,11 +336,11 @@ The following configuration options are available when initializing an API using
 - Default: `false`
 - If `true`, render formatted JSON in response.
 
-##### `useAuth`
+##### `useDefaultAuth`
 - _Boolean_
 - Default: `false`
-- If `true`, `POST /login` and `GET /logout` endpoints are added to the API. You can access
-  `this.user` and `this.userId` in [authenticated](#authenticating) endpoints.
+- If `true`, `POST /login` and `GET /logout` endpoints are added to the API. See [Authenticating]
+  (#authenticating) for details on using these endpoints.
 
 ##### `version`
 - _String_
@@ -378,7 +378,7 @@ configuration is not recommended):
     onLoggedIn: -> console.log "#{@user.username} (#{@userId}) logged in"
     onLoggedOut: -> console.log "#{@user.username} (#{@userId}) logged out"
     prettyJson: true
-    useAuth: true
+    useDefaultAuth: true
     version: 'v1'
 ```
 
@@ -405,7 +405,7 @@ configuration is not recommended):
       console.log(this.user.username + ' (' + this.userId + ') logged out');
     },
     prettyJson: true,
-    useAuth: true,
+    useDefaultAuth: true,
     version: 'v1'
   });
 ```
@@ -979,13 +979,13 @@ Each endpoint has access to:
 
 ##### `this.user`
 - _Meteor.user_
-- The authenticated `Meteor.user`. Only available if `useAuth` and `authRequired` are both `true`.
-  If not, it will be `undefined`.
+- The authenticated `Meteor.user`. Only available if `authRequired` is `true` and a user is 
+  successfully authenticated. If not, it will be `undefined`.
 
 ##### `this.userId`
 - _String_
-- The authenticated user's `Meteor.userId`. Only available if `useAuth` and `authRequired` are both
-  `true`. If not, it will be `undefined`.
+- The authenticated user's `Meteor.userId`. Only available if `authRequired` is `true` and a user is 
+  successfully authenticated. If not, it will be `undefined`.
 
 ##### `this.urlParams`
 - _Object_
@@ -1090,14 +1090,16 @@ their own convenience, while providing the latest and greatest API to those read
 Currently, there is only a single versioning strategy supported in Restivus: URL path versioning. In
 this strategy, the version of the API is appended to the base path of all routes belonging to that 
 API. This allows us to easily maintain multiple versions of an API, each with their own set of 
-configuration options. Here's a [good write-up](http://www.troyhunt.com/2014/02/your-api-versioning-is-wrong-which-is.html) on some of the different API versioning strategies.
+configuration options. Here's a [good write-up]
+(http://www.troyhunt.com/2014/02/your-api-versioning-is-wrong-which-is.html) on some of the 
+different API versioning strategies.
 
 ###### CoffeeScript
 ```coffeescript
 # Configure first version of the API
 ApiV1 = new Restivus
   version: 'v1'
-  useAuth: true
+  useDefaultAuth: true
   prettyJson: true
 
 # Maps to api/v1/items and api/v1/items/:id
@@ -1129,7 +1131,7 @@ ApiV2.addRoute 'custom',
 // Configure first version of the API
 var ApiV1 = new Restivus({
   version: 'v1',
-  useAuth: true,
+  useDefaultAuth: true,
   prettyJson: true
 });
 
@@ -1188,10 +1190,14 @@ curl -d "message=Some message details" http://localhost:3000/api/posts/3/comment
 
 **Warning: Make sure you're using HTTPS, otherwise this is insecure!**
 
-If you have `useAuth` set to `true`, you now have a `POST /api/login` endpoint that returns a
+_Note: To use the default authentication, you must first [create a user with the `accounts-password` 
+package](http://docs.meteor.com/#/full/accounts_passwords). You can do this with Restivus if you 
+[setup a POST collection endpoint for the `Meteor.users` collection](#users-collection-endpoints)._
+
+If you have `useDefaultAuth` set to `true`, you now have a `POST /api/login` endpoint that returns a
 `userId` and `authToken`. You must save these, and include them in subsequent requests.
 
-```bash
+```bash 
 curl http://localhost:3000/api/login/ -d "password=testpassword&user=test"
 ```
 
