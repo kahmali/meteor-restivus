@@ -205,8 +205,10 @@ class @Route
         body = JSON.stringify body
 
     # Send response
-    endpointContext.response.writeHead statusCode, headers
-    endpointContext.response.write body
+    sendResponse = ->
+      endpointContext.response.writeHead statusCode, headers
+      endpointContext.response.write body
+      endpointContext.response.end()
     if statusCode in [401, 403]
       # Hackers can measure the response time to determine things like whether the 401 response was 
       # caused by bad user id vs bad password.
@@ -217,9 +219,9 @@ class @Route
       minimumDelayInMilliseconds = 500
       randomMultiplierBetweenOneAndTwo = 1 + Math.random()
       delayInMilliseconds = minimumDelayInMilliseconds * randomMultiplierBetweenOneAndTwo
-      Meteor.setTimeout endpointContext.response.end, delayInMilliseconds
+      Meteor.setTimeout sendResponse, delayInMilliseconds
     else
-      endpointContext.response.end()
+      sendResponse()
 
   ###
     Return the object with all of the keys converted to lowercase
