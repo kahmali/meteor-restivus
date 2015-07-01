@@ -6,7 +6,7 @@ Meteor.startup ->
         test.equal Restivus.config.apiPath, 'api/'
         test.isFalse Restivus.config.useAuth
         test.isFalse Restivus.config.prettyJson
-        test.equal Restivus.config.auth.token, 'services.resume.loginTokens.token'
+        test.equal Restivus.config.auth.token, 'services.resume.loginTokens.hashedToken'
 
       it 'should allow you to add an unconfigured route', (test) ->
         Restivus.addRoute 'test1', {authRequired: true, roleRequired: 'admin'},
@@ -43,7 +43,6 @@ Meteor.startup ->
         Restivus.configure
           apiPath: 'api/v1'
           useAuth: true
-          auth: token: 'apiKey'
           defaultHeaders:
             'Content-Type': 'text/json'
             'X-Test-Header': 'test header'
@@ -51,7 +50,7 @@ Meteor.startup ->
         config = Restivus.config
         test.equal config.apiPath, 'api/v1/'
         test.equal config.useAuth, true
-        test.equal config.auth.token, 'apiKey'
+        test.equal config.auth.token, 'services.resume.loginTokens.hashedToken'
         test.equal config.defaultHeaders['Content-Type'], 'text/json'
         test.equal config.defaultHeaders['X-Test-Header'], 'test header'
         test.equal config.defaultHeaders['Access-Control-Allow-Origin'], '*'
@@ -105,7 +104,7 @@ Meteor.startup ->
             description: 'test description'
         response = JSON.parse result.content
         responseData = response.data
-        test.equal result.statusCode, 201
+        test.equal result.statusCode, 200
         test.equal response.status, 'success'
         test.equal responseData.name, 'test name'
         test.equal responseData.description, 'test description'

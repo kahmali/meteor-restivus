@@ -35,7 +35,7 @@ getUserQuerySelector = (user) ->
 ###
 @Auth.loginWithPassword = (user, password) ->
   if not user or not password
-    return undefined # TODO: Should we throw a more descriptive error here, or is that insecure?
+    throw new Meteor.Error 401, 'Unauthorized'
 
   # Validate the login input types
   check user, userValidator
@@ -46,17 +46,18 @@ getUserQuerySelector = (user) ->
   authenticatingUser = Meteor.users.findOne(authenticatingUserSelector)
 
   if not authenticatingUser
-    throw new Meteor.Error 403, 'User not found'
+    throw new Meteor.Error 401, 'Unauthorized'
   if not authenticatingUser.services?.password
-    throw new Meteor.Error 403, 'User has no password set'
+    throw new Meteor.Error 401, 'Unauthorized'
 
   # Authenticate the user's password
   passwordVerification = Accounts._checkPassword authenticatingUser, password
   if passwordVerification.error
-    throw new Meteor.Error 403, 'Incorrect password'
+    throw new Meteor.Error 401, 'Unauthorized'
 
   # Add a new auth token to the user's account
   authToken = Accounts._generateStampedLoginToken()
-  Meteor.users.update authenticatingUser._id, {$push: {'services.resume.loginTokens': authToken}}
+  hashedToken = Accounts._hashLoginToken authToken.token
+  Accounts._insertHashedLoginToken authenticatingUser._id, {hashedToken}
 
   return {authToken: authToken.token, userId: authenticatingUser._id}
