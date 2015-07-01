@@ -1,5 +1,11 @@
 # Change Log
 
+## Unreleased
+
+#### Fixed
+- Issue #95
+  - On 401, 403 errors, Restivus should wait before sending any data
+
 ## [v0.7.0] - 2015-06-18
 
 **_WARNING!_ Potentially breaking changes! Please be aware when upgrading!**
@@ -250,10 +256,7 @@
 
 
 
-<<<<<<< HEAD
-=======
 [v0.7.0]:  https://github.com/kahmali/meteor-restivus/compare/v0.6.6...v0.7.0 "Version 0.7.0"
->>>>>>> original/devel
 [v0.6.6]:  https://github.com/kahmali/meteor-restivus/compare/v0.6.5...v0.6.6 "Version 0.6.6"
 [v0.6.5]:  https://github.com/kahmali/meteor-restivus/compare/v0.6.4...v0.6.5 "Version 0.6.5"
 [v0.6.4]:  https://github.com/kahmali/meteor-restivus/compare/v0.6.3...v0.6.4 "Version 0.6.4"
