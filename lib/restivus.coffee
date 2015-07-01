@@ -284,6 +284,26 @@ class @Restivus
 
         {status: 'success', data: auth}
 
+    logout = ->
+      # Remove the given auth token from the user's account
+      authToken = @request.headers['x-auth-token']
+      hashedToken = Accounts._hashLoginToken authToken
+      tokenLocation = self._config.auth.token
+      index = tokenLocation.lastIndexOf '.'
+      tokenPath = tokenLocation.substring 0, index
+      tokenFieldName = tokenLocation.substring index + 1
+      tokenToRemove = {}
+      tokenToRemove[tokenFieldName] = hashedToken
+      tokenRemovalQuery = {}
+      tokenRemovalQuery[tokenPath] = tokenToRemove
+      Meteor.users.update @user._id, {$pull: tokenRemovalQuery}
+
+      # TODO: Add any return data to response as data.extra
+      # Call the logout hook with the logged out user attached
+      self._config.onLoggedOut?.call this
+
+      {status: 'success', data: message: 'You\'ve been logged out!'}
+
     ###
       Add a logout endpoint to the API
 
@@ -292,24 +312,9 @@ class @Restivus
     ###
     @addRoute 'logout', {authRequired: true},
       get: ->
-        # Remove the given auth token from the user's account
-        authToken = @request.headers['x-auth-token']
-        hashedToken = Accounts._hashLoginToken authToken
-        tokenLocation = self._config.auth.token
-        index = tokenLocation.lastIndexOf '.'
-        tokenPath = tokenLocation.substring 0, index
-        tokenFieldName = tokenLocation.substring index + 1
-        tokenToRemove = {}
-        tokenToRemove[tokenFieldName] = hashedToken
-        tokenRemovalQuery = {}
-        tokenRemovalQuery[tokenPath] = tokenToRemove
-        Meteor.users.update @user._id, {$pull: tokenRemovalQuery}
-
-        # TODO: Add any return data to response as data.extra
-        # Call the logout hook with the logged out user attached
-        self._config.onLoggedOut?.call this
-
-        {status: 'success', data: message: 'You\'ve been logged out!'}
-
+        console.warn "Warning: Default logout via GET will be removed in Restivus v1.0. Use POST instead."
+        console.warn "    See https://github.com/kahmali/meteor-restivus/issues/100"
+        return logout.call(this)
+      post: logout
 
 Restivus = @Restivus

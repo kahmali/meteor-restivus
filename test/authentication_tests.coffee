@@ -143,7 +143,7 @@ describe 'The default authentication endpoints', ->
 
 
   it 'should allow a user to logout', (test, waitFor) ->
-    HTTP.get Meteor.absoluteUrl('default-auth/logout'), {
+    HTTP.post Meteor.absoluteUrl('default-auth/logout'), {
       headers:
         'X-User-Id': userId
         'X-Auth-Token': token
@@ -170,7 +170,7 @@ describe 'The default authentication endpoints', ->
       test.isTrue durationInMilliseconds >= 500
 
   it 'should allow a second logged in user to logout', (test, waitFor) ->
-    HTTP.get Meteor.absoluteUrl('default-auth/logout'), {
+    HTTP.post Meteor.absoluteUrl('default-auth/logout'), {
       headers:
         'X-User-Id': userId
         'X-Auth-Token': emailLoginToken

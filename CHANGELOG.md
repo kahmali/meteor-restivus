@@ -1,5 +1,16 @@
 # Change Log
 
+## Unreleased
+
+#### Added 
+- Default logout endpoint at `POST /api/logout`
+
+#### Deprecated
+- Default logout endpoint at `GET /api/logout` (#100)
+  - Will be removed in v1.0
+  - Use `POST /api/logout` instead
+
+
 ## [v0.8.0] - 2015-07-06
 
 **_WARNING!_ API-breaking changes! Please be aware when upgrading!**
