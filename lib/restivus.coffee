@@ -39,9 +39,13 @@ class @Restivus
     if @_config.version
       @_config.apiPath += @_config.version + '/'
 
-    # Add default login and logout endpoints if auth is configured (legacy config name: useAuth)
-    if @_config.useDefaultAuth or @_config.useAuth
+    # Add default login and logout endpoints if auth is configured
+    if @_config.useDefaultAuth
       @_initAuth()
+    else if @_config.useAuth
+      @_initAuth()
+      console.warn 'Warning: useAuth API config option will be removed in Restivus v1.0 ' +
+          '\n    Use the useDefaultAuth option instead'
 
     return this
 

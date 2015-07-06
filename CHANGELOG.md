@@ -19,8 +19,10 @@
   - `403`: Role permission errors
   - `405`: API method not found (but route exists)
 - Remove dependency on `useAuth` API config option for endpoint authentication ([#49][])
-- Rename API config option `useAuth` to `useDefaultAuth` to better reflect it's purpose, which is to 
-  generate the default auth endpoints (`useAuth` will still work, for backwards-compatibility)
+  
+#### Deprecated
+- `useAuth` API config option (replaced with `useDefaultAuth` to better reflect it's purpose, which 
+  is to generate the default auth endpoints)
 
 #### Fixed
 - Iron Router related issues
