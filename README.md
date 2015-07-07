@@ -1204,12 +1204,12 @@ To update Restivus to the latest version:
 
 Or to update Restivus to a specific version:
 ```bash
-> meteor update nimble:restivus@<version_number>
+> meteor add nimble:restivus@=<version_number>
 ```
 
 For example, to update restivus to v0.7.0:
 ```bash
-> meteor update nimble:restivus@0.7.0
+> meteor add nimble:restivus@=0.7.0
 ```
 
 Please check the [change log][restivus-change-log] before updating, for more information about the 
