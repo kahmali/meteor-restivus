@@ -1,4 +1,4 @@
-# Restivus [v0.8.0](#upgrading-to-080) [![Build Status](https://travis-ci.org/kahmali/meteor-restivus.svg)](https://travis-ci.org/kahmali/meteor-restivus)
+# Restivus v0.8.1 [![Build Status](https://travis-ci.org/kahmali/meteor-restivus.svg)](https://travis-ci.org/kahmali/meteor-restivus)
 
 #### REST APIs for the Best of Us!
 

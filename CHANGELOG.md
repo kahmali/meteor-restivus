@@ -1,6 +1,6 @@
 # Change Log
 
-## Unreleased
+## [v0.8.1] - 2015-07-07
 
 #### Added 
 - Default logout endpoint at `POST /api/logout`
@@ -299,6 +299,7 @@ _Note: API-breaking changes are in **bold**_
 
 
 
+[v0.8.1]:  https://github.com/kahmali/meteor-restivus/compare/v0.8.0...v0.8.1 "Version 0.8.1"
 [v0.8.0]:  https://github.com/kahmali/meteor-restivus/compare/v0.7.1...v0.8.0 "Version 0.8.0"
 [v0.7.1]:  https://github.com/kahmali/meteor-restivus/compare/v0.7.0...v0.7.1 "Version 0.7.1"
 [v0.7.0]:  https://github.com/kahmali/meteor-restivus/compare/v0.6.6...v0.7.0 "Version 0.7.0"
