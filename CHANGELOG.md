@@ -1,5 +1,11 @@
 # Change Log
 
+## Unreleased
+
+#### Changed
+- Updated simple:json-routes to v1.0.4 to remove Connect deprecation warnings ([#118][])
+
+
 ## [v0.8.1] - 2015-07-07
 
 #### Added 
@@ -347,3 +353,4 @@ _Note: API-breaking changes are in **bold**_
 [#79]:                           https://github.com/kahmali/meteor-restivus/issues/79                   "Issue #79"
 [#81]:                           https://github.com/kahmali/meteor-restivus/issues/81                   "Issue #81"
 [#91]:                           https://github.com/kahmali/meteor-restivus/issues/91                   "Issue #91"
+[#118]:                          https://github.com/kahmali/meteor-restivus/issues/118                  "Issue #118"
