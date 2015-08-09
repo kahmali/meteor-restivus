@@ -75,6 +75,7 @@ like to create an API with Restivus (keep scrolling for a JavaScript version):
 ###### CoffeeScript:
 ```coffeescript
 Items = new Mongo.Collection 'items'
+Articles = new Mongo.Collection 'articles'
 
 # Restivus is only available on the server!
 if Meteor.isServer
@@ -100,37 +101,24 @@ if Meteor.isServer
       delete:
         roleRequired: 'admin'
 
-  # Maps to: /api/posts/:id
-  Api.addRoute 'posts/:id', authRequired: true,
-    get: ->
-      post = Posts.findOne @urlParams.id
-      if post
-        status: 'success', data: post
-      else
-        statusCode: 404
-        body: status: 'fail', message: 'Post not found'
-    post:
+  # Maps to: /api/articles/:id
+  Api.addRoute 'articles/:id', authRequired: true,
+    get: -> 
+      Articles.findOne @urlParams.id
+    delete:
       roleRequired: ['author', 'admin']
       action: ->
-        post = Posts.findOne @urlParams.id
-        if post
-          status: 'success', data: post
-        else
-          statusCode: 400
-          body: status: 'fail', message: 'Unable to add post'
-    delete:
-      roleRequired: 'admin'
-      action: ->
-        if Posts.remove @urlParams.id
-          status: 'success', data: message: 'Item removed'
+        if Articles.remove @urlParams.id
+          status: 'success', data: message: 'Article removed'
         else
           statusCode: 404
-          body: status: 'fail', message: 'Item not found'
+          body: status: 'fail', message: 'Article not found'
 ```
 
 ###### JavaScript:
 ```javascript
 Items = new Mongo.Collection('items');
+Articles = new Mongo.Collection('articles');
 
 if (Meteor.isServer) {
 
@@ -161,40 +149,20 @@ if (Meteor.isServer) {
     }
   });
 
-  // Maps to: /api/posts/:id
-  Api.addRoute('posts/:id', {authRequired: true}, {
+  // Maps to: /api/articles/:id
+  Api.addRoute('articles/:id', {authRequired: true}, {
     get: function () {
-      var post = Posts.findOne(this.urlParams.id);
-      if (post) {
-        return {status: 'success', data: post};
-      }
-      return {
-        statusCode: 404,
-        body: {status: 'fail', message: 'Post not found'}
-      };
-    },
-    post: {
-      roleRequired: ['author', 'admin'],
-      action: function () {
-        var post = Posts.findOne(this.urlParams.id);
-        if (post) {
-          return {status: 'success', data: post};
-        }
-        return {
-          statusCode: 400,
-          body: {status: 'fail', message: 'Unable to add post'}
-        };
-      }
+      return Articles.findOne(this.urlParams.id);
     },
     delete: {
-      roleRequired: 'admin',
+      roleRequired: ['author', 'admin'],
       action: function () {
-        if (Posts.remove(this.urlParams.id)) {
-          return {status: 'success', data: {message: 'Item removed'}};
+        if (Articles.remove(this.urlParams.id)) {
+          return {status: 'success', data: {message: 'Article removed'}};
         }
         return {
           statusCode: 404,
-          body: {status: 'fail', message: 'Item not found'}
+          body: {status: 'fail', message: 'Article not found'}
         };
       }
     }
@@ -512,7 +480,7 @@ otherwise indicated. Sample requests and responses for each endpoint are include
 #### `post`
 Request:
 ```bash
-curl -X POST http://localhost:3000/api/posts/ -d "title=Witty Title" -d "author=Jack Rose"
+curl -X POST http://localhost:3000/api/articles/ -d "title=Witty Title" -d "author=Jack Rose"
 ```
 
 Response:
@@ -532,7 +500,7 @@ Status Code: `201`
 #### `getAll`
 Request:
 ```bash
-curl -X GET http://localhost:3000/api/posts/
+curl -X GET http://localhost:3000/api/articles/
 ```
 
 Response:
@@ -557,7 +525,7 @@ Response:
 #### `get`
 Request:
 ```bash
-curl -X GET http://localhost:3000/api/posts/LrcEYNojn5N7NPRdo
+curl -X GET http://localhost:3000/api/articles/LrcEYNojn5N7NPRdo
 ```
 
 Response:
@@ -575,7 +543,7 @@ Response:
 #### `put`
 Request:
 ```bash
-curl -X PUT http://localhost:3000/api/posts/LrcEYNojn5N7NPRdo -d "title=Wittier Title" -d "author=Jaclyn Rose"
+curl -X PUT http://localhost:3000/api/articles/LrcEYNojn5N7NPRdo -d "title=Wittier Title" -d "author=Jaclyn Rose"
 ```
 
 Response:
@@ -593,7 +561,7 @@ Response:
 #### `delete`
 Request:
 ```bash
-curl -X DELETE http://localhost:3000/api/posts/LrcEYNojn5N7NPRdo
+curl -X DELETE http://localhost:3000/api/articles/LrcEYNojn5N7NPRdo
 ```
 
 Response:
@@ -757,8 +725,8 @@ The `path` is the 1st parameter of `Restivus#addRoute`. You can pass it a string
 pass it `test/path`, the full path will be `https://yoursite.com/api/test/path`.
 
 Paths can have variable parameters. For example, you can create a route to show a post with a
-specific id. The `id` is variable depending on the post you want to see such as "/posts/1" or
-"/posts/2". To declare a named parameter in the path, use the `:` syntax followed by the parameter
+specific id. The `id` is variable depending on the post you want to see such as "/articles/1" or
+"/articles/2". To declare a named parameter in the path, use the `:` syntax followed by the parameter
 name. When a user goes to that URL, the actual value of the parameter will be stored as a property
 on `this.urlParams` in your endpoint function.
 
@@ -898,46 +866,46 @@ and will get their default values from the route.
 
 ###### CoffeeScript
 ```coffeescript
-Api.addRoute 'posts', {authRequired: true},
+Api.addRoute 'articles', {authRequired: true},
   get:
     authRequired: false
     action: ->
-      # GET api/posts
+      # GET api/articles
   post: ->
-    # POST api/posts
+    # POST api/articles
   put: ->
-    # PUT api/posts
+    # PUT api/articles
   patch: ->
-    # PATCH api/posts
+    # PATCH api/articles
   delete: ->
-    # DELETE api/posts
+    # DELETE api/articles
   options: ->
-    # OPTIONS api/posts
+    # OPTIONS api/articles
 ```
 
 ###### JavaScript
 ```javascript
-Api.addRoute('posts', {authRequired: true}, {
+Api.addRoute('articles', {authRequired: true}, {
   get: function () {
     authRequired: false,
     action: function () {
-      // GET api/posts
+      // GET api/articles
     }
   },
   post: function () {
-    // POST api/posts
+    // POST api/articles
   },
   put: function () {
-    // PUT api/posts
+    // PUT api/articles
   },
   patch: function () {
-    // PATCH api/posts
+    // PATCH api/articles
   },
   delete: function () {
-    // DELETE api/posts
+    // DELETE api/articles
   },
   options: function () {
-    // OPTIONS api/posts
+    // OPTIONS api/articles
   }
 });
 ```
@@ -960,12 +928,12 @@ Each endpoint has access to:
 
 ##### `this.urlParams`
 - _Object_
-- Non-optional parameters extracted from the URL. A parameter `id` on the path `posts/:id` would be
+- Non-optional parameters extracted from the URL. A parameter `id` on the path `articles/:id` would be
   available as `this.urlParams.id`.
 
 ##### `this.queryParams`
 - _Object_
-- Optional query parameters from the URL. Given the URL `https://yoursite.com/posts?likes=true`,
+- Optional query parameters from the URL. Given the URL `https://yoursite.com/articles?likes=true`,
   `this.queryParams.likes => true`.
 
 ##### `this.bodyParams`
@@ -1151,10 +1119,10 @@ The following uses the above code.
 
 ## Basic Usage
 
-We can call our `POST /posts/:id/comments` endpoint the following way. Note the /api/ in the URL
+We can call our `POST /articles/:id/comments` endpoint the following way. Note the /api/ in the URL
 (defined with the api_path option above):
 ```bash
-curl -d "message=Some message details" http://localhost:3000/api/posts/3/comments
+curl -d "message=Some message details" http://localhost:3000/api/articles/3/comments
 ```
 
 ## Authenticating
@@ -1192,7 +1160,7 @@ For any endpoints that require the default authentication, you must include the 
 - X-Auth-Token
 
 ```bash
-curl -H "X-Auth-Token: f2KpRW7KeN9aPmjSZ" -H "X-User-Id: fbdpsNf4oHiX79vMJ" http://localhost:3000/api/posts/
+curl -H "X-Auth-Token: f2KpRW7KeN9aPmjSZ" -H "X-User-Id: fbdpsNf4oHiX79vMJ" http://localhost:3000/api/articles/
 ```
 
 # Upgrading Restivus
