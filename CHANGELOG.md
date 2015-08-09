@@ -1,5 +1,14 @@
 # Change Log
 
+## Unreleased
+
+#### Fixed
+- Enable CORS with default authentication when both are configured ([#99][])
+
+#### Added
+- Default OPTIONS endpoint when CORS is enabled ([#99][])
+
+
 ## [v0.8.3] - 2015-08-12
 
 #### Changed
@@ -361,5 +370,6 @@ _Note: API-breaking changes are in **bold**_
 [#79]:                           https://github.com/kahmali/meteor-restivus/issues/79                   "Issue #79"
 [#81]:                           https://github.com/kahmali/meteor-restivus/issues/81                   "Issue #81"
 [#91]:                           https://github.com/kahmali/meteor-restivus/issues/91                   "Issue #91"
+[#99]:                           https://github.com/kahmali/meteor-restivus/issues/99                   "Issue #99"
 [#118]:                          https://github.com/kahmali/meteor-restivus/issues/118                  "Issue #118"
 [#121]:                          https://github.com/kahmali/meteor-restivus/issues/121                  "Issue #121"

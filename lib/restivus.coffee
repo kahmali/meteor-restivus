@@ -24,9 +24,21 @@ class @Restivus
     # Configure API with the given options
     _.extend @_config, options
 
-    # Set default header to enable CORS if configured
     if @_config.enableCors
-      _.extend @_config.defaultHeaders, 'Access-Control-Allow-Origin': '*'
+      corsHeaders =
+        'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'
+
+      if @_config.useDefaultAuth
+        corsHeaders['Access-Control-Allow-Headers'] += ', X-User-Id, X-Auth-Token'
+
+      # Set default header to enable CORS if configured
+      _.extend @_config.defaultHeaders, corsHeaders
+
+      if not @_config.defaultOptionsEndpoint
+        @_config.defaultOptionsEndpoint = ->
+          @response.writeHead 200, corsHeaders
+          @done()
 
     # Normalize the API path
     if @_config.apiPath[0] is '/'

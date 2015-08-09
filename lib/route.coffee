@@ -18,9 +18,8 @@ class @Route
       if _.contains @api._config.paths, @path
         throw new Error "Cannot add a route at an existing path: #{@path}"
 
-      # Override the default OPTIONS endpoint with our own (if it's defined)
-      if @api._config.defaultOptionsEndpoint
-        @endpoints = _.extend options: @api._config.defaultOptionsEndpoint, @endpoints
+      # Override the default OPTIONS endpoint with our own
+      @endpoints = _.extend options: @api._config.defaultOptionsEndpoint, @endpoints
 
       # Configure each endpoint on this route
       @_resolveEndpoints()
