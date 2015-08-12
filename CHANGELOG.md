@@ -1,5 +1,11 @@
 # Change Log
 
+## Unreleased
+
+#### Changed
+- Accept explicit `username` or `email` in default login endpoint ([#121][])
+
+
 ## [v0.8.2] - 2015-08-05
 
 #### Changed
@@ -355,3 +361,4 @@ _Note: API-breaking changes are in **bold**_
 [#81]:                           https://github.com/kahmali/meteor-restivus/issues/81                   "Issue #81"
 [#91]:                           https://github.com/kahmali/meteor-restivus/issues/91                   "Issue #91"
 [#118]:                          https://github.com/kahmali/meteor-restivus/issues/118                  "Issue #118"
+[#121]:                          https://github.com/kahmali/meteor-restivus/issues/121                  "Issue #121"

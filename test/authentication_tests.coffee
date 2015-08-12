@@ -47,7 +47,7 @@ describe 'The default authentication endpoints', ->
 
   userId = Accounts.createUser {
     username: username
-    email
+    email: email
     password: password
   }
 
@@ -93,11 +93,47 @@ describe 'The default authentication endpoints', ->
       test.isUndefined response?.data?.authToken
 
 
-
   it 'should allow a user to login', (test, waitFor) ->
+    # Explicit username
+    HTTP.post Meteor.absoluteUrl('default-auth/login'), {
+      data:
+        username: username
+        password: password
+    }, waitFor (error, result) ->
+      response = result.data
+      test.equal result.statusCode, 200
+      test.equal response.status, 'success'
+      test.equal response.data.userId, userId
+      test.isTrue response.data.authToken
+
+    # Explicit email
+    HTTP.post Meteor.absoluteUrl('default-auth/login'), {
+      data:
+        email: email
+        password: password
+    }, waitFor (error, result) ->
+      response = result.data
+      test.equal result.statusCode, 200
+      test.equal response.status, 'success'
+      test.equal response.data.userId, userId
+      test.isTrue response.data.authToken
+
+    # Implicit username
     HTTP.post Meteor.absoluteUrl('default-auth/login'), {
       data:
         user: username
+        password: password
+    }, waitFor (error, result) ->
+      response = result.data
+      test.equal result.statusCode, 200
+      test.equal response.status, 'success'
+      test.equal response.data.userId, userId
+      test.isTrue response.data.authToken
+
+    # Implicit email
+    HTTP.post Meteor.absoluteUrl('default-auth/login'), {
+      data:
+        user: email
         password: password
     }, waitFor (error, result) ->
       response = result.data

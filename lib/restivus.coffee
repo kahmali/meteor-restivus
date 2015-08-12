@@ -255,10 +255,15 @@ class @Restivus
       post: ->
         # Grab the username or email that the user is logging in with
         user = {}
-        if @bodyParams.user.indexOf('@') is -1
-          user.username = @bodyParams.user
-        else
-          user.email = @bodyParams.user
+        if @bodyParams.user
+          if @bodyParams.user.indexOf('@') is -1
+            user.username = @bodyParams.user
+          else
+            user.email = @bodyParams.user
+        else if @bodyParams.username
+          user.username = @bodyParams.username
+        else if @bodyParams.email
+          user.email = @bodyParams.email
 
         # Try to log the user into the user's account (if successful we'll get an auth token back)
         try

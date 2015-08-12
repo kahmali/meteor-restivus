@@ -49,7 +49,10 @@ and is built on top of [Simple JSON Routes][json-routes] to provide:
 - [Consuming a Restivus API](#consuming-a-restivus-api)
   - [Basic Usage](#basic-usage)
   - [Authenticating](#authenticating)
-  - [Authenticated Calls](#authenticated-calls)
+    - [Default Authentication](#default-authentication)
+      - [Logging In](#logging-in)
+      - [Logging Out](#logging-out)
+      - [Authenticated Calls](#authenticated-calls)
 - [Upgrading Restivus](#upgrading-restivus)
   - [Upgrading to 0.8.0](#upgrading-to-080)
   - [Upgrading to 0.7.0](#upgrading-to-070)
@@ -1129,30 +1132,48 @@ curl -d "message=Some message details" http://localhost:3000/api/articles/3/comm
 
 **Warning: Make sure you're using HTTPS, otherwise this is insecure!**
 
+### Default Authentication
+
 _Note: To use the default authentication, you must first [create a user with the `accounts-password` 
 package](http://docs.meteor.com/#/full/accounts_passwords). You can do this with Restivus if you 
 [setup a POST collection endpoint for the `Meteor.users` collection](#users-collection-endpoints)._
 
+#### Logging In
+
 If you have `useDefaultAuth` set to `true`, you now have a `POST /api/login` endpoint that returns a
-`userId` and `authToken`. You must save these, and include them in subsequent requests.
+`userId` and `authToken`. You must save these, and include them in subsequent requests. In addition 
+to the `password`, the login endpoint requires one of the following parameters (via the request 
+body):
+- `email`: An email address associated with your `Meteor.user` account
+- `username`: The username associated with your `Meteor.user` account
+- `user`: **Note: This is for legacy purposes only. It is recommended to use one of the options 
+  above.** Accepts either of the options listed above. Restivus will (very naively) attempt to 
+  determine if the value provided is an email, otherwise it will assume it to be the username. This 
+  can sometimes lead to unexpected behavior.
+
+A login will look something like
 
 ```bash 
-curl http://localhost:3000/api/login/ -d "password=testpassword&user=test"
+curl http://localhost:3000/api/login/ -d "username=test&password=password"
 ```
 
-The response will look like this, which you must save (for subsequent authenticated requests):
+And the response will look like
 ```javascript
 { status: "success", data: {authToken: "f2KpRW7KeN9aPmjSZ", userId: fbdpsNf4oHiX79vMJ} }
 ```
+
+You'll need to save the `userId` and `token` on the client, for subsequent authenticated requests.
+
+#### Logging Out
   
-You also have an authenticated `GET /api/logout` endpoint for logging a user out. If successful, the
+You also have an authenticated `POST /api/logout` endpoint for logging a user out. If successful, the
 auth token that is passed in the request header will be invalidated (removed from the user account),
 so it will not work in any subsequent requests.
 ```bash
-curl http://localhost:3000/api/logout -H "X-Auth-Token: f2KpRW7KeN9aPmjSZ" -H "X-User-Id: fbdpsNf4oHiX79vMJ"
+curl http://localhost:3000/api/logout -X POST -H "X-Auth-Token: f2KpRW7KeN9aPmjSZ" -H "X-User-Id: fbdpsNf4oHiX79vMJ"
 ```
 
-## Authenticated Calls
+#### Authenticated Calls
 
 For any endpoints that require the default authentication, you must include the `userId` and
 `authToken` with each request under the following headers:
