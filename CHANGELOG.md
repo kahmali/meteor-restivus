@@ -1,6 +1,6 @@
 # Change Log
 
-## Unreleased
+## [v0.8.4] - 2015-08-18
 
 #### Fixed
 - Enable CORS with default authentication when both are configured ([#99][])
@@ -320,6 +320,7 @@ _Note: API-breaking changes are in **bold**_
 
 
 
+[v0.8.4]:  https://github.com/kahmali/meteor-restivus/compare/v0.8.3...v0.8.4 "Version 0.8.4"
 [v0.8.3]:  https://github.com/kahmali/meteor-restivus/compare/v0.8.2...v0.8.3 "Version 0.8.3"
 [v0.8.2]:  https://github.com/kahmali/meteor-restivus/compare/v0.8.1...v0.8.2 "Version 0.8.2"
 [v0.8.1]:  https://github.com/kahmali/meteor-restivus/compare/v0.8.0...v0.8.1 "Version 0.8.1"
