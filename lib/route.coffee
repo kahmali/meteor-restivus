@@ -144,7 +144,14 @@ class @Route
     # Call the endpoint if authentication doesn't fail
     if @_authAccepted endpointContext, endpoint
       if @_roleAccepted endpointContext, endpoint
-        endpoint.action.call endpointContext
+        invocation = new DDPCommon.MethodInvocation
+          isSimulation: true,
+          userId: endpointContext.userId,
+          connection: null,
+          randomSeed: DDPCommon.makeRpcSeed()
+      
+        return DDP._CurrentInvocation.withValue invocation, ->
+          return endpoint.action.call(endpointContext);
       else
         statusCode: 403
         body: {status: 'error', message: 'You do not have permission to do this.'}
