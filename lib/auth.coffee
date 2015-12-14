@@ -26,16 +26,17 @@ getUserQuerySelector = (user) ->
   else if user.email
     return {'emails.address': user.email}
 
-  # We shouldn't be here if the user object was properly validated
-  throw new Error 'Cannot create selector from invalid user'
-
+  throw new Meteor.Error 401, 'UsernameEmpty'
 
 ###
   Log a user in with their password
 ###
 @Auth.loginWithPassword = (user, password) ->
-  if not user or not password
-    throw new Meteor.Error 401, 'Unauthorized'
+  if not user
+    throw new Meteor.Error 401, 'UsernameEmpty'
+
+  if not password
+    throw new Meteor.Error 401, 'PasswordEmpty'
 
   # Validate the login input types
   check user, userValidator
@@ -46,14 +47,14 @@ getUserQuerySelector = (user) ->
   authenticatingUser = Meteor.users.findOne(authenticatingUserSelector)
 
   if not authenticatingUser
-    throw new Meteor.Error 401, 'Unauthorized'
+    throw new Meteor.Error 401, 'UserNotFound'
   if not authenticatingUser.services?.password
-    throw new Meteor.Error 401, 'Unauthorized'
+    throw new Meteor.Error 401, 'PasswordDoNotSetup'
 
   # Authenticate the user's password
   passwordVerification = Accounts._checkPassword authenticatingUser, password
   if passwordVerification.error
-    throw new Meteor.Error 401, 'Unauthorized'
+    throw new Meteor.Error 401, 'PasswordDoNotVerify'
 
   # Add a new auth token to the user's account
   authToken = Accounts._generateStampedLoginToken()
