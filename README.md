@@ -889,7 +889,7 @@ Api.addRoute 'articles', {authRequired: true},
 ###### JavaScript
 ```javascript
 Api.addRoute('articles', {authRequired: true}, {
-  get: function () {
+  get: {
     authRequired: false,
     action: function () {
       // GET api/articles
