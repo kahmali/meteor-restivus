@@ -6,6 +6,7 @@ DefaultAuthApi = new Restivus
     user: ->
       userId: @request.headers['x-user-id']
       token: Accounts._hashLoginToken @request.headers['x-auth-token']
+  onLoggedIn: -> Meteor.users.findOne({_id: @userId})
 
 NoDefaultAuthApi = new Restivus
   apiPath: 'no-default-auth'
@@ -61,6 +62,7 @@ describe 'The default authentication endpoints', ->
       test.equal result.statusCode, 200
       test.equal response.status, 'success'
       test.equal response.data.userId, userId
+      test.equal response.data.extra.username, username
       test.isTrue response.data.authToken
 
     HTTP.post Meteor.absoluteUrl('no-default-auth/login'), {
@@ -70,6 +72,7 @@ describe 'The default authentication endpoints', ->
     }, waitFor (error, result) ->
       response = result.data
       test.isUndefined response?.data?.userId
+      test.isUndefined response?.data?.extra
       test.isUndefined response?.data?.authToken
 
     HTTP.post Meteor.absoluteUrl('legacy-default-auth/login'), {
@@ -81,6 +84,7 @@ describe 'The default authentication endpoints', ->
       test.equal result.statusCode, 200
       test.equal response.status, 'success'
       test.equal response.data.userId, userId
+      test.isTrue _.isEmpty(response.data.extra)
       test.isTrue response.data.authToken
 
     HTTP.post Meteor.absoluteUrl('legacy-no-default-auth/login'), {
@@ -90,6 +94,7 @@ describe 'The default authentication endpoints', ->
     }, waitFor (error, result) ->
       response = result.data
       test.isUndefined response?.data?.userId
+      test.isUndefined response?.data?.extra
       test.isUndefined response?.data?.authToken
 
 
@@ -104,6 +109,7 @@ describe 'The default authentication endpoints', ->
       test.equal result.statusCode, 200
       test.equal response.status, 'success'
       test.equal response.data.userId, userId
+      test.equal response.data.extra.username, username
       test.isTrue response.data.authToken
 
     # Explicit email
@@ -116,6 +122,7 @@ describe 'The default authentication endpoints', ->
       test.equal result.statusCode, 200
       test.equal response.status, 'success'
       test.equal response.data.userId, userId
+      test.equal response.data.extra.username, username
       test.isTrue response.data.authToken
 
     # Implicit username
@@ -128,6 +135,7 @@ describe 'The default authentication endpoints', ->
       test.equal result.statusCode, 200
       test.equal response.status, 'success'
       test.equal response.data.userId, userId
+      test.equal response.data.extra.username, username
       test.isTrue response.data.authToken
 
     # Implicit email
@@ -140,6 +148,7 @@ describe 'The default authentication endpoints', ->
       test.equal result.statusCode, 200
       test.equal response.status, 'success'
       test.equal response.data.userId, userId
+      test.equal response.data.extra.username, username
       test.isTrue response.data.authToken
 
       # Store the token for later use
@@ -156,6 +165,7 @@ describe 'The default authentication endpoints', ->
       test.equal result.statusCode, 200
       test.equal response.status, 'success'
       test.equal response.data.userId, userId
+      test.equal response.data.extra.username, username
       test.isTrue response.data.authToken
       test.notEqual token, response.data.authToken
 

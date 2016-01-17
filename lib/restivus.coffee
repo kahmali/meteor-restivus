@@ -295,9 +295,10 @@ class @Restivus
             searchQuery
           @userId = @user?._id
 
-        # TODO: Add any return data to response as data.extra
         # Call the login hook with the authenticated user attached
-        self._config.onLoggedIn.call this
+        loginResult = self._config.onLoggedIn.call(@)
+        if loginResult?
+          _.extend(auth, extra: loginResult)
 
         {status: 'success', data: auth}
 
