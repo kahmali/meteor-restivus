@@ -193,7 +193,9 @@ class @Route
       endpointContext.user = auth.user
       endpointContext.userId = auth.user._id
       true
-    else authOptional ? true : false
+    else if authOptional
+      true
+    else false
 
 
   ###
