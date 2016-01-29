@@ -130,6 +130,13 @@ class @Route
             endpoint.authRequired = true
           else
             endpoint.authRequired = false
+
+        # Configure auth optional
+        if endpoint.authOptional is undefined
+          if @options?.authOptional
+            endpoint.authOptional = true
+          else
+            endpoint.authOptional = false
         return
     , this
     return
@@ -165,6 +172,8 @@ class @Route
   _authAccepted: (endpointContext, endpoint) ->
     if endpoint.authRequired
       @_authenticate endpointContext
+    else if endpoint.authOptional
+      @_authenticate endpointContext, true
     else true
 
 
@@ -175,7 +184,7 @@ class @Route
 
     @returns {Boolean} True if the authentication was successful
   ###
-  _authenticate: (endpointContext) ->
+  _authenticate: (endpointContext, authOptional) ->
     # Get auth info
     auth = @api._config.auth.user.call(endpointContext)
 
@@ -190,6 +199,8 @@ class @Route
     if auth?.user
       endpointContext.user = auth.user
       endpointContext.userId = auth.user._id
+      true
+    else if authOptional
       true
     else false
 

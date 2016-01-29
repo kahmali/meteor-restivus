@@ -454,6 +454,12 @@ object containing the following properties:
   (#authenticating). If defined, this overrides the option of the same name defined on the entire
   route.
 
+##### `authOptional`
+- _String_
+- Default: `undefined`
+- If true, this endpoint will optionally require login auth, if user is logged in, then endpoint 'user' & 'userId' exists. If not logged in / auth error, endpoint '.user' & 'userId' will be undefined. User is still accessible to the API but as a guest then. If `authRequired` is true, this setting will be overridden.
+
+
 ##### `roleRequired`
 - _String or Array of Strings_
 - Default: `undefined` (no role required)
@@ -853,8 +859,13 @@ and will get their default values from the route.
 - _String_
 - Default: [`Route.authRequired`](#authrequired-1)
 - If true, this endpoint will return a `401` if the user is not properly
-  [authenticated](#authenticating). Overrides the option of the same name defined on the entire
-  route.
+[authenticated](#authenticating). Overrides the option of the same name defined on the entire
+route.
+
+##### `authOptional`
+- _String_
+- Default: [`Route.authOptional`](#authoptional-1)
+- If true, this endpoint will optionally require login auth, if user is logged in, then endpoint 'user' & 'userId' exists. If not logged in / auth error, endpoint '.user' & 'userId' will be undefined. User is still accessible to the API but as a guest then. If `authRequired` is true, this setting will be overridden.
 
 ##### `roleRequired`
 - _String or Array of Strings_
