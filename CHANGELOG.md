@@ -1,5 +1,12 @@
 # Change Log
 
+## Unreleased
+
+#### Changed
+- Update to the latest version of `simple:json-routes` (v2.0.1)
+  - Increases max request size to 50mb ([#78][] and [#179][]) 
+
+
 ## [v0.8.5] - 2016-02-24
 
 #### Fixed

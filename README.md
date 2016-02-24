@@ -1128,6 +1128,8 @@ We can call our `POST /articles/:id/comments` endpoint the following way. Note t
 curl -d "message=Some message details" http://localhost:3000/api/articles/3/comments
 ```
 
+_**Note: There is a 50mb limit on requests. If you need this limit increased, please file a GitHub Issue.**_
+
 ## Authenticating
 
 **Warning: Make sure you're using HTTPS, otherwise this is insecure!**
