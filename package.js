@@ -14,8 +14,8 @@ Package.onUse(function (api) {
   api.use('check');
   api.use('coffeescript');
   api.use('underscore');
-  api.use('accounts-base@1.2.0');
-  api.use('simple:json-routes@=2.0.1');
+  api.use('accounts-password@1.1.4');
+  api.use('simple:json-routes@2.0.1');
 
   api.addFiles('lib/auth.coffee', 'server');
   api.addFiles('lib/iron-router-error-to-response.js', 'server');

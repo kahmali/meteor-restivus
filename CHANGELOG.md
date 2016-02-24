@@ -1,5 +1,11 @@
 # Change Log
 
+## Unreleased
+
+#### Fixed
+- Declare dependency on accounts-password ([#169][])
+
+
 ## [v0.8.6] - 2016-02-24
 
 #### Changed
@@ -383,9 +389,13 @@ _Note: API-breaking changes are in **bold**_
 [#48]:                           https://github.com/kahmali/meteor-restivus/issues/48                   "Issue #48"
 [#49]:                           https://github.com/kahmali/meteor-restivus/issues/49                   "Issue #49"
 [#68]:                           https://github.com/kahmali/meteor-restivus/issues/68                   "Issue #68"
+[#78]:                           https://github.com/kahmali/meteor-restivus/issues/78                   "Issue #78"
 [#79]:                           https://github.com/kahmali/meteor-restivus/issues/79                   "Issue #79"
 [#81]:                           https://github.com/kahmali/meteor-restivus/issues/81                   "Issue #81"
 [#91]:                           https://github.com/kahmali/meteor-restivus/issues/91                   "Issue #91"
 [#99]:                           https://github.com/kahmali/meteor-restivus/issues/99                   "Issue #99"
 [#118]:                          https://github.com/kahmali/meteor-restivus/issues/118                  "Issue #118"
 [#121]:                          https://github.com/kahmali/meteor-restivus/issues/121                  "Issue #121"
+[#169]:                          https://github.com/kahmali/meteor-restivus/issues/169                  "Issue #169"
+[#170]:                          https://github.com/kahmali/meteor-restivus/issues/170                  "Issue #170"
+[#179]:                          https://github.com/kahmali/meteor-restivus/issues/179                  "Issue #179"
