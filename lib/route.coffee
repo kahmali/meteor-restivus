@@ -1,4 +1,4 @@
-class @Route
+class share.Route
 
   constructor: (@api, @path, @options, @endpoints) ->
     # Check if options were provided

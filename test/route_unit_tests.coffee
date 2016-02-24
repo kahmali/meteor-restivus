@@ -2,7 +2,7 @@ describe 'A route', =>
   Api = new Restivus
 
   it 'can be constructed with options', (test) =>
-    route = new @Route Api, 'test-route-1', {authRequired: true, roleRequired: ['admin', 'dev']},
+    route = new share.Route Api, 'test-route-1', {authRequired: true, roleRequired: ['admin', 'dev']},
       get: -> 'GET test-route-1'
 
     test.equal route.path, 'test-route-1'
@@ -12,14 +12,14 @@ describe 'A route', =>
     test.equal route.endpoints.get(), 'GET test-route-1'
 
   it 'can be constructed without options', (test) =>
-    route = new @Route Api, 'test-route-2',
+    route = new share.Route Api, 'test-route-2',
       get: -> 'GET test-route-2'
 
     test.equal route.path, 'test-route-2'
     test.equal route.endpoints.get(), 'GET test-route-2'
 
   it 'should support endpoints for all HTTP methods', (test) =>
-    route = new @Route Api, 'test-route-3',
+    route = new share.Route Api, 'test-route-3',
       get: -> 'GET test-route-2'
       post: -> 'POST test-route-2'
       put: -> 'PUT test-route-2'

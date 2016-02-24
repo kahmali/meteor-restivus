@@ -1,5 +1,11 @@
 # Change Log
 
+## Unreleased
+
+#### Fixed
+- Remove Route class from global namespace ([#170][])
+
+
 ## [v0.8.4] - 2015-08-18
 
 #### Fixed

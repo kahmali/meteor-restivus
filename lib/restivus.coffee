@@ -76,7 +76,7 @@ class @Restivus
   ###
   addRoute: (path, options, endpoints) ->
     # Create a new route and add it to our list of existing routes
-    route = new Route(this, path, options, endpoints)
+    route = new share.Route(this, path, options, endpoints)
     @_routes.push(route)
 
     route.addToApi()

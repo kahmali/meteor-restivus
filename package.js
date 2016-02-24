@@ -37,8 +37,9 @@ Package.onTest(function (api) {
   api.use('underscore');
   api.use('accounts-base');
   api.use('accounts-password');
-  api.use('mongo')
+  api.use('mongo');
 
+  api.addFiles('lib/route.coffee', 'server');
   api.addFiles('test/api_tests.coffee', 'server');
   api.addFiles('test/route_unit_tests.coffee', 'server');
   api.addFiles('test/authentication_tests.coffee', 'server');
