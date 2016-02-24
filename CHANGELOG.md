@@ -1,9 +1,9 @@
 # Change Log
 
-## Unreleased
+## [v0.8.5] - 2016-02-24
 
 #### Fixed
-- Remove Route class from global namespace ([#170][])
+- Remove `Route` class from global namespace ([#170][])
 
 
 ## [v0.8.4] - 2015-08-18
@@ -326,6 +326,7 @@ _Note: API-breaking changes are in **bold**_
 
 
 
+[v0.8.5]:  https://github.com/kahmali/meteor-restivus/compare/v0.8.4...v0.8.5 "Version 0.8.5"
 [v0.8.4]:  https://github.com/kahmali/meteor-restivus/compare/v0.8.3...v0.8.4 "Version 0.8.4"
 [v0.8.3]:  https://github.com/kahmali/meteor-restivus/compare/v0.8.2...v0.8.3 "Version 0.8.3"
 [v0.8.2]:  https://github.com/kahmali/meteor-restivus/compare/v0.8.1...v0.8.2 "Version 0.8.2"
