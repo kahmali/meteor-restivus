@@ -1,6 +1,6 @@
 # Change Log
 
-## Unreleased
+## [v0.8.7] - 2016-02-24
 
 #### Fixed
 - Declare dependency on accounts-password ([#169][])
@@ -339,6 +339,7 @@ _Note: API-breaking changes are in **bold**_
 
 
 
+[v0.8.7]:  https://github.com/kahmali/meteor-restivus/compare/v0.8.6...v0.8.7 "Version 0.8.7"
 [v0.8.6]:  https://github.com/kahmali/meteor-restivus/compare/v0.8.5...v0.8.6 "Version 0.8.6"
 [v0.8.5]:  https://github.com/kahmali/meteor-restivus/compare/v0.8.4...v0.8.5 "Version 0.8.5"
 [v0.8.4]:  https://github.com/kahmali/meteor-restivus/compare/v0.8.3...v0.8.4 "Version 0.8.4"
