@@ -1,6 +1,6 @@
 # Change Log
 
-## Unreleased
+## [v0.8.8] - 2016-03-10
 
 #### Changed
 - Update to the latest version of `simple:json-routes` ([v2.1.0](https://github.com/stubailo/meteor-rest/tree/master/packages/json-routes#210))
@@ -346,6 +346,7 @@ _Note: API-breaking changes are in **bold**_
 
 
 
+[v0.8.8]:  https://github.com/kahmali/meteor-restivus/compare/v0.8.7...v0.8.8 "Version 0.8.8"
 [v0.8.7]:  https://github.com/kahmali/meteor-restivus/compare/v0.8.6...v0.8.7 "Version 0.8.7"
 [v0.8.6]:  https://github.com/kahmali/meteor-restivus/compare/v0.8.5...v0.8.6 "Version 0.8.6"
 [v0.8.5]:  https://github.com/kahmali/meteor-restivus/compare/v0.8.4...v0.8.5 "Version 0.8.5"
