@@ -1,5 +1,12 @@
 # Change Log
 
+## Unreleased
+
+#### Changed
+- Update to the latest version of `simple:json-routes` ([v2.1.0](https://github.com/stubailo/meteor-rest/tree/master/packages/json-routes#210))
+  - Resolves errors when using alongside Iron Router ([#185][]) 
+
+
 ## [v0.8.7] - 2016-02-24
 
 #### Fixed
@@ -9,7 +16,7 @@
 ## [v0.8.6] - 2016-02-24
 
 #### Changed
-- Update to the latest version of `simple:json-routes` (v2.0.1)
+- Update to the latest version of `simple:json-routes` ([v2.0.1](https://github.com/stubailo/meteor-rest/tree/master/packages/json-routes#201))
   - Increases max request size to 50mb ([#78][] and [#179][]) 
 
 
@@ -400,3 +407,4 @@ _Note: API-breaking changes are in **bold**_
 [#169]:                          https://github.com/kahmali/meteor-restivus/issues/169                  "Issue #169"
 [#170]:                          https://github.com/kahmali/meteor-restivus/issues/170                  "Issue #170"
 [#179]:                          https://github.com/kahmali/meteor-restivus/issues/179                  "Issue #179"
+[#185]:                          https://github.com/kahmali/meteor-restivus/issues/185                  "Issue #185"
