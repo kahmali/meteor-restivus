@@ -264,7 +264,7 @@ The following configuration options are available when initializing an API using
 - Default: `undefined`
 - A hook that runs once a user has been successfully logged into their account via the `/login`
   endpoint. [Context](#endpoint-context) is the same as within authenticated endpoints. Any
-  returned data will be added to the response body as `data.extra` (coming soon).
+  returned data will be added to the response body as `data.extra`.
 
 ##### `onLoggedOut`
 - _Function_

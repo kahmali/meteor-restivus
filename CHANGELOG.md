@@ -1,5 +1,11 @@
 # Change Log
 
+## Unreleased
+
+#### Changed
+- Add result from `onLoggedIn` hook to `data.extra` field ([#194][]) 
+
+
 ## [v0.8.8] - 2016-03-10
 
 #### Changed
@@ -409,3 +415,4 @@ _Note: API-breaking changes are in **bold**_
 [#170]:                          https://github.com/kahmali/meteor-restivus/issues/170                  "Issue #170"
 [#179]:                          https://github.com/kahmali/meteor-restivus/issues/179                  "Issue #179"
 [#185]:                          https://github.com/kahmali/meteor-restivus/issues/185                  "Issue #185"
+[#194]:                          https://github.com/kahmali/meteor-restivus/issues/194                  "Issue #194"
