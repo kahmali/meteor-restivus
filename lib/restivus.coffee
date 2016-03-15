@@ -297,8 +297,8 @@ class @Restivus
 
         response = {status: 'success', data: auth}
 
-        # Call the logout hook with the authenticated user attached
-        extraData = self._config.onLoggedOut.call(this)
+        # Call the login hook with the authenticated user attached
+        extraData = self._config.onLoggedIn.call(this)
         if extraData and _.isObject(extraData) and (not _.isEmpty(extraData))
           _.extend(response.data, {extra: extraData})
 
