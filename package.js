@@ -43,4 +43,5 @@ Package.onTest(function (api) {
   api.addFiles('test/api_tests.coffee', 'server');
   api.addFiles('test/route_unit_tests.coffee', 'server');
   api.addFiles('test/authentication_tests.coffee', 'server');
+  api.addFiles('test/user_hook_tests.coffee', 'server');
 });

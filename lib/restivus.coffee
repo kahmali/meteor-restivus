@@ -295,12 +295,14 @@ class @Restivus
             searchQuery
           @userId = @user?._id
 
-        # Call the login hook with the authenticated user attached
-        loginResult = self._config.onLoggedIn.call(@)
-        if loginResult?
-          _.extend(auth, extra: loginResult)
+        response = {status: 'success', data: auth}
 
-        {status: 'success', data: auth}
+        # Call the logout hook with the authenticated user attached
+        extraData = self._config.onLoggedOut.call(this)
+        if extraData and _.isObject(extraData) and (not _.isEmpty(extraData))
+          _.extend(response.data, {extra: extraData})
+
+        response
 
     logout = ->
       # Remove the given auth token from the user's account
@@ -316,11 +318,14 @@ class @Restivus
       tokenRemovalQuery[tokenPath] = tokenToRemove
       Meteor.users.update @user._id, {$pull: tokenRemovalQuery}
 
-      # TODO: Add any return data to response as data.extra
-      # Call the logout hook with the logged out user attached
-      self._config.onLoggedOut?.call this
+      response = {status: 'success', data: {message: 'You\'ve been logged out!'}}
 
-      {status: 'success', data: message: 'You\'ve been logged out!'}
+      # Call the logout hook with the authenticated user attached
+      extraData = self._config.onLoggedOut.call(this)
+      if extraData and _.isObject(extraData) and (not _.isEmpty(extraData))
+        _.extend(response.data, {extra: extraData})
+
+      response
 
     ###
       Add a logout endpoint to the API
