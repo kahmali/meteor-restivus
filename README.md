@@ -72,8 +72,8 @@ You can install Restivus using Meteor's package manager:
 
 ## Quick Start
 
-Often, the easiest way to explain something is by example, so here's a short example of what it's 
-like to create an API with Restivus (keep scrolling for a JavaScript version): 
+Often, the easiest way to explain something is by example, so here's a short example of what it's
+like to create an API with Restivus (keep scrolling for a JavaScript version):
 
 ###### CoffeeScript:
 ```coffeescript
@@ -106,7 +106,7 @@ if Meteor.isServer
 
   # Maps to: /api/articles/:id
   Api.addRoute 'articles/:id', authRequired: true,
-    get: -> 
+    get: ->
       Articles.findOne @urlParams.id
     delete:
       roleRequired: ['author', 'admin']
@@ -188,12 +188,12 @@ _**Route:**_
 
 # Writing A Restivus API
 
-**Restivus is a _server-only_ package. Attempting to access any of its methods from the client will 
+**Restivus is a _server-only_ package. Attempting to access any of its methods from the client will
 result in an error.**
 
 ## Configuration Options
 
-The following configuration options are available when initializing an API using 
+The following configuration options are available when initializing an API using
 `new Restivus(options)`:
 
 ##### `apiPath`
@@ -206,7 +206,7 @@ The following configuration options are available when initializing an API using
 - _Object_
   - `token`  _String_
     - Default: `'services.resume.loginTokens.hashedToken'`
-    - The path to the hashed auth token in the `Meteor.user` document. This location will be checked 
+    - The path to the hashed auth token in the `Meteor.user` document. This location will be checked
       for a matching token if one is returned in `auth.user()`.
   - `user`  _Function_
     - Default: Get user ID and auth token from `X-User-Id` and `X-Auth-Token` headers
@@ -218,7 +218,7 @@ The following configuration options are available when initializing an API using
           };
         }
         ```
-        
+
     - Provides one of two levels of authentication, depending on the data returned. The context
       within this function is the [endpoint context](#endpoint-context) without `this.user` and
       `this.userId` (well, that's what we're working on here!). Once the user authentication
@@ -241,22 +241,22 @@ The following configuration options are available when initializing an API using
 ##### `defaultHeaders`
 - _Object_
 - Default: `{ 'Content-Type': 'application/json' }`
-- The response headers that will be returned from every endpoint by default. These can be overridden 
-  by [returning `headers` of the same name from any endpoint](#response-data). 
+- The response headers that will be returned from every endpoint by default. These can be overridden
+  by [returning `headers` of the same name from any endpoint](#response-data).
 
 ##### `defaultOptionsEndpoint`
 - [_Endpoint_](#endpoint-configuration)
 - Default: undefined
-- If an endpoint is provided, it will be used as the OPTIONS endpoint on all routes, except those 
+- If an endpoint is provided, it will be used as the OPTIONS endpoint on all routes, except those
   that have one manually defined. This can be used to DRY up your API, since OPTIONS endpoints will
-  frequently [respond generically](http://zacstewart.com/2012/04/14/http-options-method.html) across 
-  all routes. 
+  frequently [respond generically](http://zacstewart.com/2012/04/14/http-options-method.html) across
+  all routes.
 
 ##### `enableCors`
 - _Boolean_
 - Default: `true`
-- If true, enables cross-origin resource sharing ([CORS]). This allows your API to receive requests 
-  from _any_ domain (when `false`, the API will only accept requests from the domain where the API 
+- If true, enables cross-origin resource sharing ([CORS]). This allows your API to receive requests
+  from _any_ domain (when `false`, the API will only accept requests from the domain where the API
   is being hosted. _Note: Only applies to requests originating from browsers)._
 
 ##### `onLoggedIn`
@@ -271,7 +271,7 @@ The following configuration options are available when initializing an API using
 - Default: `undefined`
 - Same as onLoggedIn, but runs once a user has been successfully logged out of their account via
   the `/logout` endpoint. [Context](#endpoint-context) is the same as within authenticated
-  endpoints. Any returned data will be added to the response body as `data.extra` (coming soon).
+  endpoints. Any returned data will be added to the response body as `data.extra`.
 
 ##### `prettyJson`
 - _Boolean_
@@ -287,15 +287,15 @@ The following configuration options are available when initializing an API using
 ##### `version`
 - _String_
 - Default: `null`
-- URL path versioning is the only type of API versioning currently available, so if a version is 
-  provided, it's appended to the base path of all routes that belong to that API  
+- URL path versioning is the only type of API versioning currently available, so if a version is
+  provided, it's appended to the base path of all routes that belong to that API
     ```javascript
     // Base URL path: my-api/v1/
     ApiV1 = new Restivus({
       apiPath: 'my-api/',
       version: 'v1'
     });
-    
+
     // Base URL path: my-api/v2/
     ApiV2 = new Restivus({
       apiPath: 'my-api/',
@@ -303,7 +303,7 @@ The following configuration options are available when initializing an API using
     });
     ```
 
-Here's a sample configuration with the complete set of options (for demo purposes only - using this 
+Here's a sample configuration with the complete set of options (for demo purposes only - using this
 configuration is not recommended):
 
 ###### CoffeeScript
@@ -477,7 +477,7 @@ object containing the following properties:
 ### Request and Response Structure
 
 All responses generated by Restivus follow the [JSend] format, with one minor tweak: failures have
-an identical structure to errors. Successful responses will have a status code of `200`, unless 
+an identical structure to errors. Successful responses will have a status code of `200`, unless
 otherwise indicated. Sample requests and responses for each endpoint are included below:
 
 #### `post`
@@ -837,11 +837,11 @@ method you want to support at the given path. The corresponding endpoint will be
 type of request is made at that path.
 
 For finer-grained control over each endpoint, you can also define each one as an object
-containing the endpoint action and some addtional configuration options. 
+containing the endpoint action and some addtional configuration options.
 
 #### Endpoint Configuration
 
-An `action` is required when configuring an endpoint. All other configuration settings are optional, 
+An `action` is required when configuring an endpoint. All other configuration settings are optional,
 and will get their default values from the route.
 
 ##### `action`
@@ -921,12 +921,12 @@ Each endpoint has access to:
 
 ##### `this.user`
 - _Meteor.user_
-- The authenticated `Meteor.user`. Only available if `authRequired` is `true` and a user is 
+- The authenticated `Meteor.user`. Only available if `authRequired` is `true` and a user is
   successfully authenticated. If not, it will be `undefined`.
 
 ##### `this.userId`
 - _String_
-- The authenticated user's `Meteor.userId`. Only available if `authRequired` is `true` and a user is 
+- The authenticated user's `Meteor.userId`. Only available if `authRequired` is `true` and a user is
   successfully authenticated. If not, it will be `undefined`.
 
 ##### `this.urlParams`
@@ -968,14 +968,14 @@ Each endpoint has access to:
     }
   });
   ```
-  
+
 ##### `this.<endpointOption>`
-All [endpoint configuration options](#endpoint-configuration-1) can be accessed by name (e.g., 
-`this.roleRequired`). Within an endpoint, all options have been completely resolved, meaning all 
+All [endpoint configuration options](#endpoint-configuration-1) can be accessed by name (e.g.,
+`this.roleRequired`). Within an endpoint, all options have been completely resolved, meaning all
 configuration options set on an endpoint's route will already be applied to the endpoint as
-defaults. So if you set `authRequired: true` on a route and do not set the `authRequired` option on 
-one if its endpoints, `this.authRequired` will still be `true` within that endpoint, since the 
-default will already have been applied from the route. 
+defaults. So if you set `authRequired: true` on a route and do not set the `authRequired` option on
+one if its endpoints, `this.authRequired` will still be `true` within that endpoint, since the
+default will already have been applied from the route.
 
 #### Response Data
 
@@ -1015,25 +1015,25 @@ All responses contain the following defaults, which will be overridden with any 
 - Default:
   - `Content-Type`: `application/json`
   - `Access-Control-Allow-Origin`: `*`
-    - This is a [CORS-compliant header][cors] that allows requests to be made to the API from any 
-      domain. Without this, requests from within the browser would only be allowed from the same 
-      domain the API is hosted on, which is typically not the intended behavior. This can be 
-      [disabled by default](https://github.com/kahmali/meteor-restivus#enablecors), or also by 
-      returning a header of the same name with a domain specified (usually the domain the API is 
+    - This is a [CORS-compliant header][cors] that allows requests to be made to the API from any
+      domain. Without this, requests from within the browser would only be allowed from the same
+      domain the API is hosted on, which is typically not the intended behavior. This can be
+      [disabled by default](https://github.com/kahmali/meteor-restivus#enablecors), or also by
+      returning a header of the same name with a domain specified (usually the domain the API is
       being hosted on).
 
 
 ## Versioning an API
 
-We can't always get an API right on the first try (in fact, most people don't). Eventually, we 
-find ourselves needing to maintain different versions of our API. This allows clients to convert at 
-their own convenience, while providing the latest and greatest API to those ready to consume it.  
+We can't always get an API right on the first try (in fact, most people don't). Eventually, we
+find ourselves needing to maintain different versions of our API. This allows clients to convert at
+their own convenience, while providing the latest and greatest API to those ready to consume it.
 
 Currently, there is only a single versioning strategy supported in Restivus: URL path versioning. In
-this strategy, the version of the API is appended to the base path of all routes belonging to that 
-API. This allows us to easily maintain multiple versions of an API, each with their own set of 
+this strategy, the version of the API is appended to the base path of all routes belonging to that
+API. This allows us to easily maintain multiple versions of an API, each with their own set of
 configuration options. Here's a [good write-up]
-(http://www.troyhunt.com/2014/02/your-api-versioning-is-wrong-which-is.html) on some of the 
+(http://www.troyhunt.com/2014/02/your-api-versioning-is-wrong-which-is.html) on some of the
 different API versioning strategies.
 
 ###### CoffeeScript
@@ -1049,10 +1049,10 @@ ApiV1.addCollection Items
   routeOptions: authRequired: true
 
 # Maps to api/v1/custom
-ApiV1.addRoute 'custom', 
+ApiV1.addRoute 'custom',
   get: ->
     'get something'
-    
+
 # Configure another version of the API (with a different set of config options if needed)
 ApiV2 = new Restivus
   version: 'v2'
@@ -1060,7 +1060,7 @@ ApiV2 = new Restivus
 
 # Maps to api/v2/items and api/v2/items/:id (with auth requirement removed in this version)
 ApiV2.addCollection Items
-  
+
 # Maps to api/v2/custom (notice the different return value)
 ApiV2.addRoute 'custom',
   get: ->
@@ -1088,7 +1088,7 @@ ApiV1.addRoute('custom', {
     return 'get something';
   }
 });
-    
+
 // Configure another version of the API (with a different set of config options if needed)
 var ApiV2 = new Restivus({
   version: 'v2',
@@ -1097,7 +1097,7 @@ var ApiV2 = new Restivus({
 
 // Maps to api/v2/items and api/v2/items/:id (with auth requirement removed in this version)
 ApiV2.addCollection(Items);
-  
+
 // Maps to api/v2/custom (notice the different return value)
 ApiV2.addRoute('custom', {
   get: function () {
@@ -1136,26 +1136,26 @@ _**Note: There is a 50mb limit on requests. If you need this limit increased, pl
 
 ### Default Authentication
 
-_Note: To use the default authentication, you must first [create a user with the `accounts-password` 
-package](http://docs.meteor.com/#/full/accounts_passwords). You can do this with Restivus if you 
+_Note: To use the default authentication, you must first [create a user with the `accounts-password`
+package](http://docs.meteor.com/#/full/accounts_passwords). You can do this with Restivus if you
 [setup a POST collection endpoint for the `Meteor.users` collection](#users-collection-endpoints)._
 
 #### Logging In
 
 If you have `useDefaultAuth` set to `true`, you now have a `POST /api/login` endpoint that returns a
-`userId` and `authToken`. You must save these, and include them in subsequent requests. In addition 
-to the `password`, the login endpoint requires one of the following parameters (via the request 
+`userId` and `authToken`. You must save these, and include them in subsequent requests. In addition
+to the `password`, the login endpoint requires one of the following parameters (via the request
 body):
 - `email`: An email address associated with your `Meteor.user` account
 - `username`: The username associated with your `Meteor.user` account
-- `user`: **Note: This is for legacy purposes only. It is recommended to use one of the options 
-  above.** Accepts either of the options listed above. Restivus will (very naively) attempt to 
-  determine if the value provided is an email, otherwise it will assume it to be the username. This 
+- `user`: **Note: This is for legacy purposes only. It is recommended to use one of the options
+  above.** Accepts either of the options listed above. Restivus will (very naively) attempt to
+  determine if the value provided is an email, otherwise it will assume it to be the username. This
   can sometimes lead to unexpected behavior.
 
 A login will look something like
 
-```bash 
+```bash
 curl http://localhost:3000/api/login/ -d "username=test&password=password"
 ```
 
@@ -1167,7 +1167,7 @@ And the response will look like
 You'll need to save the `userId` and `token` on the client, for subsequent authenticated requests.
 
 #### Logging Out
-  
+
 You also have an authenticated `POST /api/logout` endpoint for logging a user out. If successful, the
 auth token that is passed in the request header will be invalidated (removed from the user account),
 so it will not work in any subsequent requests.
@@ -1203,15 +1203,15 @@ For example, to update restivus to v0.7.0:
 > meteor add nimble:restivus@=0.7.0
 ```
 
-Please check the [change log][restivus-change-log] before updating, for more information about the 
-changes between each version. More detailed instructions for updating between major versions are 
+Please check the [change log][restivus-change-log] before updating, for more information about the
+changes between each version. More detailed instructions for updating between major versions are
 included below.
 
 ## Upgrading to 0.8.0
 
-The most noticeable difference in v0.8.0 is that Restivus is now exported as a "class" instead of an 
-object. API configuration has also been moved from `Restivus.configure()` (which has been removed), 
-to the Restivus constructor. This means that instead of being forced to configure a single Restivus 
+The most noticeable difference in v0.8.0 is that Restivus is now exported as a "class" instead of an
+object. API configuration has also been moved from `Restivus.configure()` (which has been removed),
+to the Restivus constructor. This means that instead of being forced to configure a single Restivus
 API with
 
 ```javascript
@@ -1243,16 +1243,16 @@ FirstApi.addRoute('example', ...);
 SecondApi.addRoute('example', ...);
 ```
 
-This update makes it possible to [maintain multiple versions of an API](#versioning-an-api). 
+This update makes it possible to [maintain multiple versions of an API](#versioning-an-api).
 
-One other significant (but not API-breaking) change is that [`iron:router`][iron-router] has been 
-replaced by [`simple:json-routes`][json-routes] as the server-side router for Restivus. This means 
+One other significant (but not API-breaking) change is that [`iron:router`][iron-router] has been
+replaced by [`simple:json-routes`][json-routes] as the server-side router for Restivus. This means
 that Restivus should no longer [interfere with other routers]
 (https://github.com/kahmali/meteor-restivus/issues/24) (client _or_ server), or do other [annoying]
 (https://github.com/kahmali/meteor-restivus/issues/35) [things]
 (https://github.com/kahmali/meteor-restivus/issues/43). Special thanks to [Sashko Stubailo]
-(https://github.com/stubailo) for his work on `simple:json-routes`, and for handling the conversion 
-from `iron:router` to `simple:json-routes` in Restivus! 
+(https://github.com/stubailo) for his work on `simple:json-routes`, and for handling the conversion
+from `iron:router` to `simple:json-routes` in Restivus!
 
 Some other notable changes are:
 - The `deleteAll` collection endpoint has been removed, as it had the potential to be quite
@@ -1265,14 +1265,14 @@ For a complete list of changes, check out the [change log]
 
 ## Upgrading to 0.7.0
 
-**_WARNING!_ All clients consuming a Restivus API _with the default authentication_ will need to 
+**_WARNING!_ All clients consuming a Restivus API _with the default authentication_ will need to
 reauthenticate after this update**
 
-Restivus used to store the account login token in the `Meteor.user` document at 
-`services.resume.loginTokens.token`. Now, to match Meteor's current implementation, the account 
-login token is stored as a hashed token at `services.resume.loginTokens.hashedToken`. This means 
-that all clients using the default authentication in a Restivus API will need to reauthenticate with 
-their username/email and password after this update, as their existing tokens will be rendered 
+Restivus used to store the account login token in the `Meteor.user` document at
+`services.resume.loginTokens.token`. Now, to match Meteor's current implementation, the account
+login token is stored as a hashed token at `services.resume.loginTokens.hashedToken`. This means
+that all clients using the default authentication in a Restivus API will need to reauthenticate with
+their username/email and password after this update, as their existing tokens will be rendered
 invalid.
 
 ## Upgrading to 0.6.1
@@ -1304,8 +1304,8 @@ before getting started.
 ## Thanks
 
 Thanks to the developers over at Differential for [RestStop2][], where we got our inspiration for
-this package and stole tons of ideas and code, as well as the Sashko Stubailo from MDG, for his 
-work on [`simple:json-routes`][json-routes], including the Restivus conversion from [Iron 
+this package and stole tons of ideas and code, as well as the Sashko Stubailo from MDG, for his
+work on [`simple:json-routes`][json-routes], including the Restivus conversion from [Iron
 Router][iron-router].
 
 Also, thanks to the following projects, which RestStop2 was inspired by:
