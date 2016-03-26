@@ -15,8 +15,6 @@ class @Restivus
             token = Accounts._hashLoginToken @request.headers['x-auth-token']
           userId: @request.headers['x-user-id']
           token: token
-      onLoggedIn: -> {}
-      onLoggedOut: -> {}
       defaultHeaders:
         'Content-Type': 'application/json'
       enableCors: true
@@ -298,8 +296,8 @@ class @Restivus
         response = {status: 'success', data: auth}
 
         # Call the login hook with the authenticated user attached
-        extraData = self._config.onLoggedIn.call(this)
-        if extraData and _.isObject(extraData) and (not _.isEmpty(extraData))
+        extraData = self._config.onLoggedIn?.call(this)
+        if extraData?
           _.extend(response.data, {extra: extraData})
 
         response
@@ -321,8 +319,8 @@ class @Restivus
       response = {status: 'success', data: {message: 'You\'ve been logged out!'}}
 
       # Call the logout hook with the authenticated user attached
-      extraData = self._config.onLoggedOut.call(this)
-      if extraData and _.isObject(extraData) and (not _.isEmpty(extraData))
+      extraData = self._config.onLoggedOut?.call(this)
+      if extraData?
         _.extend(response.data, {extra: extraData})
 
       response
