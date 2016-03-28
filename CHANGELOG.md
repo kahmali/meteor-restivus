@@ -1,5 +1,12 @@
 # Change Log
 
+## Unreleased
+
+#### Changed
+- Add result from `onLoggedOut` hook to `data.extra` field ([#196][]) 
+- Remove the default `onLoggedIn` and `onLoggedOut` hooks that returned an empty object (docs incorrectly listed them as `undefined`, but the result was not being used prior to [v0.8.9]) 
+
+
 ## [v0.8.9] - 2016-03-14
 
 #### Changed
@@ -417,3 +424,4 @@ _Note: API-breaking changes are in **bold**_
 [#179]:                          https://github.com/kahmali/meteor-restivus/issues/179                  "Issue #179"
 [#185]:                          https://github.com/kahmali/meteor-restivus/issues/185                  "Issue #185"
 [#194]:                          https://github.com/kahmali/meteor-restivus/issues/194                  "Issue #194"
+[#196]:                          https://github.com/kahmali/meteor-restivus/pull/196                    "PR #196"
