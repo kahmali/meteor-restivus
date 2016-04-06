@@ -58,6 +58,7 @@ and is built on top of [Simple JSON Routes][json-routes] to provide:
   - [Upgrading to 0.7.0](#upgrading-to-070)
   - [Upgrading to 0.6.1](#upgrading-to-061)
 - [Resources](#resources)
+  - [Plugins](#plugins) 
   - [Change Log](#change-log)
   - [Contributing](#contributing)
 
@@ -1289,6 +1290,11 @@ with that comes a few API-breaking changes:
   manually created will remain unaffected.
 
 # Resources
+
+## Plugins
+
+[Restivus Swagger](https://github.com/apinf/restivus-swagger)
+- Define and generate [Swagger 2.0](http://swagger.io/) documentation for Restivus API
 
 ## Change Log
 
