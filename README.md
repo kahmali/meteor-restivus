@@ -1,3 +1,27 @@
+# Fork for: [https://github.com/kahmali/meteor-restivus.git](https://github.com/kahmali/meteor-restivus.git)
+
+## Changes:
+#### Possibiliti to customize message for auth failed response
+```javascript
+//sample
+let Api = new Restivus({
+    apiPath: 'api/'
+    auth: {
+        authFailedResponse: {
+            statusCode: 200,
+            body: {
+                result: {
+                    message:'An error ocurred with server access',
+                    error_code:3,
+                    isValid:false
+                }
+            }
+        }
+    },
+});
+```
+
+
 # Restivus [v0.8.10](https://github.com/kahmali/meteor-restivus/blob/devel/CHANGELOG.md#change-log) [![Build Status](https://travis-ci.org/kahmali/meteor-restivus.svg)](https://travis-ci.org/kahmali/meteor-restivus)
 
 #### REST APIs for the Best of Us!

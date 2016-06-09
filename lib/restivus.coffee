@@ -15,9 +15,16 @@ class @Restivus
             token = Accounts._hashLoginToken @request.headers['x-auth-token']
           userId: @request.headers['x-user-id']
           token: token
+        authFailedResponse:
+          statusCode: 401
+          body: {status: 'error', message: 'You must be logged in to do this.'}
+        permissionDeniedResponse:
+          statusCode: 403
+          body: {status: 'error', message: 'You do not have permission to do this.'}
       defaultHeaders:
         'Content-Type': 'application/json'
       enableCors: true
+
 
     # Configure API with the given options
     _.extend @_config, options
