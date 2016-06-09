@@ -2,7 +2,7 @@ Package.describe({
   name: 'kuneberg:restivus',
   summary: 'Create authenticated REST APIs in Meteor 0.9+ via HTTP/HTTPS. Setup CRUD endpoints for Collections.',
   version: '0.8.11',
-  git: 'https://github.com/kahmali/meteor-restivus.git'
+  git: 'https://github.com/kuneberg/meteor-restivus.git'
 });
 
 
