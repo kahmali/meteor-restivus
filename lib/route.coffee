@@ -57,10 +57,6 @@ class share.Route
           responseData = null
           try
             responseData = self._callEndpoint endpointContext, endpoint
-            if responseData is null or responseData is undefined
-              throw new Error "Cannot return null or undefined from an endpoint: #{method} #{fullPath}"
-            if res.headersSent and not responseInitiated
-              throw new Error "Must call this.done() after handling endpoint response manually: #{method} #{fullPath}"
           catch error
             # Do exactly what Iron Router would have done, to avoid changing the API
             ironRouterSendErrorToResponse(error, req, res);
@@ -70,12 +66,18 @@ class share.Route
             # Ensure the response is properly completed
             res.end()
             return
+          else
+            if res.headersSent
+              throw new Error "Must call this.done() after handling endpoint response manually: #{method} #{fullPath}"
+            else if responseData is null or responseData is undefined
+              throw new Error "Cannot return null or undefined from an endpoint: #{method} #{fullPath}"
 
           # Generate and return the http response, handling the different endpoint response types
           if responseData.body and (responseData.statusCode or responseData.headers)
             self._respond res, responseData.body, responseData.statusCode, responseData.headers
           else
             self._respond res, responseData
+
       _.each rejectedMethods, (method) ->
         JsonRoutes.add method, fullPath, (req, res) ->
           responseData = status: 'error', message: 'API endpoint does not exist'

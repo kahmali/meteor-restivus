@@ -1,5 +1,11 @@
 # Change Log
 
+## Unreleased
+
+#### Fixed
+- Allow null or undefined to be returned from endpoint function when HTTP response is handled manually ([#135][])
+
+
 ## [v0.8.10] - 2016-03-28
 
 #### Changed
@@ -420,6 +426,7 @@ _Note: API-breaking changes are in **bold**_
 [#99]:                           https://github.com/kahmali/meteor-restivus/issues/99                   "Issue #99"
 [#118]:                          https://github.com/kahmali/meteor-restivus/issues/118                  "Issue #118"
 [#121]:                          https://github.com/kahmali/meteor-restivus/issues/121                  "Issue #121"
+[#135]:                          https://github.com/kahmali/meteor-restivus/issues/135                  "Issue #135"
 [#169]:                          https://github.com/kahmali/meteor-restivus/issues/169                  "Issue #169"
 [#170]:                          https://github.com/kahmali/meteor-restivus/issues/170                  "Issue #170"
 [#179]:                          https://github.com/kahmali/meteor-restivus/issues/179                  "Issue #179"
