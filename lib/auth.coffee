@@ -14,6 +14,12 @@ userValidator = Match.Where (user) ->
 
   return true
 
+###
+  A password can be either in plain text or hashed
+###
+passwordValidator = Match.OneOf(String,
+  digest: String
+  algorithm: String)
 
 ###
   Return a MongoDB query selector for finding the given user
@@ -29,7 +35,6 @@ getUserQuerySelector = (user) ->
   # We shouldn't be here if the user object was properly validated
   throw new Error 'Cannot create selector from invalid user'
 
-
 ###
   Log a user in with their password
 ###
@@ -39,7 +44,7 @@ getUserQuerySelector = (user) ->
 
   # Validate the login input types
   check user, userValidator
-  check password, String
+  check password, passwordValidator
 
   # Retrieve the user from the database
   authenticatingUserSelector = getUserQuerySelector(user)
@@ -49,6 +54,13 @@ getUserQuerySelector = (user) ->
     throw new Meteor.Error 401, 'Unauthorized'
   if not authenticatingUser.services?.password
     throw new Meteor.Error 401, 'Unauthorized'
+
+  if @bodyParams.algorithm == 'sha-256'
+    password =
+      digest: @bodyParams.password
+      algorithm: 'sha-256'
+  else
+    password = @bodyParams.password
 
   # Authenticate the user's password
   passwordVerification = Accounts._checkPassword authenticatingUser, password

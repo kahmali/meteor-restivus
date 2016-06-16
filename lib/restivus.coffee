@@ -275,6 +275,12 @@ class @Restivus
         else if @bodyParams.email
           user.email = @bodyParams.email
 
+        password = @bodyParams.password
+        if @bodyParams.hashed
+          password =
+            digest: password
+            algorithm: 'sha-256'
+
         # Try to log the user into the user's account (if successful we'll get an auth token back)
         try
           auth = Auth.loginWithPassword user, @bodyParams.password
