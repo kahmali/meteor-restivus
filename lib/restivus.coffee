@@ -283,7 +283,7 @@ class @Restivus
 
         # Try to log the user into the user's account (if successful we'll get an auth token back)
         try
-          auth = Auth.loginWithPassword user, @bodyParams.password
+          auth = Auth.loginWithPassword user, password
         catch e
           return {} =
             statusCode: e.error
