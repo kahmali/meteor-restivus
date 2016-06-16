@@ -55,13 +55,6 @@ getUserQuerySelector = (user) ->
   if not authenticatingUser.services?.password
     throw new Meteor.Error 401, 'Unauthorized'
 
-  if @bodyParams.algorithm == 'sha-256'
-    password =
-      digest: @bodyParams.password
-      algorithm: 'sha-256'
-  else
-    password = @bodyParams.password
-
   # Authenticate the user's password
   passwordVerification = Accounts._checkPassword authenticatingUser, password
   if passwordVerification.error

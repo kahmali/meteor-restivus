@@ -1160,6 +1160,12 @@ A login will look something like
 curl http://localhost:3000/api/login/ -d "username=test&password=password"
 ```
 
+The password can be sha-256 hashed on the client side, in which case your request would look like
+OR
+```bash
+curl http://localhost:3000/api/login/ -d "username=test&password=sha-256-password&hashed=true"
+```
+
 And the response will look like
 ```javascript
 { status: "success", data: {authToken: "f2KpRW7KeN9aPmjSZ", userId: fbdpsNf4oHiX79vMJ} }
