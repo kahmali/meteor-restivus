@@ -144,7 +144,9 @@ class share.Route
   ###
   _callEndpoint: (endpointContext, endpoint) ->
     # Call the endpoint if authentication doesn't fail
-    if @_authAccepted endpointContext, endpoint
+    authResult = @_authAccepted endpointContext, endpoint
+    return authResult if typeof authResult is 'object'
+    if authResult
       if @_roleAccepted endpointContext, endpoint
         endpoint.action.call endpointContext
       else
@@ -193,7 +195,8 @@ class share.Route
       endpointContext.user = auth.user
       endpointContext.userId = auth.user._id
       true
-    else false
+    else
+      if typeof auth is 'object' then auth else false
 
 
   ###
