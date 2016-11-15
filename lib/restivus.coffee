@@ -188,7 +188,7 @@ class @Restivus
     getAll: (collection) ->
       get:
         action: ->
-          entities = collection.find().fetch()
+          entities = collection.find(@queryParams).fetch()
           if entities
             {status: 'success', data: entities}
           else
@@ -242,7 +242,7 @@ class @Restivus
     getAll: (collection) ->
       get:
         action: ->
-          entities = collection.find({}, fields: profile: 1).fetch()
+          entities = collection.find(@queryParams, fields: profile: 1).fetch()
           if entities
             {status: 'success', data: entities}
           else
