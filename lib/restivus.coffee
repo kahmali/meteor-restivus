@@ -22,6 +22,11 @@ class @Restivus
     # Configure API with the given options
     _.extend @_config, options
 
+    if @_config.middleware
+      _.each @_config.middleware, (middleware) ->
+        JsonRoutes.Middleware.use middleware
+      , this
+
     if @_config.enableCors
       corsHeaders =
         'Access-Control-Allow-Origin': '*'
