@@ -116,6 +116,16 @@ class share.Route
   _configureEndpoints: ->
     _.each @endpoints, (endpoint, method) ->
       if method isnt 'options'
+      # Configure acceptable roles group
+        if not @options?.roleGroup
+          @options.roleGroup = ''
+        if not endpoint.roleGroup
+          endpoint.roleGroup = ''
+        endpoint.roleGroup = _.union endpoint.roleGroup, @options.roleGroup
+        # Make it easier to check if no roles are required
+        if _.isEmpty endpoint.roleGroup
+          endpoint.roleGroup = false
+
         # Configure acceptable roles
         if not @options?.roleRequired
           @options.roleRequired = []
@@ -206,8 +216,9 @@ class share.Route
   ###
   _roleAccepted: (endpointContext, endpoint) ->
     if endpoint.roleRequired
-      if endpoint.roleGroup
-        if _.isEmpty _.intersection(endpoint.roleRequired, endpointContext.user.roles[roleGroup])
+        [first, ..., last] = endpoint.roleRequired
+      if last != '0'
+        if _.isEmpty _.intersection(endpoint.roleRequired, endpointContext.user.roles[last])
           return false
       else
         if _.isEmpty _.intersection(endpoint.roleRequired, endpointContext.user.roles)
