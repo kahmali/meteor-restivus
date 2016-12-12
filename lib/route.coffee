@@ -107,7 +107,7 @@ class share.Route
     override the default.
 
     After the endpoint is configured, all authentication and role requirements of an endpoint can be
-    accessed at <code>endpoint.authRequired</code> and <code>endpoint.roleRequired</code>,
+    accessed at <code>endpoint.authRequired</code> and <code>endpoint.roleRequired if used (meteor_roles) endpoint.roleGroup (default - 'default-group') </code>,
     respectively.
 
     @param {Route} route The route the endpoints belong to
@@ -217,7 +217,6 @@ class share.Route
   _roleAccepted: (endpointContext, endpoint) ->
     if endpoint.roleRequired
       if endpoint.roleGroup
-        console.log(endpoint.roleGroup, endpoint.roleRequired)
         if _.isEmpty _.intersection(endpoint.roleRequired, endpointContext.user.roles[endpoint.roleGroup])
           return false
       else
