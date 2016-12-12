@@ -216,9 +216,9 @@ class share.Route
   ###
   _roleAccepted: (endpointContext, endpoint) ->
     if endpoint.roleRequired
-        [first, ..., last] = endpoint.roleRequired
-      if last != '0'
-        if _.isEmpty _.intersection(endpoint.roleRequired, endpointContext.user.roles[last])
+        
+      if roleGroup
+        if _.isEmpty _.intersection(endpoint.roleRequired, endpointContext.user.roles[roleGroup])
           return false
       else
         if _.isEmpty _.intersection(endpoint.roleRequired, endpointContext.user.roles)
