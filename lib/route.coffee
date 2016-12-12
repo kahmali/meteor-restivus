@@ -217,7 +217,7 @@ class share.Route
   _roleAccepted: (endpointContext, endpoint) ->
     if endpoint.roleRequired
       if endpoint.roleGroup
-        console.log(endpoint.roleGroup, ndpoint.roleRequired)
+        console.log(endpoint.roleGroup, endpoint.roleRequired)
         if _.isEmpty _.intersection(endpoint.roleRequired, endpointContext.user.roles[endpoint.roleGroup])
           return false
       else
