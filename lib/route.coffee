@@ -121,7 +121,6 @@ class share.Route
           @options.roleGroup = ''
         if not endpoint.roleGroup
           endpoint.roleGroup = ''
-        endpoint.roleGroup = _.union endpoint.roleGroup, @options.roleGroup
         # Make it easier to check if no roles are required
         if _.isEmpty endpoint.roleGroup
           endpoint.roleGroup = false
@@ -217,7 +216,7 @@ class share.Route
   _roleAccepted: (endpointContext, endpoint) ->
     if endpoint.roleRequired
       if endpoint.roleGroup
-        console.log(endpoint.roleGroup)
+        console.log(endpoint.roleGroup, ndpoint.roleRequired)
         if _.isEmpty _.intersection(endpoint.roleRequired, endpointContext.user.roles[endpoint.roleGroup])
           return false
       else
