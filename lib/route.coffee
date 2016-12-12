@@ -121,6 +121,7 @@ class share.Route
           @options.roleGroup = ''
         if not endpoint.roleGroup
           endpoint.roleGroup = ''
+        endpoint.roleGroup = endpoint.roleGroup || @options.roleGroup
         # Make it easier to check if no roles are required
         if _.isEmpty endpoint.roleGroup
           endpoint.roleGroup = false
