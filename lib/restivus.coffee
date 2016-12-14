@@ -159,7 +159,10 @@ class @Restivus
     put: (collection) ->
       put:
         action: ->
-          entityIsUpdated = collection.update @urlParams.id, @bodyParams
+          if @queryParams
+              entityIsUpdated = collection.update @urlParams.id, {$set: @queryParams}
+          else
+              entityIsUpdated = collection.update @urlParams.id, @bodyParams
           if entityIsUpdated
             entity = collection.findOne @urlParams.id
             {status: 'success', data: entity}
@@ -188,7 +191,7 @@ class @Restivus
     getAll: (collection) ->
       get:
         action: ->
-          entities = collection.find().fetch()
+          entities = collection.find(@queryParams).fetch()
           if entities
             {status: 'success', data: entities}
           else
@@ -242,7 +245,7 @@ class @Restivus
     getAll: (collection) ->
       get:
         action: ->
-          entities = collection.find({}, fields: profile: 1).fetch()
+          entities = collection.find(@queryParams, fields: profile: 1).fetch()
           if entities
             {status: 'success', data: entities}
           else
