@@ -1,7 +1,7 @@
 Package.describe({
   name: 'maka:rest',
   summary: 'Create authenticated REST APIs in Meteor 0.9+ via HTTP/HTTPS. Setup CRUD endpoints for Collections.',
-  version: '0.8.18',
+  version: '0.8.22',
   git: 'https://github.com/kahmali/meteor-restivus.git'
 });
 
