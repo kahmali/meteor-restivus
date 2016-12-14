@@ -159,8 +159,9 @@ class @Restivus
     put: (collection) ->
       put:
         action: ->
-          if @queryParams
-              entityIsUpdated = collection.update @urlParams.id, {$set: @queryParams}
+          EMPTY = {}
+          if @queryParams isnt EMPTY
+              entityIsUpdated = collection.update @urlParams.id, $set: @queryParams
           else
               entityIsUpdated = collection.update @urlParams.id, @bodyParams
           if entityIsUpdated
