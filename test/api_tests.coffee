@@ -145,6 +145,27 @@ Meteor.startup ->
         test.equal responseData.name, 'update name with no description'
         test.isUndefined responseData.description
 
+      it 'should support a PATCH on api/collection/:id', (test) ->
+        result = HTTP.patch Meteor.absoluteUrl("api/autogen/#{testId}"),
+          data:
+            name: 'new name'
+            description: 'new description'
+        response = JSON.parse result.content
+        responseData = response.data
+        test.equal result.statusCode, 200
+        test.equal response.status, 'success'
+        test.equal responseData.name, 'new name'
+        test.equal responseData.description, 'new description'
+
+        result = HTTP.patch Meteor.absoluteUrl("api/autogen/#{testId}"),
+          data:
+            name: 'new name with no description'
+        response = JSON.parse result.content
+        responseData = response.data
+        test.equal result.statusCode, 200
+        test.equal response.status, 'success'
+        test.equal responseData.name, 'new name with no description'
+        test.equal responseData.description, 'new description'
 
   describe 'An API endpoint', ->
 
