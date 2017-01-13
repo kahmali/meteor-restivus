@@ -89,7 +89,7 @@ if Meteor.isServer
     useDefaultAuth: true
     prettyJson: true
 
-  # Generates: GET, POST on /api/items and GET, PUT, DELETE on
+  # Generates: GET, POST on /api/items and GET, PUT, PATCH, DELETE on
   # /api/items/:id for the Items collection
   Api.addCollection Items
 
@@ -132,7 +132,7 @@ if (Meteor.isServer) {
     prettyJson: true
   });
 
-  // Generates: GET, POST on /api/items and GET, PUT, DELETE on
+  // Generates: GET, POST on /api/items and GET, PUT, PATCH, DELETE on
   // /api/items/:id for the Items collection
   Api.addCollection(Items);
 
@@ -366,7 +366,7 @@ Well, you're in luck, because this is almost _too easy_ with Restivus! All avail
 
 **`/api/<collection>/:id`**
 - Operations on a single entity within the collection
-- `GET`, `PUT`, and `DELETE`
+- `GET`, `PUT`, `PATCH` and `DELETE`
 
 ### Collection
 
@@ -438,6 +438,10 @@ The top level properties of the options apply to both routes that will be genera
     - `PUT /api/collection/:id`
     - Completely replace the entity with the given `:id` with the data contained in the request
       body. Any fields not included will be removed from the document in the collection.
+  - `patch` _Endpoint_
+    - `PATCH /api/collection/:id`
+    - Partially modify the entity with the given `:id` with the data contained in the request
+      body. Only fields included will be modified.
   - `delete` _Endpoint_
     - `DELETE /api/collection/:id`
     - Remove the entity with the given `:id` from the collection.
@@ -558,6 +562,24 @@ Response:
     "_id": "LrcEYNojn5N7NPRdo",
     "title": "Wittier Title",
     "author": "Jaclyn Rose"
+  }
+}
+```
+
+#### `patch`
+Request:
+```bash
+curl -X PATCH http://localhost:3000/api/articles/LrcEYNojn5N7NPRdo -d "author=J. K. Rowling"
+```
+
+Response:
+```json
+{
+  "status": "success",
+  "data": {
+    "_id": "LrcEYNojn5N7NPRdo",
+    "title": "Wittier Title",
+    "author": "J. K. Rowling"
   }
 }
 ```
