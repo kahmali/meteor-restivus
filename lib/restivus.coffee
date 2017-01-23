@@ -74,6 +74,7 @@ class @Restivus
   ###
   addRoute: (path, options, endpoints) ->
     # Create a new route and add it to our list of existing routes
+    path = path.replace /^\//, ''
     route = new share.Route(this, path, options, endpoints)
     @_routes.push(route)
 
