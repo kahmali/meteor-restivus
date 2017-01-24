@@ -169,6 +169,17 @@ Meteor.startup ->
 
   describe 'An API endpoint', ->
 
+    it 'should normalize path starting with a forward slash', (test) ->
+      Api.addRoute '/forward-slash',
+        get: ->
+          true
+
+      result = HTTP.get Meteor.absoluteUrl 'api/forward-slash'
+
+      test.equal result.statusCode, 200
+      test.equal result.headers['content-type'], 'text/json'
+      test.isTrue result.content
+
     it 'should respond with the default headers when not overridden', (test) ->
       Api.addRoute 'default-headers',
         get: ->
