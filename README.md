@@ -770,14 +770,14 @@ inside of the GET endpoint function we can get the actual value of the `_id` fro
 ###### CoffeeScript:
 ```coffeescript
 # Given a URL like "/post/5"
-Api.addRoute '/post/:_id',
+Api.addRoute 'post/:_id',
   get: ->
     id = @urlParams._id # "5"
 ```
 ###### JavaScript:
 ```javascript
 // Given a URL "/post/5"
-Api.addRoute('/post/:_id', {
+Api.addRoute('post/:_id', {
   get: function () {
     var id = this.urlParams._id; // "5"
   }
@@ -791,7 +791,7 @@ parameter. If you navigate to the URL `/post/5/comments/100` then inside your en
 ###### CoffeeScript:
 ```coffeescript
 # Given a URL "/post/5/comments/100"
-Api.addRoute '/post/:_id/comments/:commentId',
+Api.addRoute 'post/:_id/comments/:commentId',
   get: ->
     id = @urlParams._id # "5"
     commentId = @urlParams.commentId # "100"
@@ -800,7 +800,7 @@ Api.addRoute '/post/:_id/comments/:commentId',
 ###### JavaScript:
 ```javascript
 // Given a URL "/post/5/comments/100"
-Api.addRoute('/post/:_id/comments/:commentId', {
+Api.addRoute('post/:_id/comments/:commentId', {
   get: function () {
     var id = this.urlParams._id; // "5"
     var commentId = this.urlParams.commentId; // "100"
@@ -813,7 +813,7 @@ If there is a query string in the URL, you can access that using `this.queryPara
 ###### Coffeescript:
 ```coffeescript
 # Given the URL: "/post/5?q=liked#hash_fragment"
-Api.addRoute '/post/:_id',
+Api.addRoute 'post/:_id',
   get: ->
     id = @urlParams._id
     query = @queryParams # query.q -> "liked"
@@ -822,7 +822,7 @@ Api.addRoute '/post/:_id',
 ###### JavaScript:
 ```javascript
 // Given the URL: "/post/5?q=liked#hash_fragment"
-Api.addRoute('/post/:_id', {
+Api.addRoute('post/:_id', {
   get: function () {
     var id = this.urlParams._id;
     var query = this.queryParams; // query.q -> "liked"
