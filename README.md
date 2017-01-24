@@ -1189,8 +1189,7 @@ A login will look something like
 curl http://localhost:3000/api/login/ -d "username=test&password=password"
 ```
 
-The password can be sha-256 hashed on the client side, in which case your request would look like
-OR
+The password can be SHA-256 hashed on the client side, in which case your request would look like
 ```bash
 curl http://localhost:3000/api/login/ -d "username=test&password=sha-256-password&hashed=true"
 ```

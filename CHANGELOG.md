@@ -1,9 +1,16 @@
 # Change Log
 
-## [Unreleased]
+## Unreleased
+
+#### Added
+- Support for SHA-256 hashed passwords sent from client in the [default login endpoint](https://github.com/kahmali/meteor-restivus#logging-in)
+- [PATCH support](https://github.com/kahmali/meteor-restivus#patch) for default collection endpoints 
 
 #### Changed
 - Allow custom error responses to be returned from [custom auth functions](https://github.com/kahmali/meteor-restivus#auth) by providing an `error` value in return object
+
+#### Fixed 
+- Bcrypt build error (required upgrade of `accounts-password` dependency to v1.3.3)
 
 
 ## [v0.8.11] - 2016-06-16
@@ -53,11 +60,11 @@
 
 ## [v0.8.4] - 2015-08-18
 
-#### Fixed
-- Enable CORS with default authentication when both are configured ([#99][])
-
 #### Added
 - Default OPTIONS endpoint when CORS is enabled ([#99][])
+
+#### Fixed
+- Enable CORS with default authentication when both are configured ([#99][])
 
 
 ## [v0.8.3] - 2015-08-12
