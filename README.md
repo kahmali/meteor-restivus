@@ -238,6 +238,12 @@ The following configuration options are available when initializing an API using
           returned, any `userId` and `token` will be ignored, as it's assumed that you have already
           successfully authenticated the user (by whatever means you deem necessary). The given user
           is simply attached to the [endpoint context](#endpoint-context), no questions asked.
+          
+      For either level of auth described above, you can optionally return a custom error response by 
+      providing that response in an `error` field of your response object. The `error` value can be 
+      [any valid response](#response-data). If an `error` field exists in the object returned from 
+      your custom auth function, all other fields will be ignored. Do **not** provide an `error` 
+      value if you intend for the authentication to pass successfully.
 
 ##### `defaultHeaders`
 - _Object_
@@ -304,8 +310,9 @@ The following configuration options are available when initializing an API using
     });
     ```
 
-Here's a sample configuration with the complete set of options (for demo purposes only - using this
-configuration is not recommended):
+Here's a sample configuration with the complete set of options: 
+
+**Warning! For demo purposes only - using this configuration is not recommended!**
 
 ###### CoffeeScript
 ```coffeescript

@@ -144,17 +144,20 @@ class share.Route
   ###
   _callEndpoint: (endpointContext, endpoint) ->
     # Call the endpoint if authentication doesn't fail
-    authResult = @_authAccepted endpointContext, endpoint
-    return authResult if typeof authResult is 'object'
-    if authResult
+    auth = @_authAccepted endpointContext, endpoint
+    if auth.success
       if @_roleAccepted endpointContext, endpoint
-        endpoint.action.call endpointContext
-      else
+        return endpoint.action.call endpointContext
+      else return {
         statusCode: 403
         body: {status: 'error', message: 'You do not have permission to do this.'}
-    else
-      statusCode: 401
-      body: {status: 'error', message: 'You must be logged in to do this.'}
+      }
+    else # Auth failed
+      if auth.data then return auth.data
+      else return {
+        statusCode: 401
+        body: {status: 'error', message: 'You must be logged in to do this.'}
+      }
 
 
   ###
@@ -164,12 +167,20 @@ class share.Route
     individual endpoints. If required on an entire endpoint, that serves as the default. If required
     in any individual endpoints, that will override the default.
 
-    @returns False if authentication fails, and true otherwise
+    @returns An object of the following format:
+
+        {
+          success: Boolean
+          data: String or Object
+        }
+
+      where `success` is `true` if all required authentication checks pass and the optional `data`
+      will contain the auth data when successful and an optional error response when auth fails.
   ###
   _authAccepted: (endpointContext, endpoint) ->
     if endpoint.authRequired
-      @_authenticate endpointContext
-    else true
+      return @_authenticate endpointContext
+    else return { success: true }
 
 
   ###
@@ -177,26 +188,37 @@ class share.Route
 
     If verified, attach the authenticated user to the context.
 
-    @returns {Boolean} True if the authentication was successful
+    @returns An object of the following format:
+
+        {
+          success: Boolean
+          data: String or Object
+        }
+
+      where `success` is `true` if all required authentication checks pass and the optional `data`
+      will contain the auth data when successful and an optional error response when auth fails.
   ###
   _authenticate: (endpointContext) ->
     # Get auth info
     auth = @api._config.auth.user.call(endpointContext)
 
+    if not auth then return { success: false }
+
     # Get the user from the database
-    if auth?.userId and auth?.token and not auth?.user
+    if auth.userId and auth.token and not auth.user
       userSelector = {}
       userSelector._id = auth.userId
       userSelector[@api._config.auth.token] = auth.token
       auth.user = Meteor.users.findOne userSelector
 
+    if auth.error then return { success: false, data: auth.error }
+
     # Attach the user and their ID to the context if the authentication was successful
-    if auth?.user
+    if auth.user
       endpointContext.user = auth.user
       endpointContext.userId = auth.user._id
-      true
-    else
-      if typeof auth is 'object' then auth else false
+      return { success: true , data: auth }
+    else return { success: false }
 
 
   ###
