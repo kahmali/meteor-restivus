@@ -1,6 +1,6 @@
 # Change Log
 
-## Unreleased
+## [v0.8.12] - 2017-01-23
 
 #### Added
 - Support for SHA-256 hashed passwords sent from client in the [default login endpoint](https://github.com/kahmali/meteor-restivus#logging-in)
@@ -378,6 +378,7 @@ _Note: API-breaking changes are in **bold**_
 
 
 
+[v0.8.12]:  https://github.com/kahmali/meteor-restivus/compare/v0.8.11...v0.8.12  "Version 0.8.12"
 [v0.8.11]:  https://github.com/kahmali/meteor-restivus/compare/v0.8.10...v0.8.11  "Version 0.8.11"
 [v0.8.10]:  https://github.com/kahmali/meteor-restivus/compare/v0.8.9...v0.8.10   "Version 0.8.10"
 [v0.8.9]:   https://github.com/kahmali/meteor-restivus/compare/v0.8.8...v0.8.9    "Version 0.8.9"
