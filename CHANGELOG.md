@@ -1,5 +1,11 @@
 # Change Log
 
+## [Unreleased]
+
+#### Changed
+- Allow custom error responses to be returned from [custom auth functions](https://github.com/kahmali/meteor-restivus#auth) by providing an `error` value in return object
+
+
 ## [v0.8.11] - 2016-06-16
 
 #### Fixed

@@ -86,7 +86,7 @@ class @Restivus
     Generate routes for the Meteor Collection with the given name
   ###
   addCollection: (collection, options={}) ->
-    methods = ['get', 'post', 'put', 'delete', 'getAll']
+    methods = ['get', 'post', 'put', 'patch', 'delete', 'getAll']
     methodsOnCollection = ['post', 'getAll']
 
     # Grab the set of endpoints
@@ -160,6 +160,16 @@ class @Restivus
       put:
         action: ->
           entityIsUpdated = collection.update @urlParams.id, @bodyParams
+          if entityIsUpdated
+            entity = collection.findOne @urlParams.id
+            {status: 'success', data: entity}
+          else
+            statusCode: 404
+            body: {status: 'fail', message: 'Item not found'}
+    patch: (collection) ->
+      patch:
+        action: ->
+          entityIsUpdated = collection.update @urlParams.id, $set: @bodyParams
           if entityIsUpdated
             entity = collection.findOne @urlParams.id
             {status: 'success', data: entity}
@@ -275,9 +285,15 @@ class @Restivus
         else if @bodyParams.email
           user.email = @bodyParams.email
 
+        password = @bodyParams.password
+        if @bodyParams.hashed
+          password =
+            digest: password
+            algorithm: 'sha-256'
+
         # Try to log the user into the user's account (if successful we'll get an auth token back)
         try
-          auth = Auth.loginWithPassword user, @bodyParams.password
+          auth = Auth.loginWithPassword user, password
         catch e
           return {} =
             statusCode: e.error
