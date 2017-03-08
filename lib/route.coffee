@@ -13,6 +13,23 @@ class share.Route
     return ->
       self = this
 
+      respond = (responseData, {responseInitiated, res}) ->
+        if responseInitiated
+          # Ensure the response is properly completed
+          res.end()
+          return
+        else
+          if res.headersSent
+            throw new Error "Must call this.done() after handling endpoint response manually: #{method} #{fullPath}"
+          else if responseData is null or responseData is undefined
+            throw new Error "Cannot return null or undefined from an endpoint: #{method} #{fullPath}"
+
+        # Generate and return the http response, handling the different endpoint response types
+        if responseData.body and (responseData.statusCode or responseData.headers)
+          self._respond res, responseData.body, responseData.statusCode, responseData.headers
+        else
+          self._respond res, responseData
+
       # Throw an error if a route has already been added at this path
       # TODO: Check for collisions with paths that follow same pattern with different parameter names
       if _.contains @api._config.paths, @path
@@ -57,26 +74,15 @@ class share.Route
           responseData = null
           try
             responseData = self._callEndpoint endpointContext, endpoint
+            if responseData instanceof Promise
+              responseData.then (result) ->
+                respond result, {responseInitiated, res}
           catch error
             # Do exactly what Iron Router would have done, to avoid changing the API
             ironRouterSendErrorToResponse(error, req, res);
             return
 
-          if responseInitiated
-            # Ensure the response is properly completed
-            res.end()
-            return
-          else
-            if res.headersSent
-              throw new Error "Must call this.done() after handling endpoint response manually: #{method} #{fullPath}"
-            else if responseData is null or responseData is undefined
-              throw new Error "Cannot return null or undefined from an endpoint: #{method} #{fullPath}"
-
-          # Generate and return the http response, handling the different endpoint response types
-          if responseData.body and (responseData.statusCode or responseData.headers)
-            self._respond res, responseData.body, responseData.statusCode, responseData.headers
-          else
-            self._respond res, responseData
+          if not (responseData instanceof Promise) then respond responseData, {responseInitiated, res}
 
       _.each rejectedMethods, (method) ->
         JsonRoutes.add method, fullPath, (req, res) ->
