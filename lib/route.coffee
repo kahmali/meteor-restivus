@@ -58,9 +58,10 @@ class share.Route
           try
             responseData = self._callEndpoint endpointContext, endpoint
           catch error
-            # Do exactly what Iron Router would have done, to avoid changing the API
-            ironRouterSendErrorToResponse(error, req, res);
-            return
+            responseData = {
+              statusCode: error.error,
+              body: {status: 'error', message: error.reason}
+            }
 
           if responseInitiated
             # Ensure the response is properly completed

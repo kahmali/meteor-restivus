@@ -18,7 +18,6 @@ Package.onUse(function (api) {
   api.use('simple:json-routes@2.1.0');
 
   api.addFiles('lib/auth.coffee', 'server');
-  api.addFiles('lib/iron-router-error-to-response.js', 'server');
   api.addFiles('lib/route.coffee', 'server');
   api.addFiles('lib/restivus.coffee', 'server');
 
