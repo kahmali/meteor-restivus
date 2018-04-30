@@ -1,28 +1,4 @@
-# Fork for: [https://github.com/kahmali/meteor-restivus.git](https://github.com/kahmali/meteor-restivus.git)
-
-## Changes:
-#### Possibiliti to customize message for auth failed response
-```javascript
-//sample
-let Api = new Restivus({
-    apiPath: 'api/'
-    auth: {
-        authFailedResponse: {
-            statusCode: 200,
-            body: {
-                result: {
-                    message:'An error ocurred with server access',
-                    error_code:3,
-                    isValid:false
-                }
-            }
-        }
-    },
-});
-```
-
-
-# Restivus [v0.8.10](https://github.com/kahmali/meteor-restivus/blob/devel/CHANGELOG.md#change-log) [![Build Status](https://travis-ci.org/kahmali/meteor-restivus.svg)](https://travis-ci.org/kahmali/meteor-restivus)
+# Restivus [v0.8.12](https://github.com/kahmali/meteor-restivus/blob/devel/CHANGELOG.md#change-log) [![Build Status](https://travis-ci.org/kahmali/meteor-restivus.svg)](https://travis-ci.org/kahmali/meteor-restivus)
 
 #### REST APIs for the Best of Us!
 
@@ -113,7 +89,7 @@ if Meteor.isServer
     useDefaultAuth: true
     prettyJson: true
 
-  # Generates: GET, POST on /api/items and GET, PUT, DELETE on
+  # Generates: GET, POST on /api/items and GET, PUT, PATCH, DELETE on
   # /api/items/:id for the Items collection
   Api.addCollection Items
 
@@ -156,7 +132,7 @@ if (Meteor.isServer) {
     prettyJson: true
   });
 
-  // Generates: GET, POST on /api/items and GET, PUT, DELETE on
+  // Generates: GET, POST on /api/items and GET, PUT, PATCH, DELETE on
   // /api/items/:id for the Items collection
   Api.addCollection(Items);
 
@@ -262,6 +238,12 @@ The following configuration options are available when initializing an API using
           returned, any `userId` and `token` will be ignored, as it's assumed that you have already
           successfully authenticated the user (by whatever means you deem necessary). The given user
           is simply attached to the [endpoint context](#endpoint-context), no questions asked.
+          
+      For either level of auth described above, you can optionally return a custom error response by 
+      providing that response in an `error` field of your response object. The `error` value can be 
+      [any valid response](#response-data). If an `error` field exists in the object returned from 
+      your custom auth function, all other fields will be ignored. Do **not** provide an `error` 
+      value if you intend for the authentication to pass successfully.
 
 ##### `defaultHeaders`
 - _Object_
@@ -328,8 +310,9 @@ The following configuration options are available when initializing an API using
     });
     ```
 
-Here's a sample configuration with the complete set of options (for demo purposes only - using this
-configuration is not recommended):
+Here's a sample configuration with the complete set of options: 
+
+**Warning! For demo purposes only - using this configuration is not recommended!**
 
 ###### CoffeeScript
 ```coffeescript
@@ -390,7 +373,7 @@ Well, you're in luck, because this is almost _too easy_ with Restivus! All avail
 
 **`/api/<collection>/:id`**
 - Operations on a single entity within the collection
-- `GET`, `PUT`, and `DELETE`
+- `GET`, `PUT`, `PATCH` and `DELETE`
 
 ### Collection
 
@@ -462,6 +445,10 @@ The top level properties of the options apply to both routes that will be genera
     - `PUT /api/collection/:id`
     - Completely replace the entity with the given `:id` with the data contained in the request
       body. Any fields not included will be removed from the document in the collection.
+  - `patch` _Endpoint_
+    - `PATCH /api/collection/:id`
+    - Partially modify the entity with the given `:id` with the data contained in the request
+      body. Only fields included will be modified.
   - `delete` _Endpoint_
     - `DELETE /api/collection/:id`
     - Remove the entity with the given `:id` from the collection.
@@ -582,6 +569,24 @@ Response:
     "_id": "LrcEYNojn5N7NPRdo",
     "title": "Wittier Title",
     "author": "Jaclyn Rose"
+  }
+}
+```
+
+#### `patch`
+Request:
+```bash
+curl -X PATCH http://localhost:3000/api/articles/LrcEYNojn5N7NPRdo -d "author=J. K. Rowling"
+```
+
+Response:
+```json
+{
+  "status": "success",
+  "data": {
+    "_id": "LrcEYNojn5N7NPRdo",
+    "title": "Wittier Title",
+    "author": "J. K. Rowling"
   }
 }
 ```
@@ -761,6 +766,26 @@ on `this.urlParams` in your endpoint function.
 In this example we have a parameter named `_id`. If we navigate to the `/post/5` URL in our browser,
 inside of the GET endpoint function we can get the actual value of the `_id` from
 `this.urlParams._id`. In this case `this.urlParams._id => 5`.
+
+### Possibiliti to customize message for auth failed response
+```javascript
+//sample
+let Api = new Restivus({
+    apiPath: 'api/'
+    auth: {
+        authFailedResponse: {
+            statusCode: 200,
+            body: {
+                result: {
+                    message:'An error ocurred with server access',
+                    error_code:3,
+                    isValid:false
+                }
+            }
+        }
+    },
+});
+```
 
 ###### CoffeeScript:
 ```coffeescript
@@ -1182,6 +1207,11 @@ A login will look something like
 
 ```bash
 curl http://localhost:3000/api/login/ -d "username=test&password=password"
+```
+
+The password can be SHA-256 hashed on the client side, in which case your request would look like
+```bash
+curl http://localhost:3000/api/login/ -d "username=test&password=sha-256-password&hashed=true"
 ```
 
 And the response will look like

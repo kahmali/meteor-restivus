@@ -14,6 +14,12 @@ userValidator = Match.Where (user) ->
 
   return true
 
+###
+  A password can be either in plain text or hashed
+###
+passwordValidator = Match.OneOf(String,
+  digest: String
+  algorithm: String)
 
 ###
   Return a MongoDB query selector for finding the given user
@@ -29,7 +35,6 @@ getUserQuerySelector = (user) ->
   # We shouldn't be here if the user object was properly validated
   throw new Error 'Cannot create selector from invalid user'
 
-
 ###
   Log a user in with their password
 ###
@@ -39,7 +44,7 @@ getUserQuerySelector = (user) ->
 
   # Validate the login input types
   check user, userValidator
-  check password, String
+  check password, passwordValidator
 
   # Retrieve the user from the database
   authenticatingUserSelector = getUserQuerySelector(user)

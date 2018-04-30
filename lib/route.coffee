@@ -57,10 +57,6 @@ class share.Route
           responseData = null
           try
             responseData = self._callEndpoint endpointContext, endpoint
-            if responseData is null or responseData is undefined
-              throw new Error "Cannot return null or undefined from an endpoint: #{method} #{fullPath}"
-            if res.headersSent and not responseInitiated
-              throw new Error "Must call this.done() after handling endpoint response manually: #{method} #{fullPath}"
           catch error
             # Do exactly what Iron Router would have done, to avoid changing the API
             ironRouterSendErrorToResponse(error, req, res);
@@ -70,12 +66,18 @@ class share.Route
             # Ensure the response is properly completed
             res.end()
             return
+          else
+            if res.headersSent
+              throw new Error "Must call this.done() after handling endpoint response manually: #{method} #{fullPath}"
+            else if responseData is null or responseData is undefined
+              throw new Error "Cannot return null or undefined from an endpoint: #{method} #{fullPath}"
 
           # Generate and return the http response, handling the different endpoint response types
           if responseData.body and (responseData.statusCode or responseData.headers)
             self._respond res, responseData.body, responseData.statusCode, responseData.headers
           else
             self._respond res, responseData
+
       _.each rejectedMethods, (method) ->
         JsonRoutes.add method, fullPath, (req, res) ->
           responseData = status: 'error', message: 'API endpoint does not exist'
@@ -142,18 +144,22 @@ class share.Route
   ###
   _callEndpoint: (endpointContext, endpoint) ->
     # Call the endpoint if authentication doesn't fail
-    if @_authAccepted endpointContext, endpoint
+    auth = @_authAccepted endpointContext, endpoint
+    if auth.success
       if @_roleAccepted endpointContext, endpoint
-        endpoint.action.call endpointContext
-      else
+        return endpoint.action.call endpointContext
+      else return {
         statusCode: 403
         body: {status: 'error', message: 'You do not have permission to do this.'}
-    else
-      @api._config.auth.authFailedResponse
-      ###
-        statusCode: 401
-        body: {status: 'error', message: 'You must be logged in to do this.'}
-      ###
+      }
+      else # Auth failed
+        if auth.data then return auth.data
+        else 
+          @api._config.auth.authFailedResponse
+          ###
+            statusCode: 401
+            body: {status: 'error', message: 'You must be logged in to do this.'}
+          ###     
 
   ###
     Authenticate the given endpoint if required
@@ -162,12 +168,20 @@ class share.Route
     individual endpoints. If required on an entire endpoint, that serves as the default. If required
     in any individual endpoints, that will override the default.
 
-    @returns False if authentication fails, and true otherwise
+    @returns An object of the following format:
+
+        {
+          success: Boolean
+          data: String or Object
+        }
+
+      where `success` is `true` if all required authentication checks pass and the optional `data`
+      will contain the auth data when successful and an optional error response when auth fails.
   ###
   _authAccepted: (endpointContext, endpoint) ->
     if endpoint.authRequired
-      @_authenticate endpointContext
-    else true
+      return @_authenticate endpointContext
+    else return { success: true }
 
 
   ###
@@ -175,25 +189,37 @@ class share.Route
 
     If verified, attach the authenticated user to the context.
 
-    @returns {Boolean} True if the authentication was successful
+    @returns An object of the following format:
+
+        {
+          success: Boolean
+          data: String or Object
+        }
+
+      where `success` is `true` if all required authentication checks pass and the optional `data`
+      will contain the auth data when successful and an optional error response when auth fails.
   ###
   _authenticate: (endpointContext) ->
     # Get auth info
     auth = @api._config.auth.user.call(endpointContext)
 
+    if not auth then return { success: false }
+
     # Get the user from the database
-    if auth?.userId and auth?.token and not auth?.user
+    if auth.userId and auth.token and not auth.user
       userSelector = {}
       userSelector._id = auth.userId
       userSelector[@api._config.auth.token] = auth.token
       auth.user = Meteor.users.findOne userSelector
 
+    if auth.error then return { success: false, data: auth.error }
+
     # Attach the user and their ID to the context if the authentication was successful
-    if auth?.user
+    if auth.user
       endpointContext.user = auth.user
       endpointContext.userId = auth.user._id
-      true
-    else false
+      return { success: true , data: auth }
+    else return { success: false }
 
 
   ###
