@@ -152,13 +152,14 @@ class share.Route
         statusCode: 403
         body: {status: 'error', message: 'You do not have permission to do this.'}
       }
-    else # Auth failed
-      if auth.data then return auth.data
-      else return {
-        statusCode: 401
-        body: {status: 'error', message: 'You must be logged in to do this.'}
-      }
-
+      else # Auth failed
+        if auth.data then return auth.data
+        else 
+          @api._config.auth.authFailedResponse
+          ###
+            statusCode: 401
+            body: {status: 'error', message: 'You must be logged in to do this.'}
+          ###     
 
   ###
     Authenticate the given endpoint if required

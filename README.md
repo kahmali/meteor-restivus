@@ -767,6 +767,26 @@ In this example we have a parameter named `_id`. If we navigate to the `/post/5`
 inside of the GET endpoint function we can get the actual value of the `_id` from
 `this.urlParams._id`. In this case `this.urlParams._id => 5`.
 
+### Possibiliti to customize message for auth failed response
+```javascript
+//sample
+let Api = new Restivus({
+    apiPath: 'api/'
+    auth: {
+        authFailedResponse: {
+            statusCode: 200,
+            body: {
+                result: {
+                    message:'An error ocurred with server access',
+                    error_code:3,
+                    isValid:false
+                }
+            }
+        }
+    },
+});
+```
+
 ###### CoffeeScript:
 ```coffeescript
 # Given a URL like "/post/5"
