@@ -49,10 +49,9 @@ getUserQuerySelector = (user) ->
   # Retrieve the user from the database
   authenticatingUserSelector = getUserQuerySelector(user)
   authenticatingUser = Meteor.users.findOne(authenticatingUserSelector)
-
   if not authenticatingUser
     throw new Meteor.Error 401, 'Unauthorized'
-  if not authenticatingUser.services?.password
+  if not authenticatingUser.services?.password.bcrypt
     throw new Meteor.Error 401, 'Unauthorized'
 
   # Authenticate the user's password
