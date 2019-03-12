@@ -63,6 +63,6 @@ getUserQuerySelector = (user) ->
   # Add a new auth token to the user's account
   authToken = Accounts._generateStampedLoginToken()
   hashedToken = Accounts._hashLoginToken authToken.token
-  Accounts._insertHashedLoginToken authenticatingUser._id, {hashedToken}
+  Accounts._insertLoginToken userId, authToken
 
-  return {authToken: authToken.token, userId: authenticatingUser._id}
+  return {authToken: authToken.token, userId: authenticatingUser._id, creationDate: authToken.when}
