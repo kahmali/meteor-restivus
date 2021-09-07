@@ -1,5 +1,11 @@
 # Change Log
 
+## [v0.8.13] - 2021-09-07
+
+#### Added
+- Support for [Meteor 2.3](https://docs.meteor.com/changelog.html#v2320210624)
+
+
 ## [v0.8.12] - 2017-01-23
 
 #### Added
