@@ -146,7 +146,7 @@ Meteor.startup ->
         test.isUndefined responseData.description
 
       it 'should support a PATCH on api/collection/:id', (test) ->
-        result = HTTP.patch Meteor.absoluteUrl("api/autogen/#{testId}"),
+        result = HTTP.call 'PATCH', Meteor.absoluteUrl("api/autogen/#{testId}"),
           data:
             name: 'new name'
             description: 'new description'
@@ -157,7 +157,7 @@ Meteor.startup ->
         test.equal responseData.name, 'new name'
         test.equal responseData.description, 'new description'
 
-        result = HTTP.patch Meteor.absoluteUrl("api/autogen/#{testId}"),
+        result = HTTP.call 'PATCH', Meteor.absoluteUrl("api/autogen/#{testId}"),
           data:
             name: 'new name with no description'
         response = JSON.parse result.content
